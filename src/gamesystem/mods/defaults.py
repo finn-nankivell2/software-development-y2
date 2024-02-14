@@ -6,6 +6,8 @@ from collections import OrderedDict
 from types import SimpleNamespace
 import time
 
+import pygame
+
 
 class StateManager(GameModule):
 	IDMARKER = "state"
@@ -22,6 +24,17 @@ class StateManager(GameModule):
 		t = time.time()
 		self.deltatime = t - self.time_now
 		self.time_now = t
+
+
+class ClockManager(GameModule):
+	IDMARKER = "clock"
+
+	def create(self, framerate=60):
+		self.framerate = framerate
+		self.clock = pygame.time.Clock()
+
+	def update(self):
+		self.clock.tick(self.framerate)
 
 
 class GameloopManager(GameModule):

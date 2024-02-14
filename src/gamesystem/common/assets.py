@@ -65,6 +65,9 @@ class SpriteSheet():
 	def rand(self) -> Surface:
 		return random.choice(self._sprites)
 
+	def dimensions(self) -> Tuple[int, int]:
+		return self._dims
+
 	def pseudorand(self, seed) -> Surface:
 		return self._sprites[seed % len(self)]
 
