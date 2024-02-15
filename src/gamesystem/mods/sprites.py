@@ -60,8 +60,8 @@ class SpritesManager(BaseSpriteManager):
 
 		else:
 			for x in layer_names:
-				for sprite in self._sprites:
-					sprite.destroy = True
+				for sprite in self._sprites[x]:
+					sprite.destroy()
 				self._sprites[x] = []
 
 	def purge_preserve(self, *preserve):

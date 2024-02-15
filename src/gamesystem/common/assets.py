@@ -31,6 +31,7 @@ class SpriteSheet():
 
 	def add_names(self, names: List[str]):
 		self._names = names
+		self._names_dict = {}
 
 		if type(self._names) is not list:
 			raise ValueError("Names must be a list")
@@ -42,7 +43,9 @@ class SpriteSheet():
 			raise ValueError(f"Name length ({len(self._names)}) differs to sprite length ({len(self._sprites)})")
 
 		for n, spr in zip(self._names, self._sprites):
-			if n.startswith("_"):
+			self._names_dict[n] = spr
+
+			if n.startswith("_") or not n.isascii():
 				continue
 				# raise ValueError("Sprite names must not start with an underscore")
 			self.__dict__[n] = spr
@@ -51,7 +54,7 @@ class SpriteSheet():
 		return self._sprites[idx]
 
 	def get_by_name(self, name: str):
-		return self.__dict__[name]
+		return self._names_dict[name]
 
 	def get_names(self) -> List[str]:
 		return self._names

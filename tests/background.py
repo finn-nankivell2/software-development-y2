@@ -13,7 +13,7 @@ class MatrixBackgroundRenderer(Sprite):
 		self._colours = colours
 		if self._colours is None:
 			# c1, c2 = Color("#000000"), Color("#00ff00")
-			c1, c2 = Color("#000000"), Color("#550055")
+			c1, c2 = Color("#000000"), Color("#004000")
 
 			self._colours = [c1.lerp(c2, random.uniform(0, 1.0)) for _ in range(10)]
 
@@ -27,7 +27,8 @@ class MatrixBackgroundRenderer(Sprite):
 		colour = self.get_random_colour() if len(self._droplets) <= 15 else Color("#000000")
 
 		if pos is None:
-			pos = [Vector2(random.randint(0, self._surface.get_width()), self._surface.get_height() - 1), colour]
+			# pos = [Vector2(random.randint(0, self._surface.get_width()), self._surface.get_height() - 1), colour]
+			pos = [Vector2(random.randint(0, self._surface.get_width()), 0), colour]
 			self._droplets.append(pos)
 
 	def get_random_colour(self):
@@ -54,7 +55,7 @@ class MatrixBackgroundRenderer(Sprite):
 
 		for i in range(len(self._droplets) - 1, -1, -1):
 			droplet, _ = self._droplets[i]
-			droplet.update(droplet - Vector2(0, 1))
+			droplet.update(droplet + Vector2(0, 1))
 
 			if droplet.y >= self._surface.get_height(
 			) or droplet.y < 0 or droplet.x < 0 or droplet.x >= self._surface.get_width():
@@ -133,26 +134,19 @@ class RandomizedBackgroundRenderer(Sprite):
 		self._colours = colours
 		if self._colours is None:
 			self._colours = {
-				4: Color("#37ae2f"),
 				4: Color("#000000"),
-				40: Color("#076e0f"),
-				50: Color("#043301"),
-				2: Color("#00ff00")
+				30: Color("#013e0f"),
+				60: Color("#000000"),
+				2: Color("#008f00")
 			}
 
 		t = 0
-		c = self.get_random_colour()
 		for surf in self._surfaces:
 			w, h = surf.get_size()
 			surf.lock()
 			for y in range(h):
 				for x in range(w):
-					if t == 0:
-						t = random.randint(10, w // 4)
-						c = self.get_random_colour()
-					t -= 1
-
-					surf.set_at((x, y), c)
+					surf.set_at((x, y), self.get_random_colour())
 
 			surf.unlock()
 

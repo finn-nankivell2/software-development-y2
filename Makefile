@@ -10,7 +10,7 @@ clean:
 	rm -r venv
 
 dev:
-	source venv/bin/activate
+	. venv/bin/activate
 	python3 tests/gametest.py
 
 test:

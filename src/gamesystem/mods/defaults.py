@@ -42,7 +42,7 @@ class GameloopManager(GameModule):
 	REQUIREMENTS = ["sprites"]
 
 	def create(self, loop_hook=None):
-		self.running = True
+		self.running = False
 		self.game.loop = self
 		self._hook = loop_hook
 
@@ -58,9 +58,13 @@ class GameloopManager(GameModule):
 		else:
 			self._hook(self)
 
-	def run(self, loop):
+	def run(self, inithook):
+		if self.running:
+			inithook()
+			return
+
 		self.running = True
-		loop()
+		inithook()
 		while self.running:
 			self.do_running()
 

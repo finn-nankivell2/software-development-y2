@@ -20,23 +20,38 @@ from gamesystem.mods.debug import DebugOverlayManager
 from gamesystem.common.sprite import Sprite
 from gamesystem.common.assets import SpriteSheet
 
-from background import MatrixBackgroundRenderer
+from background import MatrixBackgroundRenderer, RandomizedBackgroundRenderer
 from gameutiltest import *
+
+from enum import IntEnum
 
 
 class BubbleFontModule(GameModule):
 	IDMARKER = "bubblefont"
 
 	def create(self, font_path="sprites/fontblock-unblocked.png"):
-		self.raw = pygame.image.load(font_path)
+		self.raw = pygame.image.load(font_path).convert_alpha()
 
 		ALPHA = "abcdefghijklmnopqrstuvwxyz0123456789"
-		self.CHARACTERS = [c for c in ALPHA]
+		self.CHARACTERS = [c for c in ALPHA] + ["STOP"]
 
 		self.sheet = SpriteSheet(self.raw, (12, 12), names=self.CHARACTERS)
 
 	def get(self, k):
-		return self.sheet.__dict__[k]
+		return self.sheet.get_by_name(k)
+
+	def render(self, characters):
+		dims = self.sheet.dimensions()
+		size = Vector2(dims[0] * len(characters), dims[1])
+		surface = Surface(size, pygame.SRCALPHA)
+
+		for x, c in zip(range(0, self.raw.get_width(), dims[1]), characters):
+			if c == " ":
+				continue
+
+			surface.blit(self.get(c), (x, 0))
+
+		return surface
 
 
 class UserTypingBuffer(GameModule):
@@ -45,31 +60,49 @@ class UserTypingBuffer(GameModule):
 	REQUIREMENTS = ["input"]
 
 	def create(self):
-		self._current_buffer = []
-		self._incorrect_buffer = []
-		self._used_words = []
+		self.reset_buffers()
 
 		with open("words") as file:
 			self.wordslist = set(map(str.rstrip, file.readlines()))
 
+	def reset_buffers(self):
+		self._current_buffer = []
+		self._incorrect_buffer = []
+		self._used_words = []
+
 	def _buffer_words(self):
-		cat_current = "".join(self._current_buffer)
-		history = self._incorrect_buffer.copy()
-		history.append(cat_current)
 		return history
 
 	def get_view(self, expected_size=100):
-		buffer = self._buffer_words()
+		cat_current = "".join(self._current_buffer)
+		joinchar = " "
 
-		unpadded = list(iter(" ".join(buffer)))
+		buffer_incorrect = self._incorrect_buffer.copy()
+		buffer_incorrect = joinchar.join(buffer_incorrect)
+		buffer_incorrect = joinchar + buffer_incorrect if buffer_incorrect else buffer_incorrect
+
+		unpadded = list(iter(buffer_incorrect + joinchar + cat_current))
+
+		if len(unpadded) > expected_size:
+			game.loop.run(failstate)
+			self.reset_buffers()
 
 		while len(unpadded) < expected_size:
 			unpadded.insert(0, " ")
 
 		return unpadded
 
+	def _spawn_popped_particle(self, word):
+		fontdims = Vector2(game.bubblefont.sheet.dimensions())
+
+		botright = Vector2(120, 120)
+		botright.y -= fontdims.y
+		botright.x -= (len(word) - 0.5) * int(fontdims.x)
+
+		game.sprites.new(PoppedFontParticle(botright, word))
+
 	def is_word_valid(self, word):
-		return word in self.wordslist and word not in self._used_words
+		return len(word) > 1 and word not in self._used_words and word in self.wordslist
 
 	def update(self):
 		keys = pygame.locals.__dict__
@@ -77,28 +110,43 @@ class UserTypingBuffer(GameModule):
 		for char in "abcdefghijklmnopqrstuvwxyz0123456789":
 			keycode = keys["K_" + char]
 			if game.input.key_pressed(keycode):
-				# self._current_buffer.pop(0)
 				self._current_buffer.append(char)
 				break
 		else:
 			if game.input.key_pressed(pygame.K_SPACE):
-				# self._current_buffer.append(None)
 				word = "".join(self._current_buffer)
 
 				if self.is_word_valid(word):
 					print(f"VALID: {word}")
 					self._used_words.append(word)
+					self._spawn_popped_particle(word)
 				else:
 					self._incorrect_buffer.append(word)
 					print(f"INVALID: {word}")
 
 				self._current_buffer = []
-		# 	elif game.input.key_pressed(pygame.K_BACKSPACE):
-		# 		if game.input.key_down(pygame.K_LSHIFT):
-		# 			self.buffer = [None for _ in self.buffer]
-		# 		else:
-		# 			self.buffer.insert(0, None)
-		# 			self.buffer.pop(-1)
+
+
+class PoppedFontParticle(Sprite):
+	LAYER = "PARTICLE"
+	VEL = Vector2(0, -0.5)
+
+	def __init__(self, pos, characters):
+		self.pos = pos
+		self._ticker = 255
+
+		self._surface = game.bubblefont.render(characters)
+
+	def update_move(self):
+		self.pos += PoppedFontParticle.VEL
+		self._ticker -= 8
+
+		if self._ticker < 1:
+			self.destroy()
+
+	def update_draw(self):
+		self._surface.set_alpha(self._ticker)
+		game.windowsystem.screen.blit(self._surface, self.pos)
 
 
 class FontRenderer(Sprite):
@@ -125,8 +173,30 @@ class FontRenderer(Sprite):
 				if c == " ":
 					continue
 
+				if c == "_":
+					use_asset = game.bubblefont.get("STOP")
+
+				else:
+					use_asset = game.bubblefont.get(c)
+
 				pos = Vector2(x, y)
-				game.windowsystem.screen.blit(game.bubblefont.get(c), pos + offset)
+				game.windowsystem.screen.blit(use_asset, pos + offset)
+
+
+class GameOverMessage(Sprite):
+	LAYER = "UI"
+
+	def __init__(self):
+		self.message = "game over"
+		self._surface = game.bubblefont.render(self.message)
+
+	def update_move(self):
+		if game.input.key_pressed(pygame.K_r):
+			game.loop.run(mainloop)
+
+	def update_draw(self):
+		pos = (game.windowsystem.dimensions - self._surface.get_size()) / 2
+		game.windowsystem.screen.blit(self._surface, pos)
 
 
 def do_running(self):
@@ -139,26 +209,34 @@ def do_running(self):
 	self.game.windowsystem.update()
 
 
+def failstate():
+	game.sprites.purge_preserve("BACKGROUND")
+	game.sprites.new(GameOverMessage())
+
+
 def mainloop():
+	game.sprites.purge()
+	game.typingbuffer.reset_buffers()
 	game.sprites.new(FontRenderer())
 	game.sprites.new(MatrixBackgroundRenderer(game.windowsystem.dimensions))
 
 
-game.add_module(SpritesManager, layers=["BACKGROUND", "PARTICLE", "FONT", "FOREGROUND", "UI"])
-game.add_module(GameloopManager, loop_hook=do_running)
-game.add_module(StateManager)
-game.add_module(ClockManager)
-game.add_module(
-	ScalingWindowSystem,
-	size=Vector2(130, 130),
-	user_size=Vector2(750, 750),
-	caption="typing test",
-	flags=pygame.NOFRAME,
-	fill_color=Color("#000000")
-)
-game.add_module(InputManagerScalingMouse)
-game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
-game.add_module(BubbleFontModule, font_path="sprites/hacker-font.png")
-game.add_module(UserTypingBuffer)
+if __name__ == "__main__":
+	game.add_module(SpritesManager, layers=["BACKGROUND", "PARTICLE", "FONT", "FOREGROUND", "UI"])
+	game.add_module(GameloopManager, loop_hook=do_running)
+	game.add_module(StateManager)
+	game.add_module(ClockManager)
+	game.add_module(
+		ScalingWindowSystem,
+		size=Vector2(130, 130),
+		user_size=Vector2(750, 750),
+		caption="typing test",
+		flags=pygame.NOFRAME,
+		fill_color=Color("#000000")
+	)
+	game.add_module(InputManagerScalingMouse)
+	game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
+	game.add_module(BubbleFontModule, font_path="sprites/hacker-font.png")
+	game.add_module(UserTypingBuffer)
 
-game.loop.run(mainloop)
+	game.loop.run(mainloop)
