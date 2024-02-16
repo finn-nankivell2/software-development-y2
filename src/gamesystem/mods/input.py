@@ -50,13 +50,13 @@ class InputManager(GameModule):
 		"""Get mouse movement change since last frame"""
 		return self._mouse_rel
 
-	def key_down(self, key_code):
+	def key_down(self, *key_codes):
 		"""Check if key is down"""
-		return self.keys[key_code] and not self._freeze_input
+		return any(self.keys[k] for k in key_codes) and not self._freeze_input
 
-	def key_pressed(self, key_code):
+	def key_pressed(self, *key_codes):
 		"""Check if key is pressed on this frame only"""
-		return self.keys[key_code] and not self._last_keys[key_code] and not self._freeze_input
+		return any(self.keys[k] and not self._last_keys[k] for k in key_codes) and not self._freeze_input
 
 	def mouse_down(self, idx):
 		"""Check if mouse is down"""

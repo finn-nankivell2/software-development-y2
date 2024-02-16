@@ -7,15 +7,15 @@ import random
 class MatrixBackgroundRenderer(Sprite):
 	LAYER = "BACKGROUND"
 
-	def __init__(self, size, colours=None):
+	def __init__(self, size, crange=None):
 		self._surface = Surface(size)
 
-		self._colours = colours
-		if self._colours is None:
-			# c1, c2 = Color("#000000"), Color("#00ff00")
-			c1, c2 = Color("#000000"), Color("#004000")
+		self._crange = crange
+		if self._crange is None:
+			self._crange = Color("#000000"), Color("#004000")
 
-			self._colours = [c1.lerp(c2, random.uniform(0, 1.0)) for _ in range(10)]
+		c1, c2 = self._crange
+		self._colours = [c1.lerp(c2, random.uniform(0, 1.0)) for _ in range(10)]
 
 		self._colstate = 0
 
@@ -67,7 +67,7 @@ class MatrixBackgroundRenderer(Sprite):
 				self._droplets.append([pos - Vector2(2, 0), self.get_random_colour()])
 				self._droplets.append([pos + Vector2(2, 0), self.get_random_colour()])
 
-	def update_draw(self):
+	def update_draw(self, to_surface=None):
 		self._surface.lock()
 		for dpos, dcol in self._droplets:
 			dpos = (int(dpos.x), int(dpos.y))
@@ -75,7 +75,8 @@ class MatrixBackgroundRenderer(Sprite):
 
 		self._surface.unlock()
 
-		game.windowsystem.screen.blit(self._surface, (0, 0))
+		target = to_surface if to_surface is not None else game.windowsystem.screen
+		target.blit(self._surface, (0, 0))
 
 
 class ScrollingBackgroundRenderer(Sprite):
@@ -133,12 +134,7 @@ class RandomizedBackgroundRenderer(Sprite):
 
 		self._colours = colours
 		if self._colours is None:
-			self._colours = {
-				4: Color("#000000"),
-				30: Color("#013e0f"),
-				60: Color("#000000"),
-				2: Color("#008f00")
-			}
+			self._colours = {4: Color("#000000"), 30: Color("#013e0f"), 60: Color("#000000"), 2: Color("#008f00")}
 
 		t = 0
 		for surf in self._surfaces:

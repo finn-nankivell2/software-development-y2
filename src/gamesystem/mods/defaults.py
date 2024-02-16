@@ -12,11 +12,31 @@ import pygame
 class StateManager(GameModule):
 	IDMARKER = "state"
 
+	class Timer:
+
+		def __init__(self, length, state):
+			self._length = length
+			self._start = time.time()
+
+			self._stateman = state
+
+		def ratio(self):
+			return self.elapsed() / self._length
+
+		def elapsed(self):
+			return self._stateman.time_now - self._start
+
+		def complete(self):
+			return self.elapsed() > self._length
+
 	def create(self):
 		self.frames_since_start = 0
 
 		self.deltatime = 0
 		self.time_now = time.time()
+
+	def timer(self, length):
+		return StateManager.Timer(length, self)
 
 	def update(self):
 		self.frames_since_start += 1
