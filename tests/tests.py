@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
-# Integration Tests
 import pytest
-
 import pygame
 
 from context import gamesystem
@@ -29,6 +27,7 @@ class BaseTestSprite():
 		pass
 
 
+# Integration Tests
 def test_sprites_destroy():
 	game = GameNamespace()
 
@@ -84,6 +83,7 @@ def test_create_basic_window():
 	game.add_module(BasicWindowSystem, size=(800, 600))
 
 
+@pytest.mark.skip(reason="Requires user input, annoying")
 def test_run_basic_window_testerinput():
 	import math
 

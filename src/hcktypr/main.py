@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import pygame
 import pygame.locals
 from pygame import Surface, Vector2, Rect, FRect, Color
@@ -11,7 +11,7 @@ import random
 import math
 from types import SimpleNamespace
 
-from context import gamesystem
+from context import *
 from gamesystem import game, GameModule
 from gamesystem.mods.input import InputManagerScalingMouse
 from gamesystem.mods.window import ScalingWindowSystem, MultiLayerScreenSystem
@@ -22,7 +22,7 @@ from gamesystem.common.sprite import Sprite
 from gamesystem.common.assets import SpriteSheet
 
 from background import MatrixBackgroundRenderer, RandomizedBackgroundRenderer
-from gameutiltest import *
+from gameutil import *
 
 from enum import IntEnum
 from dataclasses import dataclass
@@ -60,7 +60,9 @@ class UserTypingBuffer(GameModule):
 	IDMARKER = "typingbuffer"
 	REQUIREMENTS = ["input"]
 
-	TIMER_LENGTH = 3.0
+	TIMER_LENGTH_MAX = 5.0
+	TIMER_LENGTH_MIN = 2.0
+	TIMER_LENGTH = 5.0
 
 	def create(self):
 		self.reset_buffers()
@@ -75,6 +77,7 @@ class UserTypingBuffer(GameModule):
 
 		self.word_timer = game.state.timer(UserTypingBuffer.TIMER_LENGTH)
 		self._frozen = False
+		self.TIMER_LENGTH = UserTypingBuffer.TIMER_LENGTH_MAX
 
 	def _buffer_words(self):
 		return history
@@ -140,6 +143,9 @@ class UserTypingBuffer(GameModule):
 
 				self.word_timer = game.state.timer(UserTypingBuffer.TIMER_LENGTH)
 				self._current_buffer = []
+
+				if self.TIMER_LENGTH > UserTypingBuffer.TIMER_LENGTH_MIN:
+					self.TIMER_LENGTH -= 0.1
 
 
 class PoppedFontParticle(Sprite):
@@ -317,7 +323,7 @@ def mainloop():
 def mainmenu():
 	game.sprites.new(
 		UiMat([
-			["hackulator", None],
+			["hcktypr", None],
 			["play", lambda: game.loop.run(mainloop)],
 			["exit", lambda: sys.exit()],
 		],
