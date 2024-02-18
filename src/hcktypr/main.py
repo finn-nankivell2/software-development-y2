@@ -9,6 +9,7 @@ import os
 import sys
 import random
 import math
+import json
 from types import SimpleNamespace
 
 from context import *
@@ -28,11 +29,27 @@ from enum import IntEnum
 from dataclasses import dataclass
 
 
+class PaletteModule(GameModule):
+	IDMARKER = "palette"
+
+	def create(self, jdict):
+		jdict = {k: Color(v) for k, v in jdict.items()}
+		self.__dict__ = jdict
+
+
 class BubbleFontModule(GameModule):
 	IDMARKER = "bubblefont"
 
 	def create(self, font_path="sprites/fontblock-unblocked.png"):
 		self.raw = pygame.image.load(font_path).convert_alpha()
+
+		transmute_surface_palette(
+			self.raw, [
+				(Color("#03d61d"), game.palette.fg0),
+				(Color("#02ad18"), game.palette.fg1),
+				(Color("#00ff00"), game.palette.fg2),
+			]
+		)
 
 		ALPHA = "abcdefghijklmnopqrstuvwxyz0123456789"
 		self.CHARACTERS = [c for c in ALPHA] + ["STOP"]
@@ -178,7 +195,7 @@ class FontRenderer(Sprite):
 		self._render_area = Vector2(120, 120)
 
 		self._tickdown_size = Vector2(winsize.x, 10)
-		self._tickdown = MatrixBackgroundRenderer(self._tickdown_size, crange=(Color("#000000"), Color("#00ff00")))
+		self._tickdown = MatrixBackgroundRenderer(self._tickdown_size, crange=(game.palette.bg0, game.palette.bg3))
 
 	def update_move(self):
 		self._tickdown.update_move()
@@ -214,7 +231,9 @@ class FontRenderer(Sprite):
 
 		tickstart = int(winsize.x * (1.0 - game.typingbuffer.word_timer.ratio()))
 		tickcover = winsize.x - tickstart
-		pygame.draw.rect(game.windowsystem.screen, Color("#000000"), (tickstart, 0, tickcover, self._tickdown_size.y))
+		pygame.draw.rect(
+			game.windowsystem.screen, game.palette.background, (tickstart, 0, tickcover, self._tickdown_size.y)
+		)
 
 
 class GameOverMessage(Sprite):
@@ -257,7 +276,7 @@ class UiMat(Sprite):
 		if self._idx < 0:
 			self._idx = 0
 		if self._idx >= len(self._buttons):
-			self._idx = len(self._buttons)-1
+			self._idx = len(self._buttons) - 1
 
 	def bcurrent(self):
 		return self._buttons[self._idx]
@@ -323,7 +342,7 @@ def mainloop():
 def mainmenu():
 	game.sprites.new(
 		UiMat([
-			["hcktypr", None],
+			["hacktyper", None],
 			["play", lambda: game.loop.run(mainloop)],
 			["exit", lambda: sys.exit()],
 		],
@@ -338,19 +357,25 @@ if __name__ == "__main__":
 	game.add_module(GameloopManager, loop_hook=do_running)
 	game.add_module(StateManager)
 	game.add_module(ClockManager)
+
+	with open("colours.json") as file:
+		d = json.load(file)
+	game.add_module(PaletteModule, jdict=d)
+
 	game.add_module(
 		ScalingWindowSystem,
 		size=Vector2(130, 130),  # Cant be smaller than 120 120
 		user_size=Vector2(750, 750),
 		caption="typing test",
 		flags=pygame.NOFRAME,
-		fill_color=Color("#000000")
+		fill_color=game.palette.background
 	)
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
 	game.add_module(BubbleFontModule, font_path="sprites/hacker-font.png")
 	game.add_module(UserTypingBuffer)
 
-	game.sprites.new(RandomizedBackgroundRenderer(game.windowsystem.dimensions, num=20))
+	colour_freq_map = {60: game.palette.bg0, 30: game.palette.bg1, 8: game.palette.bg2, 2: game.palette.bg3}
+	game.sprites.new(RandomizedBackgroundRenderer(game.windowsystem.dimensions, num=20, colours=colour_freq_map))
 
 	game.loop.run(mainmenu)

@@ -9,9 +9,9 @@ env:
 clean:
 	rm -r venv
 
-dev:
+hacktyper:
 	. venv/bin/activate
-	python3 tests/gametest.py
+	python3 src/hcktypr/main.py
 
 test:
 	. venv/bin/activate

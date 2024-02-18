@@ -3,7 +3,7 @@ from .sprite import Sprite
 
 class TickCoroutine(Sprite):
 
-	def __init__(ticks, callback):
+	def __init__(self, ticks, callback):
 		self._ticks = ticks
 		self._ticker = 0
 		self._callback = callback
