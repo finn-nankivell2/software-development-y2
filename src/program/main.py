@@ -56,15 +56,11 @@ class Card(Sprite):
 		hand = game.sprites.HAND
 
 		if game.input.mouse_pressed(0) and hand.currently_dragged is None:
-			if hand.currently_dragged is not None:
-				assert False
-
 			if self.rect.collidepoint(game.input.mouse_pos()) and not self.dragged:
 				self.dragged = True
 				self.hand_locked = False
 				self.mouse_offset = game.input.mouse_pos() - self.rect.topleft
 				hand.currently_dragged = self
-				print(hand.currently_dragged)
 
 		if not game.input.mouse_down(0):
 			self.dragged = False
@@ -72,9 +68,13 @@ class Card(Sprite):
 		if not self.dragged:
 			self.hand_locked = True
 			self.held_frames = 0
+
+			if hand.currently_dragged is self:
+				hand.currently_dragged = None
 		else:
 			self.rect.topleft = game.input.mouse_pos() - self.mouse_offset
 			self.held_frames += 1
+
 
 		if self.hand_locked:
 			travel = (hand.rect.bottom - self.rect.bottom)
@@ -83,9 +83,6 @@ class Card(Sprite):
 			if abs(travel) < 5:
 				self.hand_locked = False
 				self.rect.bottom = hand.rect.bottom
-		else:
-			if hand.currently_dragged is self:
-				hand.currently_dragged = None
 
 
 	def update_draw(self):
