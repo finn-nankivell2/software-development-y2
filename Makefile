@@ -6,8 +6,25 @@ env:
 	. venv/bin/activate
 	pip install -r requirements.txt
 
-clean:
+cleanenv:
 	rm -r venv
+
+dev:
+	. venv/bin/activate
+	python3 src/program/main.py
+
+build:
+	. venv/bin/activate
+	mkdir build
+	cp -r src/ build/
+	cd build/src
+	mv gamesystem hcktypr/gamesystem
+	# python3 hcktypr/main.py
+	pyinstaller hcktypr/main.py --onefile --noconsole
+	mv dist/main hcktypr/binary
+
+cleanbuild:
+	rm -r build
 
 hacktyper:
 	. venv/bin/activate

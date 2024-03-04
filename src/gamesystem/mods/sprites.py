@@ -85,9 +85,9 @@ class SpritesManager(BaseSpriteManager):
 		- Iterating over all layers and sprites and running update_draw for each Sprite
 		"""
 		for k in self._sprites.keys():
-			x = self._sprites[k]
+			x = self._sprites.get(k)
 			keep = []
-			for sprite in reversed(x):
+			for sprite in x:
 				if sprite._destroyed:
 					continue
 				sprite.update_move()

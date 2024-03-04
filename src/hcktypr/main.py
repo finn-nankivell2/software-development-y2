@@ -29,6 +29,10 @@ from enum import IntEnum
 from dataclasses import dataclass
 
 
+print(f"CWD: {os.getcwd()}")
+print(f"ABSPATH: {os.path.abspath(__file__)}")
+
+
 class PaletteModule(GameModule):
 	IDMARKER = "palette"
 
