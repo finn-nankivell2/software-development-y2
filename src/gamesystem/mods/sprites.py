@@ -29,11 +29,10 @@ class SpritesManager(BaseSpriteManager):
 		"""Add a new sprite to its assigned layer.
 		If a string is passed for layer_override the use that value instead of Sprite.LAYER
 		"""
-
 		if layer_override is not None:
-			self._sprites[layer_override].append(new_sprite)
+			self._sprites[layer_override].insert(0, new_sprite)
 		else:
-			self._sprites[new_sprite.LAYER].append(new_sprite)
+			self._sprites[new_sprite.LAYER].insert(0, new_sprite)
 
 	def layer_names(self):
 		"""Return a list of layer names"""

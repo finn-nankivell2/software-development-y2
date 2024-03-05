@@ -10,6 +10,9 @@ class Sprite():
 	def destroy(self):
 		self._destroyed = True
 
+	def is_destroyed(self):
+		return self._destroyed
+
 
 class SpriteGroup(Sprite):
 

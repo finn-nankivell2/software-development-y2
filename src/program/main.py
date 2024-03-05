@@ -27,13 +27,23 @@ from dataclasses import dataclass
 
 
 class DebugRect():
-
 	def update_draw(self):
 		pygame.draw.rect(game.windowsystem.screen, Color("#ff00ff"), self.rect)
 
 
+class Playspace(DebugRect, Sprite):
+	LAYER = "PLAYSPACE"
+
+	def __init__(self, rect):
+		self.rect = rect
+
+	def update_move(self):
+		pass
+
+
 class Card(Sprite):
 	LAYER = "CARD"
+	PICKME_SHIFT_AMT = 50
 
 	def __init__(self, pos, size, colour):
 		self.rect = FRect(pos, size)
@@ -42,6 +52,16 @@ class Card(Sprite):
 		self.dragged = False
 		self.mouse_offset = Vector2(0, 0)
 		self.held_frames = 0
+
+	def playspace_collide(self):
+		for playspace in game.sprites.get("PLAYSPACE"):
+			if playspace.rect.colliderect(self.rect):
+				return playspace
+
+		return None
+
+	def is_playable(self):
+		return self.playspace_collide() is not None
 
 	def mouse_over_me(self):
 		return self.rect.collidepoint(game.input.mouse_pos())
@@ -56,23 +76,26 @@ class Card(Sprite):
 				self.mouse_offset = game.input.mouse_pos() - self.rect.topleft
 				hand.currently_dragged = self
 
-		if not game.input.mouse_down(0):
+		if not game.input.mouse_down(0) and self.dragged:
 			self.dragged = False
+			if self.is_playable():
+				self.destroy()
 
-		if not self.dragged:
+		# Logic for if the Card is being dragged
+		if self.dragged:
+			self.rect.topleft = game.input.mouse_pos() - self.mouse_offset
+			self.held_frames += 1
+		else:
 			self.hand_locked = True
 			self.held_frames = 0
 
 			if hand.currently_dragged is self:
 				hand.currently_dragged = None
-		else:
-			self.rect.topleft = game.input.mouse_pos() - self.mouse_offset
-			self.held_frames += 1
 
 		if self.hand_locked:
 			target = hand.get_position_from_card(self)
-			if self.mouse_over_me():
-				target -= Vector2(0, 100)
+			if self.mouse_over_me() and hand.currently_dragged is None:
+				target -= Vector2(0, Card.PICKME_SHIFT_AMT)
 
 			travel = target - self.rect.bottomleft
 			self.rect.bottomleft += travel / 10
@@ -115,6 +138,13 @@ class Hand(Sprite):
 
 		game.debug.output(len(self.card_map))
 
+		for ref in self.card_map:
+			if ref.card.is_destroyed():
+				ref.card.rect.width -= 50
+
+		self.card_map = [ref for ref in self.card_map if ref.card.rect.width > 1]
+
+
 	def get_position_from_card(self, card) -> Vector2:
 		total_width = len(self.card_map) * Hand.CARD_SPACING
 		total_width += sum(ref.card.rect.width for ref in self.card_map)
@@ -151,6 +181,8 @@ def spritefollow():
 	game.sprites.new(Card((600, 100), (150, 220), Color("#00ff00")))
 	game.sprites.new(Card((600, 100), (150, 220), Color("#ffaa00")))
 
+	game.sprites.new(Playspace(Rect(100, 100, 600, 300)))
+
 	game.sprites.HAND = Hand(FRect(0, 780, 1280, 80))
 	game.sprites.new(game.sprites.HAND)
 
@@ -165,7 +197,7 @@ def do_running(self):
 
 
 if __name__ == "__main__":
-	game.add_module(SpritesManager, layers=["MANAGER", "BACKGROUND", "PARTICLE", "CARD", "FONT", "FOREGROUND", "UI"])
+	game.add_module(SpritesManager, layers=["MANAGER", "BACKGROUND", "PARTICLE", "PLAYSPACE", "CARD", "FONT", "FOREGROUND", "UI"])
 	game.add_module(GameloopManager, loop_hook=do_running)
 	game.add_module(StateManager)
 	game.add_module(ClockManager)
