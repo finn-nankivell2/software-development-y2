@@ -28,7 +28,6 @@ from gameutil import *
 from enum import IntEnum
 from dataclasses import dataclass
 
-
 print(f"CWD: {os.getcwd()}")
 print(f"ABSPATH: {os.path.abspath(__file__)}")
 
@@ -48,7 +47,8 @@ class BubbleFontModule(GameModule):
 		self.raw = pygame.image.load(font_path).convert_alpha()
 
 		transmute_surface_palette(
-			self.raw, [
+			self.raw,
+			[
 				(Color("#03d61d"), game.palette.fg0),
 				(Color("#02ad18"), game.palette.fg1),
 				(Color("#00ff00"), game.palette.fg2),

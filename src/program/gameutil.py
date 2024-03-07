@@ -1,4 +1,4 @@
-__all__ = ["traverse_surface", "transmute_surface_palette", "FollowParticle", "Particle"]
+__all__ = ["traverse_surface", "transmute_surface_palette", "FollowParticle", "Particle", "particle_explosion"]
 
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem import game
@@ -6,6 +6,7 @@ import pygame.draw
 import random
 import math
 from pygame import Vector2, Color
+from typing import List
 
 
 def traverse_surface(surface):
@@ -40,6 +41,12 @@ class Particle(Sprite):
 		self.outline = self.colour.lerp(Color("#ffffff"), 0.5)
 		self._decay = self.size / lifetime
 
+	@classmethod
+	def rand_angle(cls, *args, speed=5, **kwargs):
+		a = random.randint(0, 359)
+		kwargs["vel"] = Vector2(math.cos(a), math.sin(a)) * speed
+		return cls(*args, **kwargs)
+
 	def update_move(self):
 		self.pos += self.vel
 		self.size -= self._decay
@@ -48,6 +55,19 @@ class Particle(Sprite):
 
 	def update_draw(self):
 		pygame.draw.circle(game.windowsystem.screen, self.colour, self.pos, self.size)
+
+
+def particle_explosion(number, *args, **kwargs) -> List[Particle]:
+	parts = []
+	for _ in range(number):
+		if kwargs.get("speed"):
+			kwargs["speed"] *= random.uniform(0.6, 1.4)
+		else:
+			kwargs["speed"] = random.randint(3, 10)
+
+		parts.append(Particle.rand_angle(*args, **kwargs))
+
+	return parts
 
 
 class FollowParticle(SpriteGroup):
@@ -62,9 +82,8 @@ class FollowParticle(SpriteGroup):
 		self.mouse_follow = mouse_follow
 
 	def update_move(self):
-
 		a = random.randint(0, 180)
-		vel = Vector2(math.cos(a), math.sin(a)) * 2
+		vel = Vector2(math.cos(a), math.sin(a))
 
 		c = self.c1.lerp(self.c2, random.uniform(0.0, 1.0))
 		part = Particle(
@@ -82,8 +101,6 @@ class FollowParticle(SpriteGroup):
 		else:
 			self.sprites.append(part)
 
-
-
 		super().update_move()
 
 	def update_draw(self):
@@ -92,4 +109,3 @@ class FollowParticle(SpriteGroup):
 
 		for part in reversed(self.sprites):
 			pygame.draw.circle(game.windowsystem.screen, part.colour, part.pos, part.size)
-

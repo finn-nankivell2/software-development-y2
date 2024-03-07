@@ -34,6 +34,10 @@ class SpritesManager(BaseSpriteManager):
 		else:
 			self._sprites[new_sprite.LAYER].insert(0, new_sprite)
 
+	def news(self, *new_sprites, layer_override=None):
+		for sprite in new_sprites:
+			self.new(sprite, layer_override)
+
 	def layer_names(self):
 		"""Return a list of layer names"""
 		return self._sprites.keys()
