@@ -103,7 +103,7 @@ class SpritesManager(BaseSpriteManager):
 		self.game.spriteglobals.update()
 
 		for x in self._sprites.values():
-			for sprite in reversed(x):
+			for sprite in sorted(x, key=lambda spr: spr.z):
 				sprite.update_draw()
 
 

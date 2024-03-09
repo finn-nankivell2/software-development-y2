@@ -1,5 +1,6 @@
 class Sprite():
 	_destroyed = False
+	z = 0
 
 	def update_move(self):
 		pass

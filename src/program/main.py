@@ -92,9 +92,14 @@ class Card(Sprite):
 		if self.dragged:
 			self.rect.topleft = game.input.mouse_pos() - self.mouse_offset
 			self.held_frames += 1
+			if self.held_frames < 10:
+				self.mouse_offset += Vector2(1, 1)
 		else:
 			self.hand_locked = True
-			self.held_frames = 0
+			if self.held_frames > 10:
+				self.held_frames = 10
+			elif self.held_frames > 0:
+				self.held_frames -= 1
 
 			if hand.currently_dragged is self:
 				hand.currently_dragged = None
@@ -115,12 +120,32 @@ class Card(Sprite):
 		game.sprites.news(*particle_explosion(10, pos=self.rect.center, size=30, speed=5, colour=self.colour))
 
 	def update_draw(self):
-		if self.dragged:
+		if self.held_frames:
 			shadow_rect = self.rect.copy()
-			shadow_rect.topleft += Vector2(self.rect.size) / max(self.held_frames, 10)
-			pygame.draw.rect(game.windowsystem.screen, Color("#ffffff"), shadow_rect, border_radius=5)
+			shadow_rect.topleft += Vector2(1, 1) * min(10, self.held_frames)
+			pygame.draw.rect(game.windowsystem.screen, Color("#00000088"), shadow_rect, border_radius=5)
 
 		pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
+		pygame.draw.rect(
+			game.windowsystem.screen,
+			self.colour.lerp(Color("#ffffff",), 0.25),
+			self.rect.inflate(0, 0),
+			width=5,
+			border_radius=5
+		)
+
+
+class FollowMouse(Sprite):
+	LAYER = "UI"
+
+	def __init__(self):
+		self.pos = Vector2(0, 0)
+
+	def update_move(self):
+		self.pos = game.input.mouse_pos()
+
+	def update_draw(self):
+		pygame.draw.circle(game.windowsystem.screen, Color("#ffffff11"), self.pos, 50)
 
 
 class Hand(Sprite):
@@ -157,6 +182,10 @@ class Hand(Sprite):
 		self.card_map.sort(key=lambda ref: ref.card.rect.x)
 		for i, ref in enumerate(self.card_map):
 			ref.idx = i
+			ref.card.z = 0
+
+		if self.currently_dragged:
+			self.currently_dragged.z = 1
 
 	def get_position_from_card(self, card) -> Optional[Vector2]:
 		total_width = sum(
@@ -189,16 +218,18 @@ def mainmenu():
 
 def spritefollow():
 	gradient = [
-		"#a52adb",
-		"#982ad9",
-		"#8b2ad7",
-		"#7e2ad5",
-		"#712ad3",
-		"#642ad1",
-		"#572acf",
-		"#4a2acd",
-		"#3d2acb",
-		"#302ac9"
+		"#db6a48",
+		"#d36654",
+		"#cb6260",
+		"#c35e6c",
+		"#bb5a78",
+		"#b35684",
+		"#ab5290",
+		"#a34e9c",
+		"#9b4aa8",
+		"#9346b4",
+		"#8b42c0",
+		"#833ecc"
 	]
 
 	gradient = list(map(Color, gradient))
