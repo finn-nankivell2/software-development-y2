@@ -218,24 +218,24 @@ def mainmenu():
 
 def spritefollow():
 	gradient = [
-		"#db6a48",
-		"#d36654",
-		"#cb6260",
-		"#c35e6c",
-		"#bb5a78",
-		"#b35684",
-		"#ab5290",
-		"#a34e9c",
-		"#9b4aa8",
-		"#9346b4",
-		"#8b42c0",
-		"#833ecc"
+		"#54a200",
+		"#4d9515",
+		"#46882a",
+		"#3f7b3f",
+		"#386e54",
+		"#316169",
+		"#2a547e",
+		"#234793",
+		"#1c3aa8",
+		"#152dbd",
+		"#0e20d2",
+		"#0713e7"
 	]
 
 	gradient = list(map(Color, gradient))
 
 	game.windowsystem.set_fill_color(gradient[0])
-	bg_grad = gradient[:2]
+	bg_grad = [gradient[0], gradient[1]]
 
 	bg_particles = FollowParticle(pos=game.windowsystem.dimensions / 2, colours=bg_grad)
 	for _ in range(1000):
@@ -251,7 +251,7 @@ def spritefollow():
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#00ff00")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#ffaa00")))
 
-	game.sprites.new(Playspace(Rect(100, 100, 400, 250), Color("#ffffff")))
+	game.sprites.new(Playspace(Rect(100, 100, 400, 250), gradient[len(gradient)//2]))
 
 	game.sprites.HAND = Hand(FRect(0, 780, 1280, 80))
 	game.sprites.new(game.sprites.HAND)
@@ -276,8 +276,8 @@ if __name__ == "__main__":
 
 	game.add_module(
 		ScalingWindowSystem,
-		size=Vector2(1280, 800),
-		user_size=Vector2(1280, 800),
+		size=Vector2(1280, 720),
+		user_size=Vector2(1280, 720),
 		caption="program",
 		flags=pygame.NOFRAME,
 		fill_color=Color("#6e1698")

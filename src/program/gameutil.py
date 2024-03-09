@@ -80,6 +80,7 @@ class FollowParticle(SpriteGroup):
 		colours = list(map(Color, colours))
 		self.c1, self.c2 = colours
 		self.mouse_follow = mouse_follow
+		self._noise = pygame.image.load("assets/xp2.png")
 
 	def update_move(self):
 		a = random.randint(0, 180)
@@ -91,7 +92,7 @@ class FollowParticle(SpriteGroup):
 			95,
 			vel,
 			c,
-			lifetime=1320 + random.randint(-10, 10),
+			lifetime=1120 + random.randint(-50, 50),
 		)
 
 		if self.mouse_follow:
@@ -109,3 +110,8 @@ class FollowParticle(SpriteGroup):
 
 		for part in reversed(self.sprites):
 			pygame.draw.circle(game.windowsystem.screen, part.colour, part.pos, part.size)
+
+		game.windowsystem.screen.blit(self._noise, (0, 0), special_flags=pygame.BLEND_ADD)
+
+
+
