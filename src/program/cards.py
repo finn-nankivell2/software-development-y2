@@ -57,8 +57,11 @@ class Card(Sprite):
 		texture = game.textclip.get_or_insert(game.assets.rock, self.rect.size)
 		self._surf.blit(texture, VZERO)
 
+		# self._surf = surface_keepmask(self._surf, lambda surf, col: pygame.draw.rect(surf, col, r, border_radius=5))
+		self._surf = surface_rounded_corners(self._surf, 5)
+
 		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5)
-		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 10)
+		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 8)
 
 	def playspace_collide(self):
 		for playspace in game.sprites.get("PLAYSPACE"):
@@ -114,6 +117,8 @@ class Card(Sprite):
 
 			if travel.length() < 1:
 				self.rect.bottomleft = target
+			else:
+				self.z = 1
 
 	def destroy(self):
 		super().destroy()
@@ -186,7 +191,7 @@ class Hand(Sprite):
 			ref.card.z = 0
 
 		if self.currently_dragged:
-			self.currently_dragged.z = 1
+			self.currently_dragged.z = 2
 
 	def get_position_from_card(self, card) -> Optional[Vector2]:
 		total_width = sum(

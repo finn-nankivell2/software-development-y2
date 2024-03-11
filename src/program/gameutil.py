@@ -25,6 +25,10 @@ def surface_keepmask(surface: Surface, masking: Callable[Surface, Color]) -> Sur
 	return dest
 
 
+def surface_rounded_corners(surface: Surface, corner_radius: int) -> Surface:
+	return surface_keepmask(surface, lambda surf, col: pygame.draw.rect(surf, col, surf.get_rect(), border_radius=corner_radius))
+
+
 def traverse_surface(surface: Surface) -> Iterator[Tuple[int, int]]:
 	w, h = surface.get_size()
 
@@ -139,6 +143,7 @@ __all__ = [
 	FollowParticle.__name__,
 	Particle.__name__,
 	particle_explosion.__name__,
-	surface_region.__name__
-	surface_keepmask.__name__
+	surface_region.__name__,
+	surface_keepmask.__name__,
+	surface_rounded_corners.__name__
 ]
