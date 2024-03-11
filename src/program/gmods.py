@@ -1,6 +1,6 @@
 from gamesystem.mods.modulebase import GameModule
 from dataclasses import dataclass
-from pygame import Surface, Vector2
+from pygame import Surface, Vector2, Rect, FRect
 from typing import Optional, Dict, Union, Tuple
 from gameutil import surface_region
 
@@ -13,7 +13,7 @@ class CachedTexture:
 
 
 class TextureClippingCacheModule(GameModule):
-	IDMARKER = "texcache"
+	IDMARKER = "textclip"
 
 	_textures = Dict[str, CachedTexture]
 
@@ -31,7 +31,7 @@ class TextureClippingCacheModule(GameModule):
 		return self.get_tex(texture) is not None
 
 	def get_or_insert(self, texture: Surface, size: Vector2) -> Surface:
-		if size > Vector2(texture.get_size()):
+		if size[0] > texture.get_width() and size[1] > texture.get_height():
 			raise ValueError(f"Texture size ({Vector2(texture.get_size())}) cannot be less than passed size ({size})")
 
 		tex = self.get_tex(texture, size)
@@ -39,12 +39,10 @@ class TextureClippingCacheModule(GameModule):
 			return tex.texture
 
 		key = self._make_hash(texture, size)
-		clipped = surface_region(texture, size)
+		clipped = surface_region(texture, Rect((0, 0), size))
 
 		self._textures[key] = CachedTexture(clipped, key, size)
-		return self._textures[key]
-
-
+		return self._textures[key].texture
 
 
 def test_UNIT_texture_clipping():

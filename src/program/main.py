@@ -14,12 +14,13 @@ from types import SimpleNamespace
 
 from typing import Dict, List, Optional
 
-from context import *
+from context import gamesystem
 from gamesystem import game, GameModule
 from gamesystem.mods.input import InputManagerScalingMouse
 from gamesystem.mods.window import ScalingWindowSystem, MultiLayerScreenSystem
 from gamesystem.mods.defaults import SpritesManager, StateManager, GameloopManager, ClockManager
 from gamesystem.mods.debug import DebugOverlayManager
+from gamesystem.mods.assets import AssetManager
 
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem.common.assets import SpriteSheet
@@ -91,5 +92,7 @@ if __name__ == "__main__":
 	)
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
+	game.add_module(AssetManager, rock="assets/rock2.jpg")
+	game.add_module(TextureClippingCacheModule)
 
 	game.loop.run(spritefollow)

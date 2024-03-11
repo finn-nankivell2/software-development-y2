@@ -46,14 +46,16 @@ class Card(Sprite):
 	def _setup_surfaces(self):
 		self._surf = Surface(self.rect.size, pygame.SRCALPHA)
 		self._shadow_surf = self._surf.copy()
-		outline_surf = Surface(self.rect.size, pygame.SRCALPHA)
+		# outline_surf = Surface(self.rect.size, pygame.SRCALPHA)
 
 		r = self.rect.copy()
 		r.topleft = VZERO
-		pygame.draw.rect(self._surf, self.colour, r, border_radius=5)
+		# pygame.draw.rect(self._surf, self.colour, r, border_radius=5)
 
-		pygame.draw.rect(outline_surf, Color("#ffffff35"), r, border_radius=5, width=5)
-		self._surf.blit(outline_surf, VZERO)
+		# pygame.draw.rect(outline_surf, Color("#ffffff35"), r, border_radius=5, width=5)
+		# self._surf.blit(outline_surf, VZERO)
+		texture = game.textclip.get_or_insert(game.assets.rock, self.rect.size)
+		self._surf.blit(texture, VZERO)
 
 		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5)
 		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 10)
