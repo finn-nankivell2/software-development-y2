@@ -1,15 +1,15 @@
-__all__ = ["traverse_surface", "transmute_surface_palette", "FollowParticle", "Particle", "particle_explosion"]
 
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem import game
 import pygame.draw
 import random
 import math
-from pygame import Vector2, Color
-from typing import List
+from pygame import Vector2, Color, Surface, FRect, Rect
+from typing import List, Union, Iterator, Tuple
+from utils import *
 
 
-def traverse_surface(surface):
+def traverse_surface(surface: Surface) -> Iterator[Tuple[int, int]]:
 	w, h = surface.get_size()
 
 	for y in range(h):
@@ -17,7 +17,7 @@ def traverse_surface(surface):
 			yield (x, y)
 
 
-def transmute_surface_palette(surface, palette_map):
+def transmute_surface_palette(surface: Surface, palette_map: List[Tuple[Color, Color]]) -> Surface:
 	surface.lock()
 	for pos in traverse_surface(surface):
 		c = surface.get_at(pos)
@@ -28,6 +28,12 @@ def transmute_surface_palette(surface, palette_map):
 			pass
 	surface.unlock()
 	return surface
+
+
+def surface_region(surface: Surface, region: Union[Rect, FRect]) -> Surface:
+	target = Surface(region.size, pygame.SRCALPHA)
+	target.blit(surface, (0, 0), region)
+	return target
 
 
 class Particle(Sprite):
@@ -111,7 +117,13 @@ class FollowParticle(SpriteGroup):
 		for part in reversed(self.sprites):
 			pygame.draw.circle(game.windowsystem.screen, part.colour, part.pos, part.size)
 
-		game.windowsystem.screen.blit(self._noise, (0, 0), special_flags=pygame.BLEND_ADD)
 
 
-
+__all__ = [
+	traverse_surface.__name__,
+	transmute_surface_palette.__name__,
+	FollowParticle.__name__,
+	Particle.__name__,
+	particle_explosion.__name__,
+	surface_region.__name__
+]

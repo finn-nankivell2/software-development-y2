@@ -3,6 +3,7 @@ click==8.1.7
 exceptiongroup==1.1.1
 importlib-metadata==7.0.1
 iniconfig==2.0.0
+mypy==1.9.0
 mypy-extensions==1.0.0
 packaging==23.1
 pathspec==0.12.1
@@ -13,5 +14,6 @@ pyinstaller==6.4.0
 pyinstaller-hooks-contrib==2024.1
 pytest==7.3.1
 tomli==2.0.1
+typing_extensions==4.10.0
 yapf==0.40.2
 zipp==3.17.0
