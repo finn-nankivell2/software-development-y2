@@ -1,12 +1,28 @@
-
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem import game
-import pygame.draw
+import pygame
 import random
 import math
 from pygame import Vector2, Color, Surface, FRect, Rect
-from typing import List, Union, Iterator, Tuple
-from utils import *
+from typing import List, Union, Iterator, Tuple, Callable
+from consts import VZERO
+
+
+def surface_keepmask(surface: Surface, masking: Callable[Surface, Color]) -> Surface:
+	dest = Surface(surface.get_size(), pygame.SRCALPHA)
+	dest.blit(surface, VZERO)
+
+	MASK_BG = Color("#ff00ff")
+	MASK_FG = Color("#ff0000")
+
+	mask = Surface(surface.get_size())
+	mask.fill(MASK_BG)
+	masking(mask, MASK_FG)
+	mask.set_colorkey(MASK_FG)
+
+	dest.blit(mask, VZERO)
+	dest.set_colorkey(MASK_BG)
+	return dest
 
 
 def traverse_surface(surface: Surface) -> Iterator[Tuple[int, int]]:
@@ -21,11 +37,10 @@ def transmute_surface_palette(surface: Surface, palette_map: List[Tuple[Color, C
 	surface.lock()
 	for pos in traverse_surface(surface):
 		c = surface.get_at(pos)
-		try:
-			newc = next(nc for k, nc in palette_map if k == c)
+		newc = first(nc for k, nc in palette_map if k == c)
+		if newc:
 			surface.set_at(pos, newc)
-		except StopIteration:
-			pass
+
 	surface.unlock()
 	return surface
 
@@ -118,7 +133,6 @@ class FollowParticle(SpriteGroup):
 			pygame.draw.circle(game.windowsystem.screen, part.colour, part.pos, part.size)
 
 
-
 __all__ = [
 	traverse_surface.__name__,
 	transmute_surface_palette.__name__,
@@ -126,4 +140,5 @@ __all__ = [
 	Particle.__name__,
 	particle_explosion.__name__,
 	surface_region.__name__
+	surface_keepmask.__name__
 ]
