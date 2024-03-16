@@ -32,7 +32,7 @@ class Card(Sprite):
 	LAYER = "CARD"
 	PICKME_SHIFT_AMT = 50
 	SHADOW_OFFSET = 10
-	PLAYABLE_OVERLAP = 15
+	PLAYABLE_OVERLAP = 100
 
 	def __init__(self, pos, size, colour):
 		self.rect = FRect(pos, size)
@@ -54,7 +54,9 @@ class Card(Sprite):
 
 		# pygame.draw.rect(outline_surf, Color("#ffffff35"), r, border_radius=5, width=5)
 		# self._surf.blit(outline_surf, VZERO)
-		texture = game.textclip.get_or_insert(game.assets.rock, self.rect.size)
+		# texture = game.textclip.get_or_insert(game.assets.rock, self.rect.size)
+		texture = Surface(self.rect.size, pygame.SRCALPHA)
+		texture.fill(self.colour);
 		self._surf.blit(texture, VZERO)
 
 		# self._surf = surface_keepmask(self._surf, lambda surf, col: pygame.draw.rect(surf, col, r, border_radius=5))
@@ -65,7 +67,7 @@ class Card(Sprite):
 
 	def playspace_collide(self):
 		for playspace in game.sprites.get("PLAYSPACE"):
-			if playspace.rect.colliderect(self.rect.inflate(-5, -5)):
+			if playspace.rect.colliderect(self.rect.inflate(-Card.PLAYABLE_OVERLAP, -Card.PLAYABLE_OVERLAP)):
 				return playspace
 
 		return None

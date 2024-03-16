@@ -26,7 +26,9 @@ def surface_keepmask(surface: Surface, masking: Callable[Surface, Color]) -> Sur
 
 
 def surface_rounded_corners(surface: Surface, corner_radius: int) -> Surface:
-	return surface_keepmask(surface, lambda surf, col: pygame.draw.rect(surf, col, surf.get_rect(), border_radius=corner_radius))
+	return surface_keepmask(
+		surface, lambda surf, col: pygame.draw.rect(surf, col, surf.get_rect(), border_radius=corner_radius)
+	)
 
 
 def traverse_surface(surface: Surface) -> Iterator[Tuple[int, int]]:
@@ -55,94 +57,9 @@ def surface_region(surface: Surface, region: Union[Rect, FRect]) -> Surface:
 	return target
 
 
-class Particle(Sprite):
-	LAYER = "PARTICLE"
-
-	def __init__(self, pos, size, vel, colour, lifetime=60):
-		self.pos = pos
-		self.size = size
-		self.vel = vel
-		self.colour = colour
-		self.outline = self.colour.lerp(Color("#ffffff"), 0.5)
-		self._decay = self.size / lifetime
-
-	@classmethod
-	def rand_angle(cls, *args, speed=5, **kwargs):
-		a = random.randint(0, 359)
-		kwargs["vel"] = Vector2(math.cos(a), math.sin(a)) * speed
-		return cls(*args, **kwargs)
-
-	def update_move(self):
-		self.pos += self.vel
-		self.size -= self._decay
-		if self.size < 1:
-			self.destroy()
-
-	def update_draw(self):
-		pygame.draw.circle(game.windowsystem.screen, self.colour, self.pos, self.size)
-
-
-def particle_explosion(number, *args, **kwargs) -> List[Particle]:
-	parts = []
-	for _ in range(number):
-		if kwargs.get("speed"):
-			kwargs["speed"] *= random.uniform(0.6, 1.4)
-		else:
-			kwargs["speed"] = random.randint(3, 10)
-
-		parts.append(Particle.rand_angle(*args, **kwargs))
-
-	return parts
-
-
-class FollowParticle(SpriteGroup):
-	LAYER = "BACKGROUND"
-
-	def __init__(self, pos=Vector2(0, 0), colours=["#923efc", "#6e1698"], mouse_follow=False):
-		super().__init__()
-
-		self.pos = pos
-		colours = list(map(Color, colours))
-		self.c1, self.c2 = colours
-		self.mouse_follow = mouse_follow
-		self._noise = pygame.image.load("assets/xp2.png")
-
-	def update_move(self):
-		a = random.randint(0, 180)
-		vel = Vector2(math.cos(a), math.sin(a))
-
-		c = self.c1.lerp(self.c2, random.uniform(0.0, 1.0))
-		part = Particle(
-			Vector2(self.pos),
-			95,
-			vel,
-			c,
-			lifetime=1120 + random.randint(-50, 50),
-		)
-
-		if self.mouse_follow:
-			self.pos = game.input.mouse_pos()
-			if game.input.mouse_down(0):
-				self.sprites.append(part)
-		else:
-			self.sprites.append(part)
-
-		super().update_move()
-
-	def update_draw(self):
-		for part in reversed(self.sprites):
-			pygame.draw.circle(game.windowsystem.screen, part.outline, part.pos, part.size + 6)
-
-		for part in reversed(self.sprites):
-			pygame.draw.circle(game.windowsystem.screen, part.colour, part.pos, part.size)
-
-
 __all__ = [
 	traverse_surface.__name__,
 	transmute_surface_palette.__name__,
-	FollowParticle.__name__,
-	Particle.__name__,
-	particle_explosion.__name__,
 	surface_region.__name__,
 	surface_keepmask.__name__,
 	surface_rounded_corners.__name__

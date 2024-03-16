@@ -25,7 +25,7 @@ from gamesystem.mods.assets import AssetManager
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem.common.assets import SpriteSheet
 
-from gameutil import FollowParticle
+from particles import FollowParticle
 from cards import Card, Hand, Playspace
 
 from gmods import TextureClippingCacheModule

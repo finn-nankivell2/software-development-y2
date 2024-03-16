@@ -40,7 +40,7 @@ yapf:
 
 mypy:
 	. venv/bin/activate
-	mypy src/program/
+	mypy src/program/ --pretty
 
 flake8:
 	. venv/bin/activate
