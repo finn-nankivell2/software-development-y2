@@ -47,7 +47,7 @@ def particle_explosion(number, *args, **kwargs) -> List[Particle]:
 	return parts
 
 
-class FollowParticle(SpriteGroup):
+class BubbleParticleEmitter(SpriteGroup):
 	LAYER = "BACKGROUND"
 
 	def __init__(self, pos=Vector2(0, 0), colours=["#923efc", "#6e1698"], mouse_follow=False):
@@ -81,8 +81,6 @@ class FollowParticle(SpriteGroup):
 		super().update_move()
 
 	def update_draw(self):
-		game.debug.output(len(self.sprites))
-
 		for part in reversed(self.sprites):
 			pygame.draw.circle(game.windowsystem.screen, part.outline, part.pos, part.size + 6)
 

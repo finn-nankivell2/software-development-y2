@@ -3,9 +3,12 @@ import pygame
 from pygame import Vector2, FRect, Color, Surface
 from gamesystem.common.sprite import Sprite
 from dataclasses import dataclass
-from typing import Optional
-from gameutil import *
+from typing import Optional, Dict
+from gameutil import surface_rounded_corners
 from consts import VZERO
+from particles import particle_explosion
+import json
+import fonts
 
 
 class DebugRect():
@@ -21,11 +24,31 @@ class Playspace(DebugRect, Sprite):
 		self.rect = rect
 		self.colour = colour
 
-	def update_move(self):
-		pass
-
 	def update_draw(self):
 		pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
+
+
+class Playspace2(Playspace):
+	def __init__(self, rect, surface):
+		self.rect = rect
+		self.surface = game.textclip.get_or_insert(surface, rect.size)
+		self.surface = surface_rounded_corners(self.surface, 5)
+
+	def update_draw(self):
+		game.windowsystem.screen.blit(self.surface, self.rect.topleft)
+
+
+
+@dataclass(slots=True, frozen=True)
+class DataCard:
+	title: str
+	description: str
+	play_condition: str # TODO: Make this an enum
+	play_id: str # TODO: And this too
+
+	@classmethod
+	def fromjson(cls, j: Dict[str, str]):
+		return DataCard(**j)
 
 
 class Card(Sprite):
@@ -34,48 +57,53 @@ class Card(Sprite):
 	SHADOW_OFFSET = 10
 	PLAYABLE_OVERLAP = 100
 
-	def __init__(self, pos, size, colour):
-		self.rect = FRect(pos, size)
-		self.colour = colour
+	def __init__(self, rect: FRect, texture: Surface, data: DataCard):
+		self.rect = FRect(rect)
 		self.hand_locked = False  # If card is drifting towards or in hand
 		self.dragged = False  # If card is currently held by the mouse
 		self.mouse_offset = Vector2(0, 0)  # Point where the mouse grabbed the card
 		self.held_frames = 0  # How many frames card has been held for
-		self._setup_surfaces()
+		self.data = data
 
-	def _setup_surfaces(self):
+		clipped = game.textclip.get_or_insert(texture, self.rect.size)
+		self._setup_surfaces(clipped)
+
+	def _setup_surfaces(self, texture: Surface):
 		self._surf = Surface(self.rect.size, pygame.SRCALPHA)
 		self._shadow_surf = self._surf.copy()
-		# outline_surf = Surface(self.rect.size, pygame.SRCALPHA)
 
 		r = self.rect.copy()
-		r.topleft = VZERO
-		# pygame.draw.rect(self._surf, self.colour, r, border_radius=5)
+		r.topleft = VZERO  # type: ignore
 
-		# pygame.draw.rect(outline_surf, Color("#ffffff35"), r, border_radius=5, width=5)
-		# self._surf.blit(outline_surf, VZERO)
-		# texture = game.textclip.get_or_insert(game.assets.rock, self.rect.size)
-		texture = Surface(self.rect.size, pygame.SRCALPHA)
-		texture.fill(self.colour);
 		self._surf.blit(texture, VZERO)
+		self._surf = surface_rounded_corners(texture, 5)
 
-		# self._surf = surface_keepmask(self._surf, lambda surf, col: pygame.draw.rect(surf, col, r, border_radius=5))
-		self._surf = surface_rounded_corners(self._surf, 5)
+		pygame.draw.rect(self._surf, Color("#000000"), r, border_radius=5, width=10)
+
+		heading_bg = r.inflate(-30, -r.height * 0.85)
+		heading_bg.y = 0
+
+		pygame.draw.rect(self._surf, Color("#959595"), r.inflate(-10, -10), border_radius=5, width=2)
+		pygame.draw.rect(self._surf, Color("#000000"), heading_bg, border_radius=10)
+
+		title_surf = fonts.NONE_FONT.render(self.data.title, True, Color("#ffffff"))
+		self._surf.blit(title_surf, r.midtop - Vector2(title_surf.get_width()/2, -10))
+
 
 		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5)
 		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 8)
 
-	def playspace_collide(self):
+	def playspace_collide(self) -> Optional[Playspace]:
 		for playspace in game.sprites.get("PLAYSPACE"):
 			if playspace.rect.colliderect(self.rect.inflate(-Card.PLAYABLE_OVERLAP, -Card.PLAYABLE_OVERLAP)):
 				return playspace
 
 		return None
 
-	def is_playable(self):
+	def is_playable(self) -> bool:
 		return self.playspace_collide() is not None
 
-	def mouse_over_me(self):
+	def mouse_over_me(self) -> bool:
 		return self.rect.collidepoint(game.input.mouse_pos())
 
 	def update_move(self):
@@ -124,7 +152,7 @@ class Card(Sprite):
 
 	def destroy(self):
 		super().destroy()
-		game.sprites.news(*particle_explosion(10, pos=self.rect.center, size=30, speed=5, colour=self.colour))
+		game.sprites.news(*particle_explosion(10, pos=self.rect.center, size=30, speed=5, colour=Color("#ff00ff")))
 
 	def update_draw(self):
 		if self.held_frames:
@@ -133,14 +161,6 @@ class Card(Sprite):
 			game.windowsystem.screen.blit(self._shadow_surf, shadow_rect)
 
 		game.windowsystem.screen.blit(self._surf, self.rect.topleft)
-		# pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
-		# pygame.draw.rect(
-		# 	game.windowsystem.screen,
-		# 	self.colour.lerp(Color("#ffffff",), 0.25),
-		# 	self.rect.inflate(0, 0),
-		# 	width=5,
-		# 	border_radius=5
-		# )
 
 
 class FollowMouse(Sprite):

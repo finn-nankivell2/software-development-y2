@@ -15,7 +15,7 @@ class CachedTexture:
 class TextureClippingCacheModule(GameModule):
 	IDMARKER = "textclip"
 
-	_textures = Dict[str, CachedTexture]
+	_textures: Dict[str, CachedTexture]
 
 	def create(self):
 		self._textures = {}
@@ -28,7 +28,7 @@ class TextureClippingCacheModule(GameModule):
 		return self._textures.get(self._make_hash(texture, size))
 
 	def contains(self, texture: Surface, size: Vector2):
-		return self.get_tex(texture) is not None
+		return self.get_tex(texture, size) is not None
 
 	def get_or_insert(self, texture: Surface, size: Vector2) -> Surface:
 		if size[0] > texture.get_width() and size[1] > texture.get_height():

@@ -25,18 +25,18 @@ from gamesystem.mods.assets import AssetManager
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem.common.assets import SpriteSheet
 
-from particles import FollowParticle
-from cards import Card, Hand, Playspace
+from particles import BubbleParticleEmitter
+from cards import Card, Hand, Playspace2, DataCard
+
+from gameutil import ScalingImageSprite
+from consts import VZERO
 
 from gmods import TextureClippingCacheModule
+import fonts
 
 
-def mainmenu():
-	pass
-
-
-def spritefollow():
-	with open("colours.json") as file:
+def mainloop():
+	with open("data/colours.json") as file:
 		gradient = json.load(file)
 
 	gradient = list(map(Color, gradient))
@@ -44,21 +44,26 @@ def spritefollow():
 	game.windowsystem.set_fill_color(gradient[0])
 	bg_grad = [gradient[0], gradient[1]]
 
-	bg_particles = FollowParticle(pos=game.windowsystem.dimensions / 2, colours=bg_grad)
-	for _ in range(1000):
-		bg_particles.update_move()
+	# bg_particles = BubbleParticleEmitter(pos=game.windowsystem.dimensions / 2, colours=bg_grad)
+	# for _ in range(1000):
+	# 	bg_particles.update_move()
+	# game.sprites.new(bg_particles)
+	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
-	game.sprites.new(bg_particles)
+	compost = DataCard(title="Compost", description="Compost waste", play_condition="all", play_id="compost")
+	for _ in range(2):
+		game.sprites.new(Card(FRect(200, 100, 150, 220), game.assets.compost, compost))
 
-	for c in gradient[-5:]:
-		game.sprites.new(Card((200, 100), (150, 220), c))
+	plastic = DataCard(title="Plastic", description="Plastic waste", play_condition="all", play_id="plastic")
+	for _ in range(3):
+		game.sprites.new(Card(FRect(200, 100, 150, 220), game.assets.plastic, plastic))
 
 	# game.sprites.new(Card((400, 100), (150, 220), Color("#ff0000")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#0000ff")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#00ff00")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#ffaa00")))
 
-	game.sprites.new(Playspace(Rect(100, 100, 400, 250), gradient[len(gradient) // 2]))
+	game.sprites.new(Playspace2(Rect(100, 100, 400, 250), game.assets.buildingbg))
 
 	game.sprites.HAND = Hand(FRect(0, 780, 1280, 80))
 	game.sprites.new(game.sprites.HAND)
@@ -92,7 +97,10 @@ if __name__ == "__main__":
 	)
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
-	game.add_module(AssetManager, rock="assets/rock2.jpg")
+
+	with open("data/assets.json") as file:
+		game.add_module(AssetManager, **json.load(file))
+
 	game.add_module(TextureClippingCacheModule)
 
-	game.loop.run(spritefollow)
+	game.loop.run(mainloop)

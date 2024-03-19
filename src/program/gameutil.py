@@ -4,11 +4,12 @@ import pygame
 import random
 import math
 from pygame import Vector2, Color, Surface, FRect, Rect
-from typing import List, Union, Iterator, Tuple, Callable
+from typing import List, Union, Iterator, Tuple, Callable, Any
 from consts import VZERO
+from utils import first
 
 
-def surface_keepmask(surface: Surface, masking: Callable[Surface, Color]) -> Surface:
+def surface_keepmask(surface: Surface, masking: Callable[[Surface, Color], Any]) -> Surface:
 	dest = Surface(surface.get_size(), pygame.SRCALPHA)
 	dest.blit(surface, VZERO)
 
@@ -57,10 +58,30 @@ def surface_region(surface: Surface, region: Union[Rect, FRect]) -> Surface:
 	return target
 
 
+
+class ImageSprite(Sprite):
+	def __init__(self, pos: Vector2, image: Surface):
+		self.pos = pos
+		self.image = image
+
+	def update_draw(self):
+		game.windowsystem.screen.blit(self.image, self.pos)
+
+
+
+class ScalingImageSprite(ImageSprite):
+	def __init__(self, pos: Vector2, image: Surface):
+		super().__init__(pos, image)
+		self.unscaled = self.image
+		self.image = pygame.transform.scale(self.unscaled, game.windowsystem.dimensions)
+
+
 __all__ = [
 	traverse_surface.__name__,
 	transmute_surface_palette.__name__,
 	surface_region.__name__,
 	surface_keepmask.__name__,
-	surface_rounded_corners.__name__
+	surface_rounded_corners.__name__,
+	ImageSprite.__name__,
+	ScalingImageSprite.__name__
 ]
