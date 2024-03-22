@@ -12,7 +12,8 @@ class AssetManager(GameModule):
 			self._load(*pair)
 
 	def _load(self, name, path):
-		if name in self.__dict__: raise TypeError(f"{name} already present")
+		if name in self.__dict__:
+			raise TypeError(f"{name} already present")
 		self.__dict__[name] = pygame.image.load(path).convert_alpha()
 
 	def add(self, name, path):

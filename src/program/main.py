@@ -42,7 +42,7 @@ def mainloop():
 	gradient = list(map(Color, gradient))
 
 	game.windowsystem.set_fill_color(gradient[0])
-	bg_grad = [gradient[0], gradient[1]]
+	# bg_grad = [gradient[0], gradient[1]]
 
 	# bg_particles = BubbleParticleEmitter(pos=game.windowsystem.dimensions / 2, colours=bg_grad)
 	# for _ in range(1000):
@@ -50,11 +50,11 @@ def mainloop():
 	# game.sprites.new(bg_particles)
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
-	compost = DataCard(title="Compost", description="Compost waste", play_condition="all", play_id="compost")
+	compost = DataCard(title="Compost", description="Compost waste", playable_everywhere=False, play_id="compost")
 	for _ in range(2):
 		game.sprites.new(Card(FRect(200, 100, 150, 220), game.assets.compost, compost))
 
-	plastic = DataCard(title="Plastic", description="Plastic waste", play_condition="all", play_id="plastic")
+	plastic = DataCard(title="Plastic", description="Plastic waste", playable_everywhere=False, play_id="plastic")
 	for _ in range(3):
 		game.sprites.new(Card(FRect(200, 100, 150, 220), game.assets.plastic, plastic))
 

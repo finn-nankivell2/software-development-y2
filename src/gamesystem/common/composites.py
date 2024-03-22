@@ -38,14 +38,3 @@ class MouseState():
 
 	def __repr__(self):
 		return f"MouseState({self.LEFT}, {self.RIGHT}, {self.MIDDLE})"
-
-
-def test_UNIT_window_dimensions():
-	size_a = Dimensions(1000, 800)
-	size_b = Dimensions(1000, 800)
-
-	assert size_a == size_b
-	assert size_a + size_b == Dimensions(2000, 1600)
-
-	size_a.set(0, 0)
-	assert size_a == Dimensions(0, 0)

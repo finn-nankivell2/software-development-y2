@@ -58,8 +58,8 @@ def surface_region(surface: Surface, region: Union[Rect, FRect]) -> Surface:
 	return target
 
 
-
 class ImageSprite(Sprite):
+
 	def __init__(self, pos: Vector2, image: Surface):
 		self.pos = pos
 		self.image = image
@@ -68,8 +68,8 @@ class ImageSprite(Sprite):
 		game.windowsystem.screen.blit(self.image, self.pos)
 
 
-
 class ScalingImageSprite(ImageSprite):
+
 	def __init__(self, pos: Vector2, image: Surface):
 		super().__init__(pos, image)
 		self.unscaled = self.image

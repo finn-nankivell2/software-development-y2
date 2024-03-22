@@ -3,7 +3,7 @@ import pygame
 from pygame import Vector2, FRect, Color, Surface
 from gamesystem.common.sprite import Sprite
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from gameutil import surface_rounded_corners
 from consts import VZERO
 from particles import particle_explosion
@@ -29,6 +29,7 @@ class Playspace(DebugRect, Sprite):
 
 
 class Playspace2(Playspace):
+
 	def __init__(self, rect, surface):
 		self.rect = rect
 		self.surface = game.textclip.get_or_insert(surface, rect.size)
@@ -38,17 +39,30 @@ class Playspace2(Playspace):
 		game.windowsystem.screen.blit(self.surface, self.rect.topleft)
 
 
-
 @dataclass(slots=True, frozen=True)
-class DataCard:
-	title: str
-	description: str
-	play_condition: str # TODO: Make this an enum
-	play_id: str # TODO: And this too
+class DataPlayspace:
+	title: str  # The title of the building
+	description: str  # The description of the building
+	accept_ids: List[str]  # What card play_id's are accepted by this playspace
+	space_id: str  # An identifying string for the building type TODO: Make this an enum
+	# TODO: Add an image property
 
 	@classmethod
 	def fromjson(cls, j: Dict[str, str]):
-		return DataCard(**j)
+		return cls(**j)
+
+
+@dataclass(slots=True, frozen=True)
+class DataCard:
+	title: str  # The title of the card
+	description: str  # The description of the card
+	playable_everywhere: bool  # Whether the card can be played onto empty space as well as playspaces
+	play_id: str  # An identifying string for the card type TODO: Make this an enum
+	# TODO: Add an image property
+
+	@classmethod
+	def fromjson(cls, j: Dict[str, str]):
+		return cls(**j)
 
 
 class Card(Sprite):
@@ -87,8 +101,7 @@ class Card(Sprite):
 		pygame.draw.rect(self._surf, Color("#000000"), heading_bg, border_radius=10)
 
 		title_surf = fonts.NONE_FONT.render(self.data.title, True, Color("#ffffff"))
-		self._surf.blit(title_surf, r.midtop - Vector2(title_surf.get_width()/2, -10))
-
+		self._surf.blit(title_surf, r.midtop - Vector2(title_surf.get_width() / 2, -10))
 
 		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5)
 		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 8)

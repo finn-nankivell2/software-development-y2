@@ -6,24 +6,34 @@ env:
 	. venv/bin/activate
 	pip install -r requirements.txt
 
-cleanenv:
+delenv:
 	rm -r venv
 
 dev:
 	. venv/bin/activate
 	python3 src/program/main.py
 
-build:
+hackbuild:
 	. venv/bin/activate
 	mkdir build
 	cp -r src/ build/
 	cd build/src
 	mv gamesystem hcktypr/gamesystem
-	# python3 hcktypr/main.py
+	echo "import gamesystem" > hcktypr/context.py
 	pyinstaller hcktypr/main.py --onefile --noconsole
 	mv dist/main hcktypr/binary
 
-cleanbuild:
+release:
+	. venv/bin/activate
+	mkdir build
+	cp -r src/ build/
+	cd build/src
+	mv gamesystem program/gamesystem
+	echo "import gamesystem" > program/context.py
+	pyinstaller hcktypr/main.py --onefile --noconsole
+	mv dist/main program/binary
+
+clean:
 	rm -r build
 
 hacktyper:
