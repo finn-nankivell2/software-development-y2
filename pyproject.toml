@@ -1,5 +1,5 @@
-[style]
-based_on_style = google
+[tool.yapf]
+based_on_style = "google"
 use_tabs = true
 coalesce_brackets = true
 dedent_closing_brackets = true
@@ -11,3 +11,11 @@ continuation_align_style = "valign-right"
 split_complex_comprehension = true
 spaces_before_comment = 2
 column_limit = 120
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[flake8]
+exclude = ".tox,./build"
+filename = "*.py"
+ignore = "F401,W191,E501,E402,E701"

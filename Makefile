@@ -46,7 +46,7 @@ test:
 
 yapf:
 	. venv/bin/activate
-	yapf -r -i src/ tests/ --style style.toml -p
+	yapf -r -i src/ tests/ -p
 
 mypy:
 	. venv/bin/activate

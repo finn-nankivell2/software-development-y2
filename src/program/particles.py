@@ -28,10 +28,10 @@ class Particle(Sprite):
 		pygame.draw.circle(game.windowsystem.screen, self.colour, self.pos, self.size)
 
 
-
 class SurfaceParticle(Particle):
+
 	def __init__(self, pos, vel, surface, lifetime=60):
-		super().__init__(pos, surface.get_width()/2, vel, Color("#ff00ff"), lifetime)
+		super().__init__(pos, surface.get_width() / 2, vel, Color("#ff00ff"), lifetime)
 		self.surface = surface
 		self._start_size = Vector2(self.surface.get_size())
 
@@ -39,8 +39,7 @@ class SurfaceParticle(Particle):
 		scale_to = Vector2(self.size, self.size) * 2
 		self.surface = pygame.transform.scale(self.surface, scale_to)
 
-		game.windowsystem.screen.blit(self.surface, self.pos - Vector2(self.surface.get_size())/2)
-
+		game.windowsystem.screen.blit(self.surface, self.pos - Vector2(self.surface.get_size()) / 2)
 
 
 def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[Particle]:
@@ -56,7 +55,6 @@ def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[
 			kwargs["lifetime"] *= random.uniform(0.6, 1.4)
 		else:
 			kwargs["lifetime"] = random.randint(40, 70)
-
 
 		parts.append(particle_type.rand_angle(*args, **kwargs))
 

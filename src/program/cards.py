@@ -162,11 +162,13 @@ class Card(Sprite):
 
 		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, (0, 0), 10))
 		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, self.rect.move(0, 0).center, self.rect.width/3))
-		rd = self.rect.width/3
+		rd = self.rect.width / 3
 		masking = lambda surf, color: pygame.draw.rect(surf, color, Rect(Vector2(self.rect.size)/2, (rd, rd)).move(-rd/2, -rd/2))
 		mid_surf = surface_keepmask(self._surf.copy(), masking)
 
-		game.sprites.news(*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf))
+		game.sprites.news(
+			*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf)
+		)
 
 	def update_draw(self):
 		if self.held_frames:
