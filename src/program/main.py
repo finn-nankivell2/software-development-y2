@@ -21,6 +21,7 @@ from gamesystem.mods.window import ScalingWindowSystem, MultiLayerScreenSystem
 from gamesystem.mods.defaults import SpritesManager, StateManager, GameloopManager, ClockManager
 from gamesystem.mods.debug import DebugOverlayManager
 from gamesystem.mods.assets import AssetManager
+from gamesystem.mods.audio import AudioManagerNumChannels
 
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem.common.assets import SpriteSheet
@@ -99,7 +100,11 @@ if __name__ == "__main__":
 	game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
 
 	with open("data/assets.json") as file:
-		game.add_module(AssetManager, **json.load(file))
+		jdict = json.load(file)
+		textures, sfx = jdict["textures"], jdict["sfx"]
+
+		game.add_module(AssetManager, assets=textures)
+		game.add_module(AudioManagerNumChannels, sounds=sfx, num_channels=30)
 
 	game.add_module(TextureClippingCacheModule)
 

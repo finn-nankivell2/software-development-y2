@@ -6,9 +6,9 @@ import pygame.image
 class AssetManager(GameModule):
 	IDMARKER = "assets"
 
-	def create(self, **kwargs: Dict[str, str]):
+	def create(self, assets: Dict[str, str]):
 		self._assets = {}
-		for pair in kwargs.items():
+		for pair in assets.items():
 			self._load(*pair)
 
 	def _load(self, name, path):

@@ -254,7 +254,13 @@ class Hand(Sprite):
 
 		self.card_map = [ref for ref in self.card_map if ref.card.rect.width > 1]
 
+
+		idxs = [ref.idx for ref in self.card_map]
 		self.card_map.sort(key=lambda ref: ref.card.rect.x)
+
+		if idxs != [ref.idx for ref in self.card_map]:
+			game.audio.sounds.card_switch.play()
+
 		for i, ref in enumerate(self.card_map):
 			ref.idx = i
 			ref.card.z = 0

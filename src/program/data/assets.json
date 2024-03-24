@@ -1,7 +1,13 @@
 {
-	"plastic": "assets/plastic.png",
-	"compost": "assets/compost.png",
-	"xpbackground": "assets/xp3.png",
-	"buildingbg": "assets/building.png"
+	"textures": {
+		"plastic": "assets/plastic.png",
+		"compost": "assets/compost.png",
+		"xpbackground": "assets/xp3.png",
+		"buildingbg": "assets/building.png"
+	},
 
+	"sfx": {
+		"card_switch": "sfx/card_switch.wav",
+		"err": "sfx/err.wav"
+	}
 }

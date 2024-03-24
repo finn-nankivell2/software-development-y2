@@ -1,5 +1,4 @@
 class GameModule():
-	IDMARKER = "modulebase"
 	ALIASES = []
 	REQUIREMENTS = []
 
