@@ -59,6 +59,35 @@ class DataCard:
 		return cls(**j)  # type: ignore
 
 
+
+class DespawningCard(Sprite):
+
+	LAYER = "PARTICLE"
+
+	def __init__(self, pos: Vector2, texture: Surface, vel: Vector2 = Vector2(0, -2), lifetime: int = 20):
+		self.pos = pos
+		self.vel = vel
+		self.texture = texture
+		self._lifetime = lifetime
+		self._opacity = 255
+		self._decay = self._opacity / lifetime
+
+	@classmethod
+	def from_card(cls, card, **kwargs):
+		return cls(card.rect.topleft, card._surf, **kwargs)
+
+	def update_move(self):
+		self.pos += self.vel
+		self._opacity -= self._decay
+
+		if self._opacity < 1:
+			self.destroy()
+
+	def update_draw(self):
+		self.texture.set_alpha(int(self._opacity))
+		game.windowsystem.screen.blit(self.texture, self.pos)
+
+
 class Card(Sprite):
 	LAYER = "CARD"
 	PICKME_SHIFT_AMT = 50
@@ -166,9 +195,11 @@ class Card(Sprite):
 		masking = lambda surf, color: pygame.draw.rect(surf, color, Rect(Vector2(self.rect.size)/2, (rd, rd)).move(-rd/2, -rd/2))
 		mid_surf = surface_keepmask(self._surf.copy(), masking)
 
-		game.sprites.news(
-			*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf)
-		)
+		# game.sprites.news(
+		# 	*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf)
+		# )
+
+		game.sprites.new(DespawningCard.from_card(self))
 
 	def update_draw(self):
 		if self.held_frames:

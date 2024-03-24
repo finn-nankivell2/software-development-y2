@@ -31,3 +31,5 @@
 - [x] - Make a prelude
 
 - [ ] - Card play effects
+
+	- [x] - Become opaque and drift off
