@@ -28,4 +28,6 @@
 
 ## Code TODO:
 
-- [ ] - Make a prelude
+- [x] - Make a prelude
+
+- [ ] - Card play effects

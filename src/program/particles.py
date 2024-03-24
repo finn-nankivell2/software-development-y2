@@ -1,10 +1,4 @@
-import random
-import math
-from gamesystem.common.sprite import Sprite, SpriteGroup
-from gamesystem import game
-import pygame
-from pygame import Vector2, Color, Surface, FRect, Rect
-from typing import List, Union, Iterator, Tuple, Callable
+from prelude import *
 
 
 class Particle(Sprite):
@@ -34,15 +28,37 @@ class Particle(Sprite):
 		pygame.draw.circle(game.windowsystem.screen, self.colour, self.pos, self.size)
 
 
-def particle_explosion(number, *args, **kwargs) -> List[Particle]:
+
+class SurfaceParticle(Particle):
+	def __init__(self, pos, vel, surface, lifetime=60):
+		super().__init__(pos, surface.get_width()/2, vel, Color("#ff00ff"), lifetime)
+		self.surface = surface
+		self._start_size = Vector2(self.surface.get_size())
+
+	def update_draw(self):
+		scale_to = Vector2(self.size, self.size) * 2
+		self.surface = pygame.transform.scale(self.surface, scale_to)
+
+		game.windowsystem.screen.blit(self.surface, self.pos - Vector2(self.surface.get_size())/2)
+
+
+
+def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[Particle]:
 	parts = []
+	last_speed = kwargs.get("speed")
 	for _ in range(number):
 		if kwargs.get("speed"):
 			kwargs["speed"] *= random.uniform(0.6, 1.4)
 		else:
 			kwargs["speed"] = random.randint(3, 10)
 
-		parts.append(Particle.rand_angle(*args, **kwargs))
+		if kwargs.get("lifetime"):
+			kwargs["lifetime"] *= random.uniform(0.6, 1.4)
+		else:
+			kwargs["lifetime"] = random.randint(40, 70)
+
+
+		parts.append(particle_type.rand_angle(*args, **kwargs))
 
 	return parts
 

@@ -11,6 +11,7 @@ from utils import first
 
 def surface_keepmask(surface: Surface, masking: Callable[[Surface, Color], Any]) -> Surface:
 	dest = Surface(surface.get_size(), pygame.SRCALPHA)
+	dest2 = Surface(surface.get_size(), pygame.SRCALPHA)
 	dest.blit(surface, VZERO)
 
 	MASK_BG = Color("#ff00ff")
@@ -23,7 +24,10 @@ def surface_keepmask(surface: Surface, masking: Callable[[Surface, Color], Any])
 
 	dest.blit(mask, VZERO)
 	dest.set_colorkey(MASK_BG)
-	return dest
+
+	dest2.blit(dest, VZERO)
+
+	return dest2
 
 
 def surface_rounded_corners(surface: Surface, corner_radius: int) -> Surface:

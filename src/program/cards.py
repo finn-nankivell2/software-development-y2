@@ -1,12 +1,6 @@
-from gamesystem import game
-import pygame
-from pygame import Vector2, FRect, Color, Surface
-from gamesystem.common.sprite import Sprite
-from dataclasses import dataclass
-from typing import Optional, Dict, List
-from gameutil import surface_rounded_corners
-from consts import VZERO
-from particles import particle_explosion
+from prelude import *
+from gameutil import surface_rounded_corners, surface_keepmask
+from particles import particle_explosion, SurfaceParticle
 import json
 import fonts
 
@@ -49,7 +43,7 @@ class DataPlayspace:
 
 	@classmethod
 	def fromjson(cls, j: Dict[str, str]):
-		return cls(**j)
+		return cls(**j)  # type: ignore
 
 
 @dataclass(slots=True, frozen=True)
@@ -62,7 +56,7 @@ class DataCard:
 
 	@classmethod
 	def fromjson(cls, j: Dict[str, str]):
-		return cls(**j)
+		return cls(**j)  # type: ignore
 
 
 class Card(Sprite):
@@ -103,7 +97,7 @@ class Card(Sprite):
 		title_surf = fonts.NONE_FONT.render(self.data.title, True, Color("#ffffff"))
 		self._surf.blit(title_surf, r.midtop - Vector2(title_surf.get_width() / 2, -10))
 
-		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5)
+		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5), surface_keepmask
 		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 8)
 
 	def playspace_collide(self) -> Optional[Playspace]:
@@ -165,7 +159,14 @@ class Card(Sprite):
 
 	def destroy(self):
 		super().destroy()
-		game.sprites.news(*particle_explosion(10, pos=self.rect.center, size=30, speed=5, colour=Color("#ff00ff")))
+
+		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, (0, 0), 10))
+		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, self.rect.move(0, 0).center, self.rect.width/3))
+		rd = self.rect.width/3
+		masking = lambda surf, color: pygame.draw.rect(surf, color, Rect(Vector2(self.rect.size)/2, (rd, rd)).move(-rd/2, -rd/2))
+		mid_surf = surface_keepmask(self._surf.copy(), masking)
+
+		game.sprites.news(*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf))
 
 	def update_draw(self):
 		if self.held_frames:
