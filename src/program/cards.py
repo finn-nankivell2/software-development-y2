@@ -46,20 +46,6 @@ class DataPlayspace:
 		return cls(**j)  # type: ignore
 
 
-@dataclass(slots=True, frozen=True)
-class DataCard:
-	title: str  # The title of the card
-	description: str  # The description of the card
-	playable_everywhere: bool  # Whether the card can be played onto empty space as well as playspaces
-	play_id: str  # An identifying string for the card type TODO: Make this an enum
-	# TODO: Add an image property
-
-	@classmethod
-	def fromjson(cls, j: Dict[str, str]):
-		return cls(**j)  # type: ignore
-
-
-
 class DespawningCard(Sprite):
 
 	LAYER = "PARTICLE"
@@ -88,6 +74,19 @@ class DespawningCard(Sprite):
 		game.windowsystem.screen.blit(self.texture, self.pos)
 
 
+@dataclass(slots=True, frozen=True)
+class DataCard:
+	title: str  # The title of the card
+	description: str  # The description of the card
+	playable_everywhere: bool  # Whether the card can be played onto empty space as well as playspaces
+	play_id: str  # An identifying string for the card type TODO: Make this an enum
+	# TODO: Add an image property
+
+	@classmethod
+	def fromjson(cls, j: Dict[str, str]):
+		return cls(**j)  # type: ignore
+
+
 class Card(Sprite):
 	LAYER = "CARD"
 	PICKME_SHIFT_AMT = 50
@@ -104,6 +103,13 @@ class Card(Sprite):
 
 		clipped = game.textclip.get_or_insert(texture, self.rect.size)
 		self._setup_surfaces(clipped)
+
+	@classmethod
+	def from_blueprint(cls, blueprint: Dict[str, Any]):
+		data = DataCard.fromjson(blueprint["data"])
+		texture = game.assets.get(blueprint["texture"])
+
+		return cls(FRect(200, 100, 150, 220), texture, data)
 
 	def _setup_surfaces(self, texture: Surface):
 		self._surf = Surface(self.rect.size, pygame.SRCALPHA)
@@ -254,11 +260,12 @@ class Hand(Sprite):
 
 		self.card_map = [ref for ref in self.card_map if ref.card.rect.width > 1]
 
-
 		idxs = [ref.idx for ref in self.card_map]
 		self.card_map.sort(key=lambda ref: ref.card.rect.x)
 
-		if idxs != [ref.idx for ref in self.card_map]:
+		if self.currently_dragged is not None and not self.currently_dragged.is_playable() and idxs != [
+			ref.idx for ref in self.card_map
+		]:
 			game.audio.sounds.card_switch.play()
 
 		for i, ref in enumerate(self.card_map):

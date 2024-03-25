@@ -1,8 +1,6 @@
 from gamesystem.mods.modulebase import GameModule
-from dataclasses import dataclass
-from pygame import Surface, Vector2, Rect, FRect
-from typing import Optional, Dict, Union, Tuple
 from gameutil import surface_region
+from prelude import *
 
 
 @dataclass
@@ -43,6 +41,16 @@ class TextureClippingCacheModule(GameModule):
 
 		self._textures[key] = CachedTexture(clipped, key, size)
 		return self._textures[key].texture
+
+
+
+class BlueprintsStorageModule(GameModule):
+	IDMARKER = "blueprints"
+
+	def create(self, blueprints: Dict[str, Any]):
+		if blueprints.get("IDMARKER"):
+			del blueprints["IDMARKER"]
+		self.__dict__ = blueprints
 
 
 def test_UNIT_texture_clipping():

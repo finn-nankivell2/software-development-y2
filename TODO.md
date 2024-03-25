@@ -22,9 +22,11 @@
 
 ## Game TODO:
 
-- [ ] - Audio
+- [x] - Audio
 
-- [ ] - Text rendering
+- [x] - Text rendering
+
+- [ ] - UI Elements
 
 ## Code TODO:
 
@@ -33,3 +35,7 @@
 - [ ] - Card play effects
 
 	- [x] - Become opaque and drift off
+
+	- [ ] - Trigger behaviour
+
+- [x] - Card from json blueprint

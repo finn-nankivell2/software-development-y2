@@ -1,0 +1,20 @@
+{
+	"plastic": {
+		"texture": "plastic",
+		"data": {
+			"title": "Plastic",
+			"description": "Plastic waste",
+			"playable_everywhere": false,
+			"play_id": "plastic"
+		}
+	},
+	"compost": {
+		"texture": "compost",
+		"data": {
+			"title": "Compost",
+			"description": "Compost waste",
+			"playable_everywhere": false,
+			"play_id": "compost"
+		}
+	}
+}

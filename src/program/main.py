@@ -32,7 +32,7 @@ from cards import Card, Hand, Playspace2, DataCard
 from gameutil import ScalingImageSprite
 from consts import VZERO
 
-from gmods import TextureClippingCacheModule
+from gmods import TextureClippingCacheModule, BlueprintsStorageModule
 import fonts
 
 
@@ -51,13 +51,11 @@ def mainloop():
 	# game.sprites.new(bg_particles)
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
-	compost = DataCard(title="Compost", description="Compost waste", playable_everywhere=False, play_id="compost")
 	for _ in range(2):
-		game.sprites.new(Card(FRect(200, 100, 150, 220), game.assets.compost, compost))
+		game.sprites.new(Card.from_blueprint(game.blueprints.plastic))
 
-	plastic = DataCard(title="Plastic", description="Plastic waste", playable_everywhere=False, play_id="plastic")
 	for _ in range(3):
-		game.sprites.new(Card(FRect(200, 100, 150, 220), game.assets.plastic, plastic))
+		game.sprites.new(Card.from_blueprint(game.blueprints.compost))
 
 	# game.sprites.new(Card((400, 100), (150, 220), Color("#ff0000")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#0000ff")))
@@ -94,8 +92,11 @@ if __name__ == "__main__":
 		user_size=Vector2(1280, 800),
 		caption="program",
 		flags=pygame.NOFRAME,
-		fill_color=Color("#6e1698")
+		fill_color=Color("#000000")
 	)
+
+	# #54A200
+
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
 
@@ -107,5 +108,8 @@ if __name__ == "__main__":
 		game.add_module(AudioManagerNumChannels, sounds=sfx, num_channels=30)
 
 	game.add_module(TextureClippingCacheModule)
+
+	with open("data/blueprints.json") as file:
+		game.add_module(BlueprintsStorageModule, blueprints=json.load(file))
 
 	game.loop.run(mainloop)
