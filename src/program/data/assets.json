@@ -1,6 +1,8 @@
 {
 	"textures": {
 		"plastic": "assets/plastic2.png",
+		"cans": "assets/cans.png",
+		"paper": "assets/paper.png",
 		"compost": "assets/compost.png",
 		"xpbackground": "assets/xp3.png",
 		"buildingbg": "assets/building.png"

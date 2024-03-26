@@ -8,6 +8,24 @@
 			"play_id": "plastic"
 		}
 	},
+	"aluminium": {
+		"texture": "cans",
+		"data": {
+			"title": "Aluminium",
+			"description": "Aluminium waste",
+			"playable_everywhere": false,
+			"play_id": "aluminium"
+		}
+	},
+	"paper": {
+		"texture": "paper",
+		"data": {
+			"title": "Paper",
+			"description": "Paper waste",
+			"playable_everywhere": false,
+			"play_id": "paper"
+		}
+	},
 	"compost": {
 		"texture": "compost",
 		"data": {
