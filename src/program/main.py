@@ -27,7 +27,8 @@ from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem.common.assets import SpriteSheet
 
 from particles import BubbleParticleEmitter
-from cards import Card, Hand, Playspace2, DataCard
+from cards import Card, Hand, DataCard
+from playspaces import Playspace
 
 from gameutil import ScalingImageSprite
 from consts import VZERO
@@ -51,7 +52,7 @@ def mainloop():
 	# game.sprites.new(bg_particles)
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
-	for blueprint in game.blueprints.values():
+	for blueprint in reversed(game.blueprints.values()):
 		game.sprites.new(Card.from_blueprint(blueprint))
 
 	# for _ in range(2):
@@ -71,7 +72,7 @@ def mainloop():
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#00ff00")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#ffaa00")))
 
-	game.sprites.new(Playspace2(Rect(100, 100, 400, 250), game.assets.buildingbg))
+	game.sprites.new(Playspace(Rect(100, 100, 400, 250), game.assets.buildingbg))
 
 	game.sprites.HAND = Hand(FRect(0, 780, 1280, 80))
 	game.sprites.new(game.sprites.HAND)

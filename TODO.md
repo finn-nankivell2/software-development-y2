@@ -28,6 +28,12 @@
 
 - [ ] - UI Elements
 
+- [ ] - Mixed waste
+
+	- Can be played to incenirator or landfill, but has a chance to cause a negative effect
+
+	- Can be played to the sorter, which deals more sorted waste cards to you
+
 ## Code TODO:
 
 - [x] - Make a prelude
@@ -40,8 +46,8 @@
 
 - [x] - Card from json blueprint
 
-- [ ] - Mixed waste
+- [ ] - Draggable playspaces
 
-	- Can be played to incenirator or landfill, but has a chance to cause a negative effect
+- [ ] - Playspace text and tooltip
 
-	- Can be played to the sorter, which deals more sorted waste cards to you
+- [ ] - Palette module

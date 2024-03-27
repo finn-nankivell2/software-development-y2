@@ -36,6 +36,12 @@ def surface_rounded_corners(surface: Surface, corner_radius: int) -> Surface:
 	)
 
 
+def shadow_from_rect(rect: Rect, colour: Color = Color("#000000aa"), shrink_by=10, blur_radius=8, **kwargs) -> Surface:
+	surf = Surface(rect.size, pygame.SRCALPHA)
+	pygame.draw.rect(surf, colour, rect.inflate(-shrink_by, -shrink_by), **kwargs)
+	return pygame.transform.gaussian_blur(surf, blur_radius)
+
+
 def traverse_surface(surface: Surface) -> Iterator[Tuple[int, int]]:
 	w, h = surface.get_size()
 

@@ -1,7 +1,7 @@
 from .modulebase import GameModule
 from ..common.composites import MouseState
 
-from pygame.math import Vector2
+from pygame import Vector2, Rect
 import pygame.key
 import pygame.mouse
 
@@ -42,29 +42,33 @@ class InputManager(GameModule):
 		self._mouse_pos = Vector2(pygame.mouse.get_pos())
 		self._mouse_rel = Vector2(pygame.mouse.get_rel())
 
-	def mouse_pos(self):
+	def mouse_pos(self) -> Vector2:
 		"""Get mouse position"""
 		return self._mouse_pos
 
-	def mouse_movement(self):
+	def mouse_movement(self) -> Vector2:
 		"""Get mouse movement change since last frame"""
+		self._dragged = False
 		return self._mouse_rel
 
-	def key_down(self, *key_codes):
+	def key_down(self, *key_codes) -> bool:
 		"""Check if key is down"""
 		return any(self.keys[k] for k in key_codes) and not self._freeze_input
 
-	def key_pressed(self, *key_codes):
+	def key_pressed(self, *key_codes) -> bool:
 		"""Check if key is pressed on this frame only"""
 		return any(self.keys[k] and not self._last_keys[k] for k in key_codes) and not self._freeze_input
 
-	def mouse_down(self, idx):
+	def mouse_down(self, idx: int) -> bool:
 		"""Check if mouse is down"""
 		return self.mouse[idx] and not self._freeze_input
 
-	def mouse_pressed(self, idx):
+	def mouse_pressed(self, idx: int) -> bool:
 		"""Check if mouse is pressed on this frame only"""
 		return self.mouse[idx] and not self._last_mouse[idx] and not self._freeze_input
+
+	def mouse_within(self, rect: Rect) -> bool:
+		return rect.collidepoint(self.mouse_pos())
 
 
 class InputManagerScalingMouse(InputManager):

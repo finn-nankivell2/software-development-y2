@@ -1,36 +1,9 @@
 from prelude import *
-from gameutil import surface_rounded_corners, surface_keepmask
+from gameutil import surface_rounded_corners, surface_keepmask, shadow_from_rect
 from particles import particle_explosion, SurfaceParticle
 import json
 import fonts
-
-
-class DebugRect():
-
-	def update_draw(self):
-		pygame.draw.rect(game.windowsystem.screen, Color("#ff00ff"), self.rect)
-
-
-class Playspace(DebugRect, Sprite):
-	LAYER = "PLAYSPACE"
-
-	def __init__(self, rect, colour):
-		self.rect = rect
-		self.colour = colour
-
-	def update_draw(self):
-		pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
-
-
-class Playspace2(Playspace):
-
-	def __init__(self, rect, surface):
-		self.rect = rect
-		self.surface = game.textclip.get_or_insert(surface, rect.size)
-		self.surface = surface_rounded_corners(self.surface, 5)
-
-	def update_draw(self):
-		game.windowsystem.screen.blit(self.surface, self.rect.topleft)
+from playspaces import Playspace
 
 
 @dataclass(slots=True, frozen=True)
@@ -47,7 +20,6 @@ class DataPlayspace:
 
 
 class DespawningCard(Sprite):
-
 	LAYER = "PARTICLE"
 
 	def __init__(self, pos: Vector2, texture: Surface, vel: Vector2 = Vector2(0, -2), lifetime: int = 20):
@@ -130,14 +102,13 @@ class Card(Sprite):
 		pygame.draw.rect(self._surf, Color("#000000"), heading_bg, border_radius=10)
 
 		title_surf = fonts.families.roboto.size(18).render(self.data.title, True, Color("#ffffff"))
-		self._surf.blit(title_surf, heading_bg.center - Vector2(title_surf.get_size())/2)
+		self._surf.blit(title_surf, heading_bg.center - Vector2(title_surf.get_size()) / 2)
 
-		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5), surface_keepmask
-		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 8)
+		self._shadow_surf = shadow_from_rect(self._surf.get_rect(), border_radius=5)
 
 	def playspace_collide(self) -> Optional[Playspace]:
 		for playspace in game.sprites.get("PLAYSPACE"):
-			if playspace.rect.colliderect(self.rect.inflate(-Card.PLAYABLE_OVERLAP, -Card.PLAYABLE_OVERLAP)):
+			if playspace.collidecard(self):
 				return playspace
 
 		return None
@@ -150,6 +121,8 @@ class Card(Sprite):
 
 	def update_move(self):
 		hand = game.sprites.HAND
+		if hand.get_card_rep(self).idx > 8:
+			super().destroy()
 
 		if game.input.mouse_pressed(0) and hand.currently_dragged is None:
 			if self.mouse_over_me() and not self.dragged:
