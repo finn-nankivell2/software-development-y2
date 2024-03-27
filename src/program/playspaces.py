@@ -15,7 +15,7 @@ class Playspace(Sprite):
 		self._dragged = False
 		self._drag_offset = Vector2(0, 0)
 		self._dragged_frames = 0
-		self._dragged_poe = Vector2(self.titlebar.topleft)
+		self._dragged_poe = None
 
 		self.surface = game.textclip.get_or_insert(surface, rect.size)
 		self.surface = surface_rounded_corners(self.surface, 5)
@@ -34,17 +34,23 @@ class Playspace(Sprite):
 
 	# TODO: Fix this for when camera stuff is happening
 	def collidecard(self, card) -> bool:
-		return self.rect.colliderect(card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP)) and not self._dragged
+		return self.rect.colliderect(
+			card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP)
+		) and not self._dragged
 
 	def _invalid_placement(self) -> bool:
-		"""Returns True if placement is invalid, playspace will return to initial position"""
-		return any(self.collidecard(card) for card in game.sprites.get("CARD")) or self.rect.bottom > game.windowsystem.dimensions.y - CARD_RECT.height
+		"""Returns True if placement is invalid, playspace will return to initial position before dragging begun"""
+		return any(self.collidecard(card) for card in game.sprites.get("CARD")
+					) or self.rect.bottom > game.windowsystem.dimensions.y - CARD_RECT.height or any(
+						self.rect.colliderect(space.rect) for space in game.sprites.get("PLAYSPACE") if space is not self
+					)
 
 	def _drop_drag(self):
 		self._dragged = False
 		if self._invalid_placement():
-			self.rect.topleft = self._dragged_poe
-			self._dragged_frames = 0
+			pass
+		else:
+			self._dragged_poe = None
 
 	def _check_for_drag(self) -> bool:
 		return game.input.mouse_pressed(0) and game.input.mouse_within(self.titlebar) and self._permission_to_drag()
@@ -63,13 +69,24 @@ class Playspace(Sprite):
 			if not game.input.mouse_down(0):
 				self._drop_drag()
 
-		elif self._dragged_frames > 0:
-			self._dragged_frames -= 1
+		else:
+			if self._dragged_poe is not None:
+				mv = (Vector2(self.rect.topleft) - self._dragged_poe) / 10
+				self.rect.topleft -= mv
+				if mv.magnitude() < 0.1:
+					self.rect.topleft = self._dragged_poe
+					self._dragged_poe = None
+
+			if self._dragged_frames > 0:
+				self._dragged_frames -= 1
 
 		if self._dragged_frames > Playspace.MAX_DRAG_FRAMES:
 			self._dragged_frames = Playspace.MAX_DRAG_FRAMES
 
 		self.titlebar.topleft = self.rect.topleft
+
+		# Should be above other playspaces if it is being dragged or was just dragged
+		self.z = int(self._dragged or self._dragged_frames)
 
 	def update_draw(self):
 		if self._dragged_frames > 0:
@@ -83,4 +100,3 @@ class Playspace(Sprite):
 
 		game.windowsystem.screen.blit(self.surface, bpos)
 		pygame.draw.rect(game.windowsystem.screen, Color("#ff00ff"), self.titlebar.move(-mo, -mo))
-

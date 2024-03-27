@@ -74,6 +74,8 @@ def mainloop():
 
 	game.sprites.new(Playspace(Rect(100, 100, 400, 250), game.assets.buildingbg))
 
+	game.sprites.new(Playspace(Rect(800, 100, 400, 250), game.assets.buildingbg))
+
 	game.sprites.HAND = Hand(FRect(0, 780, 1280, 80))
 	game.sprites.new(game.sprites.HAND)
 
