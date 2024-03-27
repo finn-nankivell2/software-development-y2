@@ -129,8 +129,8 @@ class Card(Sprite):
 		pygame.draw.rect(self._surf, Color("#959595"), r.inflate(-10, -10), border_radius=5, width=2)
 		pygame.draw.rect(self._surf, Color("#000000"), heading_bg, border_radius=10)
 
-		title_surf = fonts.NONE_FONT.render(self.data.title, True, Color("#ffffff"))
-		self._surf.blit(title_surf, r.midtop - Vector2(title_surf.get_width() / 2, -10))
+		title_surf = fonts.families.roboto.size(18).render(self.data.title, True, Color("#ffffff"))
+		self._surf.blit(title_surf, heading_bg.center - Vector2(title_surf.get_size())/2)
 
 		pygame.draw.rect(self._shadow_surf, Color("#000000aa"), r.inflate(-10, -10), border_radius=5), surface_keepmask
 		self._shadow_surf = pygame.transform.gaussian_blur(self._shadow_surf, 8)

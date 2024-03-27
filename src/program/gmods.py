@@ -50,7 +50,11 @@ class BlueprintsStorageModule(GameModule):
 	def create(self, blueprints: Dict[str, Any]):
 		if blueprints.get("IDMARKER"):
 			del blueprints["IDMARKER"]
-		self.__dict__ = blueprints
+		self.prints = SimpleNamespace(**blueprints)
+		self._blueprints = blueprints
+
+	def values(self):
+		return self._blueprints.values()
 
 
 def test_UNIT_texture_clipping():

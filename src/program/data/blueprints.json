@@ -34,5 +34,77 @@
 			"playable_everywhere": false,
 			"play_id": "compost"
 		}
+	},
+	"rubble": {
+		"texture": "default",
+		"data": {
+			"title": "Rubble",
+			"description": "Rubble waste",
+			"playable_everywhere": false,
+			"play_id": "rubble"
+		}
+	},
+	"timber": {
+		"texture": "default",
+		"data": {
+			"title": "Timber",
+			"description": "Rubble waste",
+			"playable_everywhere": false,
+			"play_id": "timber"
+		}
+	},
+	"glass": {
+		"texture": "default",
+		"data": {
+			"title": "Glass",
+			"description": "Rubble waste",
+			"playable_everywhere": false,
+			"play_id": "glass"
+		}
+	},
+	"batteries": {
+		"texture": "default",
+		"data": {
+			"title": "Batteries",
+			"description": "Rubble waste",
+			"playable_everywhere": false,
+			"play_id": "batteries"
+		}
+	},
+	"electrical": {
+		"texture": "default",
+		"data": {
+			"title": "Electrical",
+			"description": "Rubble waste",
+			"playable_everywhere": false,
+			"play_id": "electrical"
+		}
+	},
+	"mixed": {
+		"texture": "default",
+		"data": {
+			"title": "Mixed",
+			"description": "Rubble waste",
+			"playable_everywhere": false,
+			"play_id": "mixed"
+		}
+	},
+	"chemical": {
+		"texture": "default",
+		"data": {
+			"title": "Chemical",
+			"description": "Rubble waste",
+			"playable_everywhere": false,
+			"play_id": "chemical"
+		}
+	},
+	"investment": {
+		"texture": "investment",
+		"data": {
+			"title": "Investment",
+			"description": "Investment waste",
+			"playable_everywhere": true,
+			"play_id": "investment"
+		}
 	}
 }

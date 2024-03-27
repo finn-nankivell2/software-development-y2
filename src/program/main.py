@@ -51,17 +51,20 @@ def mainloop():
 	# game.sprites.new(bg_particles)
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
-	for _ in range(2):
-		game.sprites.new(Card.from_blueprint(game.blueprints.aluminium))
+	for blueprint in game.blueprints.values():
+		game.sprites.new(Card.from_blueprint(blueprint))
 
-	for _ in range(2):
-		game.sprites.new(Card.from_blueprint(game.blueprints.paper))
+	# for _ in range(2):
+	# 	game.sprites.new(Card.from_blueprint(game.blueprints.aluminium))
 
-	for _ in range(2):
-		game.sprites.new(Card.from_blueprint(game.blueprints.plastic))
+	# for _ in range(2):
+	# 	game.sprites.new(Card.from_blueprint(game.blueprints.paper))
 
-	for _ in range(1):
-		game.sprites.new(Card.from_blueprint(game.blueprints.compost))
+	# for _ in range(2):
+	# 	game.sprites.new(Card.from_blueprint(game.blueprints.plastic))
+
+	# for _ in range(1):
+	# 	game.sprites.new(Card.from_blueprint(game.blueprints.compost))
 
 	# game.sprites.new(Card((400, 100), (150, 220), Color("#ff0000")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#0000ff")))

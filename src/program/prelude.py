@@ -11,3 +11,4 @@ from typing import Optional, Dict, List, Tuple, Union, Any
 import math
 import random
 from dataclasses import dataclass
+from types import SimpleNamespace

@@ -39,3 +39,9 @@
 	- [ ] - Trigger behaviour
 
 - [x] - Card from json blueprint
+
+- [ ] - Mixed waste
+
+	- Can be played to incenirator or landfill, but has a chance to cause a negative effect
+
+	- Can be played to the sorter, which deals more sorted waste cards to you
