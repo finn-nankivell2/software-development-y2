@@ -86,6 +86,13 @@ class ScalingImageSprite(ImageSprite):
 		self.image = pygame.transform.scale(self.unscaled, game.windowsystem.dimensions)
 
 
+class HookSprite(Sprite):
+	def __init__(self, update_move = None, update_draw=None):
+		self.update_move = update_move if update_move is not None else lambda: None
+		self.update_draw = update_draw if update_draw is not None else lambda: None
+
+
+
 __all__ = [
 	traverse_surface.__name__,
 	transmute_surface_palette.__name__,

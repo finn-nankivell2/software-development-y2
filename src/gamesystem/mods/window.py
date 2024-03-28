@@ -3,7 +3,7 @@ GameModules for handling pygame windowing and rendering targets
 """
 
 import pygame
-from pygame import Surface, Vector2, Color
+from pygame import Surface, Vector2, Color, Rect
 
 import sys
 from .modulebase import GameModule
@@ -20,6 +20,7 @@ class BasicWindowSystem(GameModule):
 		"""Create the window from a size. Optionally set the caption, pygame flags, and fill color"""
 
 		self.dimensions = Vector2(size)
+		self.rect = Rect(0, 0, self.dimensions.x, self.dimensions.y)
 		self.window = pygame.display.set_mode(size, flags)
 		self.screen = self.window
 
@@ -60,8 +61,10 @@ class ScalingWindowSystem(BasicWindowSystem):
 		self.uscreen = Surface(user_size, pygame.SRCALPHA)
 
 		self.dimensions = Vector2(size)
+		self.rect = Rect(0, 0, self.dimensions.x, self.dimensions.y)
 
 		self.udimensions = Vector2(user_size)
+		self.rect = Rect(0, 0, self.udimensions.x, self.udimensions.y)
 		# self.game.screen = self.screen
 		self.game.globals.screen = self.screen
 

@@ -46,7 +46,7 @@
 
 - [x] - Card from json blueprint
 
-- [ ] - Draggable playspaces
+- [x] - Draggable playspaces
 
 - [ ] - Playspace text and tooltip
 

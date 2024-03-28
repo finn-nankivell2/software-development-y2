@@ -5,7 +5,7 @@ from consts import CARD_RECT
 
 class Playspace(Sprite):
 	LAYER = "PLAYSPACE"
-	DRAGABLE_BAR_HEIGHT = 25
+	DRAGABLE_BAR_HEIGHT = 35
 	MAX_DRAG_FRAMES = 10
 
 	def __init__(self, rect, surface):
@@ -17,10 +17,14 @@ class Playspace(Sprite):
 		self._dragged_frames = 0
 		self._dragged_poe = None
 
-		self.surface = game.textclip.get_or_insert(surface, rect.size)
+		texture = surface.copy()
+		titlesurf = Surface(self.titlebar.size, pygame.SRCALPHA)
+		titlesurf.fill(Color("#000000aa"))
+		texture.blit(titlesurf, VZERO)
+
+		self.surface = game.textclip.get_or_insert(texture, rect.size)
 		self.surface = surface_rounded_corners(self.surface, 5)
 		self._shadow = shadow_from_rect(self.surface.get_rect(), border_radius=5)
-		self._invalid_shadow = shadow_from_rect(self.surface.get_rect(), Color("#90334E"), border_radius=5)
 
 	# TODO
 	def play_card_onto_space(self, card):
@@ -43,7 +47,7 @@ class Playspace(Sprite):
 		return any(self.collidecard(card) for card in game.sprites.get("CARD")
 					) or self.rect.bottom > game.windowsystem.dimensions.y - CARD_RECT.height or any(
 						self.rect.colliderect(space.rect) for space in game.sprites.get("PLAYSPACE") if space is not self
-					)
+					) or self.rect.clamp(game.windowsystem.rect) != self.rect
 
 	def _drop_drag(self):
 		self._dragged = False
@@ -90,13 +94,10 @@ class Playspace(Sprite):
 
 	def update_draw(self):
 		if self._dragged_frames > 0:
-			if self._invalid_placement():
-				game.windowsystem.screen.blit(self._invalid_shadow, self.rect.topleft)
-			else:
-				game.windowsystem.screen.blit(self._shadow, self.rect.topleft)
+			game.windowsystem.screen.blit(self._shadow, self.rect.topleft)
 
 		mo = min(Playspace.MAX_DRAG_FRAMES, self._dragged_frames)
 		bpos = self.rect.topleft - Vector2(mo, mo)
 
 		game.windowsystem.screen.blit(self.surface, bpos)
-		pygame.draw.rect(game.windowsystem.screen, Color("#ff00ff"), self.titlebar.move(-mo, -mo))
+		# pygame.draw.rect(game.windowsystem.screen, Color("#ff00ff"), self.titlebar.move(-mo, -mo))

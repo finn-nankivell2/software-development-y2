@@ -121,8 +121,10 @@ class Card(Sprite):
 
 	def update_move(self):
 		hand = game.sprites.HAND
-		if hand.get_card_rep(self).idx > 8:
+		rep = hand.get_card_rep(self)
+		if rep.idx > consts.HAND_SIZE:
 			super().destroy()
+			print(f"Destroyed card with idx: {rep.idx} with data: {self.data}")
 
 		if game.input.mouse_pressed(0) and hand.currently_dragged is None:
 			if self.mouse_over_me() and not self.dragged:

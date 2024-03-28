@@ -1,4 +1,5 @@
 from consts import VZERO
+import consts
 
 import pygame
 from pygame import Vector2, Rect, FRect, Color, Surface

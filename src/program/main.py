@@ -30,7 +30,7 @@ from particles import BubbleParticleEmitter
 from cards import Card, Hand, DataCard
 from playspaces import Playspace
 
-from gameutil import ScalingImageSprite
+from gameutil import ScalingImageSprite, HookSprite
 from consts import VZERO
 
 from gmods import TextureClippingCacheModule, BlueprintsStorageModule
@@ -76,7 +76,7 @@ def mainloop():
 
 	game.sprites.new(Playspace(Rect(800, 100, 400, 250), game.assets.buildingbg))
 
-	game.sprites.HAND = Hand(FRect(0, 780, 1280, 80))
+	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
 
@@ -100,8 +100,8 @@ if __name__ == "__main__":
 
 	game.add_module(
 		ScalingWindowSystem,
-		size=Vector2(1280, 800),
-		user_size=Vector2(1280, 800),
+		size=Vector2(1280, 720),
+		user_size=Vector2(1280, 720),
 		caption="program",
 		flags=pygame.NOFRAME,
 		fill_color=Color("#000000")
@@ -125,3 +125,4 @@ if __name__ == "__main__":
 		game.add_module(BlueprintsStorageModule, blueprints=json.load(file))
 
 	game.loop.run(mainloop)
+	game.debug.print_all_logs()

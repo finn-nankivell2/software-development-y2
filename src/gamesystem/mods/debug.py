@@ -17,6 +17,7 @@ class DebugOverlayManager(GameModule):
 
 		self._font = pygame.font.Font(font, self._fontsize) if type(font) is str or font is None else font
 		self._queue = []
+		self._logs = []
 
 	def update(self):
 		x = self._fontsize * 0.5
