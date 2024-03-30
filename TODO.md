@@ -50,4 +50,4 @@
 
 - [ ] - Playspace text and tooltip
 
-- [ ] - Palette module
+- [x] - Palette module

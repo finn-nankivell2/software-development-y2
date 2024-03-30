@@ -93,15 +93,15 @@ class Card(Sprite):
 		self._surf.blit(texture, VZERO)
 		self._surf = surface_rounded_corners(texture, 5)
 
-		pygame.draw.rect(self._surf, Color("#000000"), r, border_radius=5, width=10)
+		pygame.draw.rect(self._surf, palette.BLACK, r, border_radius=5, width=10)
 
 		heading_bg = r.inflate(-30, -r.height * 0.85)
 		heading_bg.y = 0
 
-		pygame.draw.rect(self._surf, Color("#959595"), r.inflate(-10, -10), border_radius=5, width=2)
-		pygame.draw.rect(self._surf, Color("#000000"), heading_bg, border_radius=10)
+		pygame.draw.rect(self._surf, palette.GREY, r.inflate(-10, -10), border_radius=5, width=2)
+		pygame.draw.rect(self._surf, palette.BLACK, heading_bg, border_radius=10)
 
-		title_surf = fonts.families.roboto.size(18).render(self.data.title, True, Color("#ffffff"))
+		title_surf = fonts.families.roboto.size(18).render(self.data.title, True, palette.WHITE)
 		self._surf.blit(title_surf, heading_bg.center - Vector2(title_surf.get_size()) / 2)
 
 		self._shadow_surf = shadow_from_rect(self._surf.get_rect(), border_radius=5)

@@ -51,6 +51,7 @@ yapf:
 mypy:
 	. venv/bin/activate
 	mypy src/program/ --pretty
+	# mypy src/gamesystem/ --pretty
 
 flake8:
 	. venv/bin/activate

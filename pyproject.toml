@@ -14,8 +14,3 @@ column_limit = 120
 
 [tool.mypy]
 ignore_missing_imports = true
-
-[flake8]
-exclude = ".tox,./build"
-filename = "*.py"
-ignore = "F401,W191,E501,E402,E701"

@@ -1,6 +1,6 @@
 import json
 from types import SimpleNamespace
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
 import pygame.font
@@ -16,7 +16,7 @@ NONE_FONT = pygame.font.Font(None, 28)
 @dataclass
 class FontFamily:
 	path: str
-	default: Font
+	default: Optional[Font]
 	sizes: Dict[int, Font]
 
 	@classmethod

@@ -35,6 +35,9 @@ from consts import VZERO
 
 from gmods import TextureClippingCacheModule, BlueprintsStorageModule
 import fonts
+import palette
+
+from tooltip import Tooltip
 
 
 def mainloop():
@@ -79,6 +82,14 @@ def mainloop():
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
+	game.sprites.new(
+		Tooltip(
+			"test",
+			"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+			FRect(20, 20, 1000, 1000)
+		)
+	)
+
 
 def do_running(self):
 	self.game.clock.update()
@@ -100,8 +111,8 @@ if __name__ == "__main__":
 
 	game.add_module(
 		ScalingWindowSystem,
-		size=Vector2(1280, 720),
-		user_size=Vector2(1280, 720),
+		size=Vector2(1280, 800),
+		user_size=Vector2(1280, 800),
 		caption="program",
 		flags=pygame.NOFRAME,
 		fill_color=Color("#000000")

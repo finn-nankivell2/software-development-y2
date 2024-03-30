@@ -1,6 +1,7 @@
 from prelude import *
 from gameutil import surface_rounded_corners, shadow_from_rect
 from consts import CARD_RECT
+from tooltip import Tooltip
 
 
 class Playspace(Sprite):
@@ -19,7 +20,7 @@ class Playspace(Sprite):
 
 		texture = surface.copy()
 		titlesurf = Surface(self.titlebar.size, pygame.SRCALPHA)
-		titlesurf.fill(Color("#000000aa"))
+		titlesurf.fill(palette.TRANS_BLACK)
 		texture.blit(titlesurf, VZERO)
 
 		self.surface = game.textclip.get_or_insert(texture, rect.size)
@@ -100,4 +101,3 @@ class Playspace(Sprite):
 		bpos = self.rect.topleft - Vector2(mo, mo)
 
 		game.windowsystem.screen.blit(self.surface, bpos)
-		# pygame.draw.rect(game.windowsystem.screen, Color("#ff00ff"), self.titlebar.move(-mo, -mo))
