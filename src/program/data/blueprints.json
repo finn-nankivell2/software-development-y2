@@ -4,7 +4,7 @@
 			"texture": "plastic",
 			"data": {
 				"title": "Plastic",
-				"description": "Plastic waste",
+				"description": "Sorted, recycleable plastic waste. Should be sent to plastic recycling",
 				"playable_everywhere": false,
 				"play_id": "plastic"
 			}
@@ -13,7 +13,7 @@
 			"texture": "cans",
 			"data": {
 				"title": "Aluminium",
-				"description": "Aluminium waste",
+				"description": "Recycleable aluminium waste (cans, scrap, etc). Should be sent to metal processing",
 				"playable_everywhere": false,
 				"play_id": "aluminium"
 			}
@@ -22,7 +22,7 @@
 			"texture": "paper",
 			"data": {
 				"title": "Paper",
-				"description": "Paper waste",
+				"description": "Recycleable paper waste. Should be sent to paper recycling",
 				"playable_everywhere": false,
 				"play_id": "paper"
 			}
@@ -109,13 +109,12 @@
 			}
 		}
 	},
-
 	"buildings": {
 		"incinerator": {
 			"texture": "buildingbg",
 			"data": {
 				"title": "Incinerator",
-				"description": "Burns stuff",
+				"description": "Disposes of waste by burning it. Resulting ash is sent to a landfill. Can burn any waste type except for Chemical. Disposing of cards this way will slightly increase the pollution counter",
 				"accept_ids": ["all"],
 				"space_id": ["incinerator"]
 			}
