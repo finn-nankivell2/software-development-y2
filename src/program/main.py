@@ -55,7 +55,7 @@ def mainloop():
 	# game.sprites.new(bg_particles)
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
-	for blueprint in reversed(game.blueprints.values()):
+	for _, blueprint in reversed(game.blueprints.icards()):
 		game.sprites.new(Card.from_blueprint(blueprint))
 
 	# for _ in range(2):
@@ -75,9 +75,7 @@ def mainloop():
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#00ff00")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#ffaa00")))
 
-	game.sprites.new(Playspace(Rect(100, 100, 400, 250), game.assets.buildingbg))
-
-	game.sprites.new(Playspace(Rect(800, 100, 400, 250), game.assets.buildingbg))
+	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator))
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
@@ -111,8 +109,8 @@ if __name__ == "__main__":
 
 	game.add_module(
 		ScalingWindowSystem,
-		size=Vector2(1280, 800),
-		user_size=Vector2(1280, 800),
+		size=Vector2(1920, 1080),
+		user_size=Vector2(1920, 1080),
 		caption="program",
 		flags=pygame.NOFRAME,
 		fill_color=Color("#000000")

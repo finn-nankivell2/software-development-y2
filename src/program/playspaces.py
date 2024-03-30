@@ -4,13 +4,28 @@ from consts import CARD_RECT
 from tooltip import Tooltip
 
 
+@dataclass(slots=True, frozen=True)
+class DataPlayspace:
+	title: str  # The title of the building
+	description: str  # The description of the building
+	accept_ids: List[str]  # What card play_id's are accepted by this playspace
+	space_id: str  # An identifying string for the building type TODO: Make this an enum
+	# TODO: Add an image property
+
+	@classmethod
+	def fromjson(cls, j: Dict[str, str]):
+		return cls(**j)  # type: ignore
+
+
 class Playspace(Sprite):
 	LAYER = "PLAYSPACE"
 	DRAGABLE_BAR_HEIGHT = 35
 	MAX_DRAG_FRAMES = 10
 
-	def __init__(self, rect, surface):
+	def __init__(self, rect, surface, data):
 		self.rect = rect
+		self.data = data
+
 		self.titlebar = self.rect.copy()
 		self.titlebar.height = Playspace.DRAGABLE_BAR_HEIGHT
 		self._dragged = False
@@ -26,6 +41,13 @@ class Playspace(Sprite):
 		self.surface = game.textclip.get_or_insert(texture, rect.size)
 		self.surface = surface_rounded_corners(self.surface, 5)
 		self._shadow = shadow_from_rect(self.surface.get_rect(), border_radius=5)
+
+	@classmethod
+	def from_blueprint(cls, blueprint):
+		data = DataPlayspace.fromjson(blueprint["data"])
+		texture = game.assets.get(blueprint["texture"])
+
+		return cls(consts.BUILDING_RECT, texture, data)
 
 	# TODO
 	def play_card_onto_space(self, card):
@@ -45,10 +67,11 @@ class Playspace(Sprite):
 
 	def _invalid_placement(self) -> bool:
 		"""Returns True if placement is invalid, playspace will return to initial position before dragging begun"""
-		return any(self.collidecard(card) for card in game.sprites.get("CARD")
-					) or self.rect.bottom > game.windowsystem.dimensions.y - CARD_RECT.height or any(
-						self.rect.colliderect(space.rect) for space in game.sprites.get("PLAYSPACE") if space is not self
-					) or self.rect.clamp(game.windowsystem.rect) != self.rect
+		return any(
+			self.collidecard(card) for card in game.sprites.get("CARD")
+		) or self.rect.bottom > game.windowsystem.dimensions.y - CARD_RECT.height or any(
+			self.rect.colliderect(space.rect) for space in game.sprites.get("PLAYSPACE") if space is not self
+		) or self.rect.clamp(game.windowsystem.rect) != self.rect
 
 	def _drop_drag(self):
 		self._dragged = False

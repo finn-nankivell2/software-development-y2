@@ -50,12 +50,13 @@ class BlueprintsStorageModule(GameModule):
 	def create(self, blueprints: Dict[str, Any]):
 		if blueprints.get("IDMARKER"):
 			del blueprints["IDMARKER"]
-		self.prints = SimpleNamespace(**blueprints)
+
+		self.cards = SimpleNamespace(**blueprints["cards"])
+		self.buildings = SimpleNamespace(**blueprints["buildings"])
 		self._blueprints = blueprints
 
-	def values(self):
-		return self._blueprints.values()
+	def icards(self):
+		return self.cards.__dict__.items()
 
-
-def test_UNIT_texture_clipping():
-	pass
+	def ibuildings(self):
+		return self.buildings.__dict__.items()

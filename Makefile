@@ -50,6 +50,7 @@ yapf:
 
 mypy:
 	. venv/bin/activate
+	dmypy start
 	mypy src/program/ --pretty
 	# mypy src/gamesystem/ --pretty
 

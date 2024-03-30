@@ -6,19 +6,6 @@ import fonts
 from playspaces import Playspace
 
 
-@dataclass(slots=True, frozen=True)
-class DataPlayspace:
-	title: str  # The title of the building
-	description: str  # The description of the building
-	accept_ids: List[str]  # What card play_id's are accepted by this playspace
-	space_id: str  # An identifying string for the building type TODO: Make this an enum
-	# TODO: Add an image property
-
-	@classmethod
-	def fromjson(cls, j: Dict[str, str]):
-		return cls(**j)  # type: ignore
-
-
 class DespawningCard(Sprite):
 	LAYER = "PARTICLE"
 
@@ -81,7 +68,7 @@ class Card(Sprite):
 		data = DataCard.fromjson(blueprint["data"])
 		texture = game.assets.get(blueprint["texture"])
 
-		return cls(FRect(200, 100, 150, 220), texture, data)
+		return cls(consts.CARD_RECT, texture, data)
 
 	def _setup_surfaces(self, texture: Surface):
 		self._surf = Surface(self.rect.size, pygame.SRCALPHA)
