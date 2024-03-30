@@ -4,6 +4,7 @@ from particles import particle_explosion, SurfaceParticle
 import json
 import fonts
 from playspaces import Playspace
+from tooltip import Tooltip
 
 
 class DespawningCard(Sprite):
@@ -69,6 +70,10 @@ class Card(Sprite):
 		texture = game.assets.get(blueprint["texture"])
 
 		return cls(consts.CARD_RECT, texture, data)
+
+	def with_tooltip(self):
+		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect))
+		return self
 
 	def _setup_surfaces(self, texture: Surface):
 		self._surf = Surface(self.rect.size, pygame.SRCALPHA)

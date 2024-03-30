@@ -56,7 +56,7 @@ def mainloop():
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
 	for _, blueprint in reversed(game.blueprints.icards()):
-		game.sprites.new(Card.from_blueprint(blueprint))
+		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
 	# for _ in range(2):
 	# 	game.sprites.new(Card.from_blueprint(game.blueprints.aluminium))
@@ -75,18 +75,18 @@ def mainloop():
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#00ff00")))
 	# game.sprites.new(Card((600, 100), (150, 220), Color("#ffaa00")))
 
-	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator))
+	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
-	game.sprites.new(
-		Tooltip(
-			"test",
-			"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
-			FRect(20, 20, 1000, 1000)
-		)
-	)
+	# game.sprites.new(
+	# 	Tooltip(
+	# 		"test",
+	# 		"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+	# 		game.sprites.get("PLAYSPACE")[0].rect
+	# 	)
+	# )
 
 
 def do_running(self):

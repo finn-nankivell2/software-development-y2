@@ -9,7 +9,17 @@ class Tooltip(Sprite):
 	TITLE_MARGIN = 20
 	PADDING = 15
 
-	def __init__(self, title: str, text: str, target: FRect, hover_time: int = 120, titlefont: Font = fonts.NONE_FONT, bodyfont: Font = fonts.NONE_FONT):
+	def __init__(
+		self,
+		title: str,
+		text: str,
+		target: FRect,
+		hover_time: int = consts.TOOLTIP_HOVER_TIME,
+		# titlefont: Font = fonts.NONE_FONT,
+		# bodyfont: Font = fonts.NONE_FONT
+		titlefont: Font = fonts.families.roboto.size(24),
+		bodyfont: Font = fonts.families.roboto.size(16)
+	):
 		self.title = title
 		self.text = text
 		self.target = target
@@ -36,8 +46,43 @@ class Tooltip(Sprite):
 			self._surface, palette.GREY, self.rect.inflate(-Tooltip.PADDING // 2, -Tooltip.PADDING // 2), width=1
 		)
 
+		self._shown = 0
+		self.hover_time = hover_time
+
+	def _update_hover(self):
+		if game.input.mouse_within(self.target):
+			if game.input.mouse.any():
+				self._shown = 0
+
+			if self._shown < self.hover_time:
+				self._shown += 1
+
+		else:
+			self._shown = 0
+
+	def _should_show(self):
+		return self._shown >= self.hover_time
+
+	def _out_of_bounds(self):
+		return self.rect.clamp(game.windowsystem.rect) != self.rect
+
 	def update_move(self):
-		pass
+		self._update_hover()
+
+		if self._should_show():
+			mp = game.input.mouse_pos()
+			self.rect.topleft = mp
+
+			if self._out_of_bounds():
+				self.rect.bottomleft = mp
+
+			if self._out_of_bounds():
+				self.rect.topright = mp
+
+			if self._out_of_bounds():
+				self.rect.bottomright = mp
+
 
 	def update_draw(self):
-		game.windowsystem.screen.blit(self._surface, self.rect.topleft)
+		if self._should_show():
+			game.windowsystem.screen.blit(self._surface, self.rect.topleft)

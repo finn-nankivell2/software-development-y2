@@ -49,6 +49,10 @@ class Playspace(Sprite):
 
 		return cls(consts.BUILDING_RECT, texture, data)
 
+	def with_tooltip(self):
+		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect))
+		return self
+
 	# TODO
 	def play_card_onto_space(self, card):
 		pass
