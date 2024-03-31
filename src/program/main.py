@@ -58,35 +58,10 @@ def mainloop():
 	for _, blueprint in reversed(game.blueprints.icards()):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
-	# for _ in range(2):
-	# 	game.sprites.new(Card.from_blueprint(game.blueprints.aluminium))
-
-	# for _ in range(2):
-	# 	game.sprites.new(Card.from_blueprint(game.blueprints.paper))
-
-	# for _ in range(2):
-	# 	game.sprites.new(Card.from_blueprint(game.blueprints.plastic))
-
-	# for _ in range(1):
-	# 	game.sprites.new(Card.from_blueprint(game.blueprints.compost))
-
-	# game.sprites.new(Card((400, 100), (150, 220), Color("#ff0000")))
-	# game.sprites.new(Card((600, 100), (150, 220), Color("#0000ff")))
-	# game.sprites.new(Card((600, 100), (150, 220), Color("#00ff00")))
-	# game.sprites.new(Card((600, 100), (150, 220), Color("#ffaa00")))
-
 	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
-
-	# game.sprites.new(
-	# 	Tooltip(
-	# 		"test",
-	# 		"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
-	# 		game.sprites.get("PLAYSPACE")[0].rect
-	# 	)
-	# )
 
 
 def do_running(self):
@@ -134,4 +109,3 @@ if __name__ == "__main__":
 		game.add_module(BlueprintsStorageModule, blueprints=json.load(file))
 
 	game.loop.run(mainloop)
-	game.debug.print_all_logs()

@@ -4,7 +4,7 @@
 
 - [ ] - Plastic
 
-- [ ] - Compost
+- [x] - Compost
 
 - [ ] - Aluminium
 
@@ -14,7 +14,7 @@
 
 - [ ] - Chemical
 
-- [ ] - Paper
+- [x] - Paper
 
 - [ ] - Building texture
 
@@ -46,8 +46,10 @@
 
 - [x] - Card from json blueprint
 
+- [ ] - Building from json blueprint
+
 - [x] - Draggable playspaces
 
-- [ ] - Playspace text and tooltip
+- [x] - Playspace text and tooltip
 
 - [x] - Palette module

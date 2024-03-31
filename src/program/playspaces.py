@@ -35,7 +35,7 @@ class Playspace(Sprite):
 
 		texture = surface.copy()
 		titlesurf = Surface(self.titlebar.size, pygame.SRCALPHA)
-		titlesurf.fill(palette.TRANS_BLACK)
+		titlesurf.fill(palette.BLACK)
 		texture.blit(titlesurf, VZERO)
 
 		self.surface = game.textclip.get_or_insert(texture, rect.size)
@@ -65,9 +65,10 @@ class Playspace(Sprite):
 
 	# TODO: Fix this for when camera stuff is happening
 	def collidecard(self, card) -> bool:
-		return self.rect.colliderect(
-			card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP)
-		) and not self._dragged
+		colliding = self.rect.colliderect( card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
+		playable = card.data.play_id in self.data.accept_ids
+
+		return colliding and playable and not self._dragged
 
 	def _invalid_placement(self) -> bool:
 		"""Returns True if placement is invalid, playspace will return to initial position before dragging begun"""

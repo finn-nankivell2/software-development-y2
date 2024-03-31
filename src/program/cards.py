@@ -115,7 +115,7 @@ class Card(Sprite):
 		hand = game.sprites.HAND
 		rep = hand.get_card_rep(self)
 		if rep.idx > consts.HAND_SIZE:
-			super().destroy()
+			self.destroy()
 			print(f"Destroyed card with idx: {rep.idx} with data: {self.data}")
 
 		if game.input.mouse_pressed(0) and hand.currently_dragged is None:
@@ -128,7 +128,7 @@ class Card(Sprite):
 		if not game.input.mouse_down(0) and self.dragged:
 			self.dragged = False
 			if self.is_playable():
-				self.destroy()
+				self.destroy_anim()
 
 		# Logic for if the Card is being dragged
 		if self.dragged:
@@ -159,8 +159,8 @@ class Card(Sprite):
 			else:
 				self.z = 1
 
-	def destroy(self):
-		super().destroy()
+	def destroy_anim(self):
+		self.destroy()
 
 		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, (0, 0), 10))
 		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, self.rect.move(0, 0).center, self.rect.width/3))

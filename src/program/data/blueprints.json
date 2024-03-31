@@ -114,8 +114,8 @@
 			"texture": "buildingbg",
 			"data": {
 				"title": "Incinerator",
-				"description": "Disposes of waste by burning it. Resulting ash is sent to a landfill. Can burn any waste type except for Chemical. Disposing of cards this way will slightly increase the pollution counter",
-				"accept_ids": ["all"],
+				"description": "Disposes of waste by burning it. Can burn any waste type except for Chemical. Disposing of cards this way will slightly increase the pollution counter",
+				"accept_ids": ["plastic", "aluminium", "paper", "compost", "rubble", "timber", "glass", "batteries", "electrical", "mixed", "chemical", "investment"],
 				"space_id": ["incinerator"]
 			}
 		}
