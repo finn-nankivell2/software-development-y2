@@ -58,7 +58,8 @@ def mainloop():
 	for _, blueprint in reversed(game.blueprints.icards()):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
-	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
+	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.landfill).with_tooltip())
+	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
