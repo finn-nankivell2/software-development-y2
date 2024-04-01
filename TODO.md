@@ -22,12 +22,6 @@
 
 ## Game TODO:
 
-- [x] - Audio
-
-- [x] - Text rendering
-
-- [ ] - UI Elements
-
 - [ ] - Mixed waste
 
 	- Can be played to incenirator or landfill, but has a chance to cause a negative effect
@@ -53,3 +47,12 @@
 - [x] - Playspace text and tooltip
 
 - [x] - Palette module
+
+- [ ] - Camera module
+
+- [x] - Audio
+
+- [x] - Text rendering
+
+- [ ] - UI Elements
+

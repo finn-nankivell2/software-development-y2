@@ -10,6 +10,15 @@ from .modulebase import GameModule
 from types import SimpleNamespace
 
 
+class WInfoModule(GameModule):
+	IDMARKER = "winfo"
+
+	def create(self):
+		self.info = pygame.display.Info()
+		self.display_size = Vector2(self.info.current_w, self.info.current_h)
+		self.display_rect = Rect(0, 0, self.info.current_w, self.info.current_h)
+
+
 class BasicWindowSystem(GameModule):
 	"""A GameModule that creates and manages a pygame window"""
 

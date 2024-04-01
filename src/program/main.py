@@ -17,7 +17,7 @@ from typing import Dict, List, Optional
 from context import gamesystem
 from gamesystem import game, GameModule
 from gamesystem.mods.input import InputManagerScalingMouse
-from gamesystem.mods.window import ScalingWindowSystem, MultiLayerScreenSystem
+from gamesystem.mods.window import ScalingWindowSystem, MultiLayerScreenSystem, WInfoModule
 from gamesystem.mods.defaults import SpritesManager, StateManager, GameloopManager, ClockManager
 from gamesystem.mods.debug import DebugOverlayManager
 from gamesystem.mods.assets import AssetManager
@@ -82,10 +82,12 @@ if __name__ == "__main__":
 	game.add_module(StateManager)
 	game.add_module(ClockManager)
 
+	game.add_module(WInfoModule)
+
 	game.add_module(
 		ScalingWindowSystem,
-		size=Vector2(1920, 1080),
-		user_size=Vector2(1920, 1080),
+		size=game.winfo.display_size,
+		user_size=game.winfo.display_size,
 		caption="program",
 		flags=pygame.NOFRAME,
 		fill_color=Color("#000000")
