@@ -3,6 +3,7 @@ import pygame
 import pygame.locals
 from pygame import Surface, Vector2, Rect, FRect, Color
 import os
+from pprint import pprint
 
 pygame.init()
 
@@ -58,11 +59,19 @@ def mainloop():
 	for _, blueprint in reversed(game.blueprints.icards()):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
-	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.landfill).with_tooltip())
+	print("\n".join(k for k, _ in game.blueprints.ibuildings()))
+
+
+	for _, blueprint in game.blueprints.ibuildings():
+		game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
+
+	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
+
+	pprint(game.assets.__dict__)
 
 
 def do_running(self):

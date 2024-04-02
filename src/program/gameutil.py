@@ -87,10 +87,10 @@ class ScalingImageSprite(ImageSprite):
 
 
 class HookSprite(Sprite):
-	def __init__(self, update_move = None, update_draw=None):
+
+	def __init__(self, update_move=None, update_draw=None):
 		self.update_move = update_move if update_move is not None else lambda: None
 		self.update_draw = update_draw if update_draw is not None else lambda: None
-
 
 
 __all__ = [

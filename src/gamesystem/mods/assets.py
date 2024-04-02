@@ -3,6 +3,7 @@ from typing import Dict
 import pygame.image
 
 
+# TODO: Investigate wrong asset being used randomly
 class AssetManager(GameModule):
 	IDMARKER = "assets"
 

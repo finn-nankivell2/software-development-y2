@@ -40,6 +40,8 @@ class Playspace(Sprite):
 
 		self.surface = game.textclip.get_or_insert(texture, rect.size)
 		self.surface = surface_rounded_corners(self.surface, 5)
+		pygame.draw.rect(self.surface, palette.BLACK, Rect(VZERO, self.rect.size), width=5, border_radius=5)
+
 		self._shadow = shadow_from_rect(self.surface.get_rect(), border_radius=5)
 
 	@classmethod
@@ -47,7 +49,23 @@ class Playspace(Sprite):
 		data = DataPlayspace.fromjson(blueprint["data"])
 		texture = game.assets.get(blueprint["texture"])
 
-		return cls(consts.BUILDING_RECT, texture, data)
+		dest = Playspace._find_availible_space(consts.BUILDING_RECT.copy())
+		return cls(dest, texture, data)
+
+	@staticmethod
+	def _find_availible_space(rect):
+		def check():
+			return any(space.rect.colliderect(rect) for space in game.sprites.get("PLAYSPACE"))
+
+		while check() and rect.right < game.windowsystem.dimensions.x:
+			rect.x += consts.CARD_RECT.width
+
+		if rect.right >= game.windowsystem.dimensions.x:
+			rect.x = consts.BUILDING_RECT.x
+			rect.y += consts.CARD_RECT.height
+			return Playspace._find_availible_space(rect)
+
+		return rect
 
 	def with_tooltip(self):
 		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect))
@@ -65,7 +83,7 @@ class Playspace(Sprite):
 
 	# TODO: Fix this for when camera stuff is happening
 	def collidecard(self, card) -> bool:
-		colliding = self.rect.colliderect( card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
+		colliding = self.rect.colliderect(card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
 		playable = card.data.play_id in self.data.accept_ids
 
 		return colliding and playable and not self._dragged

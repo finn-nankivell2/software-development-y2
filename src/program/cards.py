@@ -34,6 +34,16 @@ class DespawningCard(Sprite):
 		game.windowsystem.screen.blit(self.texture, self.pos)
 
 
+class PollutingCard(DespawningCard):
+	def __init__(self, pos: Vector2, target: Vector2, texture: Surface, lifetime: int = 20):
+		vel = (target - pos) / lifetime
+		super().__init__(pos, texture, vel, lifetime)
+
+	@classmethod
+	def from_card(cls, card, target, **kwargs):
+		return cls(card.rect.topleft, target, card._surf, **kwargs)
+
+
 @dataclass(slots=True, frozen=True)
 class DataCard:
 	title: str  # The title of the card
@@ -173,6 +183,7 @@ class Card(Sprite):
 		# )
 
 		game.sprites.new(DespawningCard.from_card(self))
+		# game.sprites.new(PollutingCard.from_card(self, target=Vector2(game.windowsystem.rect.topright)))
 
 	def update_draw(self):
 		if self.held_frames:

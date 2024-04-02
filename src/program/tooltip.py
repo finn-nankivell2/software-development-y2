@@ -82,7 +82,6 @@ class Tooltip(Sprite):
 			if self._out_of_bounds():
 				self.rect.bottomright = mp
 
-
 	def update_draw(self):
 		if self._should_show():
 			game.windowsystem.screen.blit(self._surface, self.rect.topleft)

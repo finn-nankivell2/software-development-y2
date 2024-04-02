@@ -7,19 +7,17 @@
 		"compost": "assets/compost.png",
 		"xpbackground": "assets/xp3.png",
 		"buildingbg": "assets/building.png",
-		"landfill": "assets/landfill2.png",
+		"landfill": "assets/landfill3.png",
+		"incinerator": "assets/incinerator2.png",
+		"plasticrec": "assets/plasticrec.png",
+		"composting": "assets/composting.png",
 		"investment": "assets/coins.png"
 	},
 
 	"fonts": {
 		"roboto": {
 			"path": "fonts/RobotoCondensed-Medium.ttf",
-			"sizes": [
-				14,
-				20,
-				25,
-				35
-			]
+			"sizes": [14, 20, 25, 35]
 		}
 	},
 

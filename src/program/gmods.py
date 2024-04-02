@@ -12,7 +12,6 @@ class CachedTexture:
 
 class TextureClippingCacheModule(GameModule):
 	IDMARKER = "textclip"
-
 	_textures: Dict[str, CachedTexture]
 
 	def create(self):
@@ -41,7 +40,6 @@ class TextureClippingCacheModule(GameModule):
 
 		self._textures[key] = CachedTexture(clipped, key, size)
 		return self._textures[key].texture
-
 
 
 class BlueprintsStorageModule(GameModule):
