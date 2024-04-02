@@ -5,6 +5,6 @@ WHITE = Color("#ffffff")
 GREY = Color("#959595")
 
 TEXT = Color("#ffffff")
-TOOLTIP = BLACK
+TOOLTIP = Color(BLACK)
 
 TRANS_BLACK = Color("#000000aa")

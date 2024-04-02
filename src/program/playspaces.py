@@ -50,10 +50,14 @@ class Playspace(Sprite):
 		texture = game.assets.get(blueprint["texture"])
 
 		dest = Playspace._find_availible_space(consts.BUILDING_RECT.copy())
-		return cls(dest, texture, data)
+		ret = cls(dest, texture, data)
+		ret._picture = blueprint["texture"]
+
+		return ret
 
 	@staticmethod
 	def _find_availible_space(rect):
+
 		def check():
 			return any(space.rect.colliderect(rect) for space in game.sprites.get("PLAYSPACE"))
 

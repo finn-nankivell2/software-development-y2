@@ -5,6 +5,7 @@ import json
 import fonts
 from playspaces import Playspace
 from tooltip import Tooltip
+import logging
 
 
 class DespawningCard(Sprite):
@@ -35,6 +36,7 @@ class DespawningCard(Sprite):
 
 
 class PollutingCard(DespawningCard):
+
 	def __init__(self, pos: Vector2, target: Vector2, texture: Surface, lifetime: int = 20):
 		vel = (target - pos) / lifetime
 		super().__init__(pos, texture, vel, lifetime)
@@ -126,7 +128,7 @@ class Card(Sprite):
 		rep = hand.get_card_rep(self)
 		if rep.idx > consts.HAND_SIZE:
 			self.destroy()
-			print(f"Destroyed card with idx: {rep.idx} with data: {self.data}")
+			logging.info(f"Destroyed card with idx: {rep.idx} with data: {self.data}")
 
 		if game.input.mouse_pressed(0) and hand.currently_dragged is None:
 			if self.mouse_over_me() and not self.dragged:

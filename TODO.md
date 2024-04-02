@@ -16,7 +16,7 @@
 
 - [x] - Paper
 
-- [ ] - Building texture
+- [x] - Building texture
 
 - [ ] - Background
 
@@ -40,7 +40,7 @@
 
 - [x] - Card from json blueprint
 
-- [ ] - Building from json blueprint
+- [x] - Building from json blueprint
 
 - [x] - Draggable playspaces
 
@@ -57,3 +57,11 @@
 - [ ] - UI Elements
 
 - [ ] - Investigate bug in asset loader where duplicate asset is loaded
+
+	- So apparently it's because of how the TextureClippingCacheModule is handling the key creation for it's storage
+
+	- You can have overlapping keys if the textures have the same size
+
+- [x] - Set up proper logging
+
+- [ ] - Easing functions

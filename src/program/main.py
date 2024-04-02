@@ -2,8 +2,12 @@
 import pygame
 import pygame.locals
 from pygame import Surface, Vector2, Rect, FRect, Color
+
 import os
-from pprint import pprint
+import time
+from pprint import pprint, pformat
+import logging
+logging.basicConfig(filename=f"logs/game.log", level=logging.DEBUG)
 
 pygame.init()
 
@@ -59,7 +63,7 @@ def mainloop():
 	for _, blueprint in reversed(game.blueprints.icards()):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
-	print("\n".join(k for k, _ in game.blueprints.ibuildings()))
+	logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
 
 
 	for _, blueprint in game.blueprints.ibuildings():
@@ -71,7 +75,10 @@ def mainloop():
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
-	pprint(game.assets.__dict__)
+	logging.debug(pformat(game.assets.all()))
+	logging.debug(pformat([space.data for space in game.sprites.get("PLAYSPACE")]))
+	logging.debug("---------- SPACES TEXTURE ----------")
+	logging.debug(pformat([space._picture for space in game.sprites.get("PLAYSPACE")]))
 
 
 def do_running(self):

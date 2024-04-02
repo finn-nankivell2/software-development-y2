@@ -90,6 +90,15 @@
 				"play_id": "mixed"
 			}
 		},
+		"paint": {
+			"texture": "default",
+			"data": {
+				"title": "Paint",
+				"description": "Paint waste",
+				"playable_everywhere": false,
+				"play_id": "paint"
+			}
+		},
 		"chemical": {
 			"texture": "default",
 			"data": {

@@ -5,3 +5,4 @@
 .dmypy.json
 build/
 **/*.psd
+**/*.log
