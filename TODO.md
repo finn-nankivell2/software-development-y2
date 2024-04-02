@@ -56,3 +56,4 @@
 
 - [ ] - UI Elements
 
+- [ ] - Investigate bug in asset loader where duplicate asset is loaded
