@@ -38,7 +38,7 @@ from playspaces import Playspace
 from gameutil import ScalingImageSprite, HookSprite
 from consts import VZERO
 
-from gmods import TextureClippingCacheModule, BlueprintsStorageModule
+from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule
 import fonts
 import palette
 
@@ -77,10 +77,14 @@ def mainloop():
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
+	logging.debug("---------- ASSETS ----------")
 	logging.debug(pformat(game.assets.all()))
+	logging.debug("---------- PLAYSPACES ----------")
 	logging.debug(pformat([space.data for space in game.sprites.get("PLAYSPACE")]))
 	logging.debug("---------- SPACES TEXTURE ----------")
 	logging.debug(pformat([space._picture for space in game.sprites.get("PLAYSPACE")]))
+	logging.debug("---------- PLAYER STATE ----------")
+	logging.debug(game.playerstate)
 
 
 def do_running(self):
@@ -125,6 +129,7 @@ if __name__ == "__main__":
 		game.add_module(AudioManagerNumChannels, sounds=sfx, num_channels=30)
 
 	game.add_module(TextureClippingCacheModule)
+	game.add_module(PlayerStateTrackingModule)
 
 	with open("data/blueprints.json") as file:
 		game.add_module(BlueprintsStorageModule, blueprints=json.load(file))

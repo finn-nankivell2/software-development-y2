@@ -2,18 +2,55 @@ from prelude import *
 from gameutil import surface_rounded_corners, shadow_from_rect
 from consts import CARD_RECT
 from tooltip import Tooltip
+from dataclasses import field
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(slots=True)
+class Effect:
+	prop: str
+	increment: float
+
+	@classmethod
+	def fromtuple(cls, items):
+		return cls(*items)
+
+	def apply(self):
+		game.playerstate.incr_property(self.prop, self.increment)
+
+
+@dataclass(slots=True)
+class PlayEffectInfo:
+	for_any: List[Effect] = field(default_factory=list)
+	for_card: Dict[str, List[Effect]] = field(default_factory=dict)
+
+	@classmethod
+	def fromjson(cls, j):
+		for_any = list(map(Effect.fromtuple, j.get("for_any", {})))
+		for_card = {play_id: list(map(Effect.fromtuple, effects.items())) for play_id, effects in j.get("for_card", {}).items()}
+
+		return cls(for_any, for_card)
+
+	def get_applicable(self, card) -> List[Effect]:
+		effects = self.for_any
+		for k, v in self.for_card.items():
+			if k == card.play_id:
+				effects.extend(v)
+
+		return effects
+
+
+@dataclass(slots=True)
 class DataPlayspace:
 	title: str  # The title of the building
 	description: str  # The description of the building
 	accept_ids: List[str]  # What card play_id's are accepted by this playspace
+	play_effect: PlayEffectInfo  # Which game values are changed when the card is played
 	space_id: str  # An identifying string for the building type TODO: Make this an enum
 	# TODO: Add an image property
 
 	@classmethod
 	def fromjson(cls, j: Dict[str, str]):
+		j["play_effect"] = PlayEffectInfo.fromjson(j.get("play_effect", {}))
 		return cls(**j)  # type: ignore
 
 
@@ -77,7 +114,8 @@ class Playspace(Sprite):
 
 	# TODO
 	def play_card_onto_space(self, card):
-		pass
+		for effect in self.data.play_effect.get_applicable(card.data):
+			effect.apply()
 
 	def is_dragged(self) -> bool:
 		return self._dragged

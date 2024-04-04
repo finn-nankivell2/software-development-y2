@@ -138,6 +138,7 @@
 					"chemical",
 					"investment"
 				],
+				"play_effect": {},
 				"space_id": ["incinerator"]
 			}
 		},
@@ -160,6 +161,7 @@
 					"chemical",
 					"investment"
 				],
+				"play_effect": {},
 				"space_id": ["landfill"]
 			}
 		},
@@ -168,10 +170,8 @@
 			"data": {
 				"title": "Plastic Recycling",
 				"description": "Recycles plastic waste played onto it, and produces money from recycled plastic",
-				"accept_ids": [
-					"plastic",
-					"investment"
-				],
+				"accept_ids": ["plastic", "investment"],
+				"play_effect": {},
 				"space_id": ["plasticrec"]
 			}
 		},
@@ -180,23 +180,25 @@
 			"data": {
 				"title": "Composting",
 				"description": "Gathers biodegradeable material together to create compost. The resulting compost can be used to create fertilizer or in the strengthening of soils, and can thus be used to generate income",
-				"accept_ids": [
-					"compost",
-					"investment"
-				],
+				"accept_ids": ["compost", "investment"],
+				"play_effect": {},
 				"space_id": ["composting"]
 			}
 		},
-
 		"plasticrec": {
 			"texture": "plasticrec",
 			"data": {
 				"title": "Plastic Recycling",
 				"description": "Recycles plastic waste played onto it, and produces money from recycled plastic",
-				"accept_ids": [
-					"plastic",
-					"investment"
-				],
+				"accept_ids": ["plastic", "investment"],
+				"play_effect": {
+					"for_any": {},
+					"for_card": {
+						"plastic": {
+							"funds": 0.1
+						}
+					}
+				},
 				"space_id": ["plasticrec"]
 			}
 		}

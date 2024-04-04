@@ -1,3 +1,6 @@
+from pprint import pformat
+
+
 class GameModule():
 	ALIASES = []
 	REQUIREMENTS = []
@@ -7,3 +10,6 @@ class GameModule():
 
 	def create(self):
 		pass
+
+	def __repr__(self):
+		return type(self).__name__ + " " + pformat(self.__dict__)

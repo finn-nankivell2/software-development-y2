@@ -47,12 +47,12 @@ class PollutingCard(DespawningCard):
 		return cls(card.rect.topleft, target, card._surf, **kwargs)
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(slots=True)
 class DataCard:
 	title: str  # The title of the card
 	description: str  # The description of the card
 	playable_everywhere: bool  # Whether the card can be played onto empty space as well as playspaces
-	play_id: str  # An identifying string for the card type TODO: Make this an enum
+	play_id: str
 	# TODO: Add an image property
 
 	@classmethod
@@ -81,7 +81,6 @@ class Card(Sprite):
 	def from_blueprint(cls, blueprint: Dict[str, Any]):
 		data = DataCard.fromjson(blueprint["data"])
 		texture = game.assets.get(blueprint["texture"])
-
 		return cls(consts.CARD_RECT, texture, data)
 
 	def with_tooltip(self):
@@ -140,7 +139,9 @@ class Card(Sprite):
 
 		if not game.input.mouse_down(0) and self.dragged:
 			self.dragged = False
-			if self.is_playable():
+			space = self.playspace_collide()
+			if space:
+				space.play_card_onto_space(self)
 				self.destroy_anim()
 
 		# Logic for if the Card is being dragged
@@ -185,8 +186,8 @@ class Card(Sprite):
 		# 	*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf)
 		# )
 
-		# game.sprites.new(DespawningCard.from_card(self))
-		game.sprites.new(PollutingCard.from_card(self, target=Vector2(game.windowsystem.rect.topright)))
+		game.sprites.new(DespawningCard.from_card(self))
+		# game.sprites.new(PollutingCard.from_card(self, target=Vector2(game.windowsystem.rect.topright)))
 
 	def update_draw(self):
 		if self.held_frames:

@@ -56,3 +56,19 @@ class BlueprintsStorageModule(GameModule):
 
 	def ibuildings(self):
 		return self.buildings.__dict__.items()
+
+
+class PlayerStateTrackingModule(GameModule):
+	IDMARKER = "playerstate"
+
+	def create(self):
+		self.pollution = 0
+		self.turns = 0
+		self.score = 0
+		self.funds = 0.1
+
+		self.investment_chance = 0.10
+
+	def incr_property(self, prop, num):
+		self.__dict__[prop] += num
+		logging.debug(f"PlayerStateTrackingModule: {prop} incremented by {num}. Status: {self}")

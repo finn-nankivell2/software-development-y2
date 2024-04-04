@@ -36,7 +36,7 @@
 
 	- [x] - Become opaque and drift off
 
-	- [ ] - Trigger behaviour
+	- [x] - Trigger behaviour
 
 - [x] - Card from json blueprint
 
@@ -56,7 +56,7 @@
 
 - [ ] - UI Elements
 
-- [ ] - Investigate bug in asset loader where duplicate asset is loaded
+- [x] - Investigate bug in asset loader where duplicate asset is loaded
 
 	- So apparently it's because of how the TextureClippingCacheModule is handling the key creation for it's storage
 
@@ -64,4 +64,14 @@
 
 - [x] - Set up proper logging
 
-- [ ] - Easing functions
+- [x] - Easing functions
+
+- [ ] - Turn taking system
+
+	- [ ] - End turn button
+
+	- [ ] - Cards fly off to pollution counter
+
+	- [ ] - New cards are dealt
+
+	- [ ] - Game state system of some kind

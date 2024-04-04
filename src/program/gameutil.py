@@ -6,7 +6,6 @@ import math
 from pygame import Vector2, Color, Surface, FRect, Rect
 from typing import List, Union, Iterator, Tuple, Callable, Any
 from consts import VZERO
-from utils import first
 
 from easing_functions import CubicEaseInOut
 
@@ -88,7 +87,7 @@ def transmute_surface_palette(surface: Surface, palette_map: List[Tuple[Color, C
 	surface.lock()
 	for pos in traverse_surface(surface):
 		c = surface.get_at(pos)
-		newc = first(nc for k, nc in palette_map if k == c)
+		newc = next((nc for k, nc in palette_map if k == c), None)
 		if newc:
 			surface.set_at(pos, newc)
 
