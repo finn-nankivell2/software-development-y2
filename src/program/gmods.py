@@ -6,7 +6,7 @@ from prelude import *
 @dataclass
 class CachedTexture:
 	texture: Surface
-	key: str
+	keytext: Surface
 	size: Vector2
 
 
@@ -15,14 +15,13 @@ class TextureClippingCacheModule(GameModule):
 	_textures: Dict[str, CachedTexture]
 
 	def create(self):
-		self._textures = {}
-
-	@staticmethod
-	def _make_hash(texture: Surface, size: Vector2):
-		return str(hash(texture)) + f"{size[0]}x{size[1]}"
+		self._textures = []
 
 	def get_tex(self, texture: Surface, size: Vector2) -> Optional[CachedTexture]:
-		return self._textures.get(self._make_hash(texture, size))
+		for entry in self._textures:
+			if entry.keytext is texture and size == entry.size:
+				return entry
+		return None
 
 	def contains(self, texture: Surface, size: Vector2):
 		return self.get_tex(texture, size) is not None
@@ -35,11 +34,10 @@ class TextureClippingCacheModule(GameModule):
 		if tex is not None:
 			return tex.texture
 
-		key = self._make_hash(texture, size)
 		clipped = surface_region(texture, Rect((0, 0), size))
 
-		self._textures[key] = CachedTexture(clipped, key, size)
-		return self._textures[key].texture
+		self._textures.append(CachedTexture(clipped, texture, size))
+		return clipped
 
 
 class BlueprintsStorageModule(GameModule):

@@ -62,11 +62,11 @@ class Playspace(Sprite):
 			return any(space.rect.colliderect(rect) for space in game.sprites.get("PLAYSPACE"))
 
 		while check() and rect.right < game.windowsystem.dimensions.x:
-			rect.x += consts.CARD_RECT.width
+			rect.x += consts.CARD_RECT.width * 1.1
 
 		if rect.right >= game.windowsystem.dimensions.x:
 			rect.x = consts.BUILDING_RECT.x
-			rect.y += consts.CARD_RECT.height
+			rect.y += consts.CARD_RECT.height * 1.1
 			return Playspace._find_availible_space(rect)
 
 		return rect

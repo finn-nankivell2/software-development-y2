@@ -65,9 +65,11 @@ def mainloop():
 
 	logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
 
+	# for _, blueprint in game.blueprints.ibuildings():
+	# 	game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
 
-	for _, blueprint in game.blueprints.ibuildings():
-		game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
+	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
+	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.plasticrec).with_tooltip())
 
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
