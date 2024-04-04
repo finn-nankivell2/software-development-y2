@@ -1,5 +1,5 @@
 from prelude import *
-from gameutil import surface_rounded_corners, surface_keepmask, shadow_from_rect
+from gameutil import surface_rounded_corners, surface_keepmask, shadow_from_rect, EasingVector2
 from particles import particle_explosion, SurfaceParticle
 import json
 import fonts
@@ -18,6 +18,7 @@ class DespawningCard(Sprite):
 		self._lifetime = lifetime
 		self._opacity = 255
 		self._decay = self._opacity / lifetime
+		self._easing = EasingVector2(start=self.pos, end=self.pos + self.vel * self._lifetime, duration=self._opacity)
 
 	@classmethod
 	def from_card(cls, card, **kwargs):
@@ -32,7 +33,7 @@ class DespawningCard(Sprite):
 
 	def update_draw(self):
 		self.texture.set_alpha(int(self._opacity))
-		game.windowsystem.screen.blit(self.texture, self.pos)
+		game.windowsystem.screen.blit(self.texture, self._easing(255-self._opacity))
 
 
 class PollutingCard(DespawningCard):
@@ -184,8 +185,8 @@ class Card(Sprite):
 		# 	*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf)
 		# )
 
-		game.sprites.new(DespawningCard.from_card(self))
-		# game.sprites.new(PollutingCard.from_card(self, target=Vector2(game.windowsystem.rect.topright)))
+		# game.sprites.new(DespawningCard.from_card(self))
+		game.sprites.new(PollutingCard.from_card(self, target=Vector2(game.windowsystem.rect.topright)))
 
 	def update_draw(self):
 		if self.held_frames:

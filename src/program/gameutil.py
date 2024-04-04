@@ -8,6 +8,40 @@ from typing import List, Union, Iterator, Tuple, Callable, Any
 from consts import VZERO
 from utils import first
 
+from easing_functions import CubicEaseInOut
+
+
+class EasingVector2:
+
+	def __init__(self, start: Vector2, end: Vector2, func = CubicEaseInOut, duration: int = 30):
+		self.start = Vector2(start)
+		self.end = Vector2(end)
+		self.func = func
+		self.duration = duration
+
+		self.xfunc = func(self.start.x, self.end.x, duration)
+		self.yfunc = func(self.start.y, self.end.y, duration)
+
+	def __call__(self, alpha):
+		return Vector2(self.xfunc(alpha), self.yfunc(alpha))
+
+	def ease(self, alpha):
+		return self(alpha)
+
+
+class SteppingEasingVector2(EasingVector2):
+
+	def __init__(*args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self._step = 0
+
+	def completed(self):
+		return self._step >= self.duration
+
+	def step(self):
+		self._step += 1
+		return self(self._step)
+
 
 def surface_keepmask(surface: Surface, masking: Callable[[Surface, Color], Any]) -> Surface:
 	dest = Surface(surface.get_size(), pygame.SRCALPHA)
@@ -100,5 +134,7 @@ __all__ = [
 	surface_keepmask.__name__,
 	surface_rounded_corners.__name__,
 	ImageSprite.__name__,
-	ScalingImageSprite.__name__
+	ScalingImageSprite.__name__,
+	EasingVector2.__name__,
+	SteppingEasingVector2.__name__
 ]

@@ -12,7 +12,7 @@ class CachedTexture:
 
 class TextureClippingCacheModule(GameModule):
 	IDMARKER = "textclip"
-	_textures: Dict[str, CachedTexture]
+	_textures: List[CachedTexture]
 
 	def create(self):
 		self._textures = []
