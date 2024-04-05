@@ -12,7 +12,7 @@ from easing_functions import CubicEaseInOut
 
 class EasingVector2:
 
-	def __init__(self, start: Vector2, end: Vector2, func = CubicEaseInOut, duration: int = 30):
+	def __init__(self, start: Vector2, end: Vector2, func=CubicEaseInOut, duration: int = 30):
 		self.start = Vector2(start)
 		self.end = Vector2(end)
 		self.func = func
@@ -30,7 +30,7 @@ class EasingVector2:
 
 class SteppingEasingVector2(EasingVector2):
 
-	def __init__(*args, **kwargs):
+	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self._step = 0
 

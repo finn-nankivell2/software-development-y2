@@ -44,7 +44,6 @@ class SurfaceParticle(Particle):
 
 def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[Particle]:
 	parts = []
-	last_speed = kwargs.get("speed")
 	for _ in range(number):
 		if kwargs.get("speed"):
 			kwargs["speed"] *= random.uniform(0.6, 1.4)

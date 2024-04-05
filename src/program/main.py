@@ -7,7 +7,8 @@ import os
 import time
 from pprint import pprint, pformat
 import logging
-logging.basicConfig(filename=f"logs/game.log", level=logging.DEBUG)
+
+logging.basicConfig(filename="logs/game.log", level=logging.DEBUG)
 
 pygame.init()
 

@@ -33,7 +33,7 @@ class DespawningCard(Sprite):
 
 	def update_draw(self):
 		self.texture.set_alpha(int(self._opacity))
-		game.windowsystem.screen.blit(self.texture, self._easing(255-self._opacity))
+		game.windowsystem.screen.blit(self.texture, self._easing(255 - self._opacity))
 
 
 class PollutingCard(DespawningCard):
@@ -175,17 +175,6 @@ class Card(Sprite):
 
 	def destroy_anim(self):
 		self.destroy()
-
-		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, (0, 0), 10))
-		# mid_surf = surface_keepmask(self._surf, lambda surf, color: pygame.draw.circle(surf, color, self.rect.move(0, 0).center, self.rect.width/3))
-		rd = self.rect.width / 3
-		masking = lambda surf, color: pygame.draw.rect(surf, color, Rect(Vector2(self.rect.size)/2, (rd, rd)).move(-rd/2, -rd/2))
-		mid_surf = surface_keepmask(self._surf.copy(), masking)
-
-		# game.sprites.news(
-		# 	*particle_explosion(10, particle_type=SurfaceParticle, pos=self.rect.center, speed=5, surface=mid_surf)
-		# )
-
 		game.sprites.new(DespawningCard.from_card(self))
 		# game.sprites.new(PollutingCard.from_card(self, target=Vector2(game.windowsystem.rect.topright)))
 

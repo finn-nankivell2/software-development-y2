@@ -26,7 +26,9 @@ class PlayEffectInfo:
 	@classmethod
 	def fromjson(cls, j):
 		for_any = list(map(Effect.fromtuple, j.get("for_any", {})))
-		for_card = {play_id: list(map(Effect.fromtuple, effects.items())) for play_id, effects in j.get("for_card", {}).items()}
+		for_card = {
+			play_id: list(map(Effect.fromtuple, effects.items())) for play_id, effects in j.get("for_card", {}).items()
+		}
 
 		return cls(for_any, for_card)
 
