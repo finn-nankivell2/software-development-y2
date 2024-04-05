@@ -54,7 +54,7 @@
 
 - [x] - Text rendering
 
-- [ ] - UI Elements
+- [x] - UI Elements
 
 - [x] - Investigate bug in asset loader where duplicate asset is loaded
 
@@ -74,4 +74,4 @@
 
 	- [ ] - New cards are dealt
 
-	- [ ] - Game state system of some kind
+	- [x] - Game state system of some kind

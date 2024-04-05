@@ -51,7 +51,7 @@ class SpritesManager(BaseSpriteManager):
 
 	def get(self, layer_name):
 		"""Get a layer of sprites"""
-		return self._sprites[layer_name]
+		return filter(lambda s: not s.is_destroyed(), self._sprites[layer_name])
 
 	def purge(self, *layer_names):
 		"""Delete all sprites from layers

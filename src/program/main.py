@@ -44,6 +44,8 @@ import fonts
 import palette
 
 from tooltip import Tooltip
+from ui import Button, AbstractButton
+from turntaking import PlayerTurnTakingModue
 
 
 def mainloop():
@@ -78,6 +80,14 @@ def mainloop():
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
+	end_turn_rect = FRect(0, 0, 60, 60)
+	end_turn_rect.bottomright = game.windowsystem.dimensions - Vector2(20, 20)
+
+	def end_turn_behaviour(*_):
+		game.playerturn.end_turn()
+
+	game.sprites.new(AbstractButton(end_turn_rect, end_turn_behaviour), layer_override="UI")
+
 	logging.debug("---------- ASSETS ----------")
 	logging.debug(pformat(game.assets.all()))
 	logging.debug("---------- PLAYSPACES ----------")
@@ -86,6 +96,8 @@ def mainloop():
 	logging.debug(pformat([space._picture for space in game.sprites.get("PLAYSPACE")]))
 	logging.debug("---------- PLAYER STATE ----------")
 	logging.debug(game.playerstate)
+
+	logging.debug("-------------------- GAME START --------------------\n\n")
 
 
 def do_running(self):
@@ -130,7 +142,9 @@ if __name__ == "__main__":
 		game.add_module(AudioManagerNumChannels, sounds=sfx, num_channels=30)
 
 	game.add_module(TextureClippingCacheModule)
+
 	game.add_module(PlayerStateTrackingModule)
+	game.add_module(PlayerTurnTakingModue)
 
 	with open("data/blueprints.json") as file:
 		game.add_module(BlueprintsStorageModule, blueprints=json.load(file))

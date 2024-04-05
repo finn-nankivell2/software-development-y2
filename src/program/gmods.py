@@ -63,7 +63,6 @@ class PlayerStateTrackingModule(GameModule):
 
 	def create(self):
 		self.pollution = 0
-		self.turns = 0
 		self.score = 0
 		self.funds = 0.1
 

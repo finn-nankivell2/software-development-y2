@@ -173,10 +173,14 @@ class Card(Sprite):
 			else:
 				self.z = 1
 
-	def destroy_anim(self):
+	def destroy_anim(self, **kwargs):
 		self.destroy()
-		game.sprites.new(DespawningCard.from_card(self))
-		# game.sprites.new(PollutingCard.from_card(self, target=Vector2(game.windowsystem.rect.topright)))
+		game.sprites.new(DespawningCard.from_card(self, **kwargs))
+
+	def destroy_into_polluting(self, target=None, **kwargs):
+		self.destroy()
+		target = target if target else Vector2(game.windowsystem.rect.topright)
+		game.sprites.new(PollutingCard.from_card(self, target=target, **kwargs))
 
 	def update_draw(self):
 		if self.held_frames:

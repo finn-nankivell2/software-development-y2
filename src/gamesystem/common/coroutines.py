@@ -1,9 +1,10 @@
 from .sprite import Sprite
+from typing import Callable
 
 
 class TickCoroutine(Sprite):
 
-	def __init__(self, ticks, callback):
+	def __init__(self, ticks: int, callback: Callable):
 		self._ticks = ticks
 		self._ticker = 0
 		self._callback = callback
