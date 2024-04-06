@@ -33,8 +33,8 @@ class PlayerTurnTakingModue(GameModule):
 		logging.info(f"Turn {self.turn_count} ended")
 
 		self.transitioning = True
-		for card in game.sprites.get("CARD"):
-			card.destroy_into_polluting(lifetime=PlayerTurnTakingModue.TURN_TRANSITION_LENGTH)
+		for i, card in enumerate(game.sprites.get("CARD")):
+			card.destroy_into_polluting(lifetime=PlayerTurnTakingModue.TURN_TRANSITION_LENGTH - i*5)
 
 		tick = TickCoroutine(PlayerTurnTakingModue.TURN_TRANSITION_LENGTH, self.next_turn)
 		game.sprites.new(tick, layer_override="MANAGER")

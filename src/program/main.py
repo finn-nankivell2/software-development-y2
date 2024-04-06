@@ -16,6 +16,7 @@ import sys
 import random
 import math
 import json
+import itertools
 from types import SimpleNamespace
 
 from typing import Dict, List, Optional
@@ -63,7 +64,7 @@ def mainloop():
 	# game.sprites.new(bg_particles)
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 
-	for _, blueprint in reversed(game.blueprints.icards()):
+	for _, blueprint in itertools.islice(reversed(game.blueprints.icards()), 3):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
 	logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
