@@ -246,5 +246,11 @@
 				"space_id": "plasticrec"
 			}
 		}
+	},
+	"scenarios": {
+		"plastic": {
+			"name": "Plastic"
+
+		}
 	}
 }

@@ -2,6 +2,7 @@ from prelude import *
 from gamesystem import GameModule
 from gamesystem.common.coroutines import TickCoroutine
 from cards import PollutingCard, Card
+from playspaces import Playspace
 
 
 
@@ -18,12 +19,31 @@ class InvestmentWatcher(Sprite):
 			game.sprites.new(Card.from_blueprint(game.blueprints.cards.investment))
 
 
+
+@dataclass
+class Scenario:
+	name: str
+	drawable_cards: List[str]
+	starting_buildings: List[str]
+
+	@classmethod
+	def from_blueprint(cls, j: Dict[str, Any]):
+		return cls(**j)
+
+	@classmethod
+	def default(cls):
+		return cls("default", [k for k, _ in game.blueprints.icards()], [k for k, _ in game.blueprints.ibuildings()])
+
+
 class PlayerTurnTakingModue(GameModule):
 	IDMARKER = "playerturn"
 	TURN_TRANSITION_LENGTH = 60
 
+	REQUIREMENTS= ["blueprints"]
+
 	def create(self):
 		self.reset()
+		self.scenario = Scenario.default()
 
 	def reset(self):
 		self.turn_count = 1
@@ -31,6 +51,10 @@ class PlayerTurnTakingModue(GameModule):
 
 	def scene_start(self):
 		game.sprites.new(InvestmentWatcher())
+
+		for building in self.scenario.starting_buildings:
+			game.sprites.new(Playspace.from_blueprint(game.blueprints.get_building(building)).with_tooltip())
+
 
 	def next_turn(self):
 		self.transitioning = False

@@ -67,15 +67,15 @@ def mainloop():
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 	# game.sprites.new(ScanlineImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
-	for _, blueprint in itertools.islice(reversed(game.blueprints.icards()), 3):
-		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
+	# for _, blueprint in itertools.islice(reversed(game.blueprints.icards()), 3):
+	# 	game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
-	game.sprites.new(Card.from_blueprint(game.blueprints.cards.mixed).with_tooltip())
+	# game.sprites.new(Card.from_blueprint(game.blueprints.cards.mixed).with_tooltip())
 
-	logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
+	# logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
 
-	for _, blueprint in itertools.islice(reversed(game.blueprints.ibuildings()), 3):
-		game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
+	# for _, blueprint in itertools.islice(reversed(game.blueprints.ibuildings()), 3):
+	# 	game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
 
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.plasticrec).with_tooltip())
@@ -104,6 +104,7 @@ def mainloop():
 	game.sprites.new(DodgingProgressBar(pbar_rect, "Funds", target="funds"))
 
 	game.playerturn.scene_start()
+	game.playerturn.next_turn()
 
 	logging.debug("---------- ASSETS ----------")
 	logging.debug(pformat(game.assets.all()))
@@ -162,7 +163,6 @@ if __name__ == "__main__":
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=Color("#ff00ff"))
 
-	game.add_module(CardSpawningModule)
 
 	with open("data/assets.json") as file:
 		jdict = json.load(file)
@@ -171,12 +171,12 @@ if __name__ == "__main__":
 		game.add_module(AssetManager, assets=textures)
 		game.add_module(AudioManagerNumChannels, sounds=sfx, num_channels=30)
 
-	game.add_module(TextureClippingCacheModule)
-
-	game.add_module(PlayerStateTrackingModule)
-	game.add_module(PlayerTurnTakingModue)
-
 	with open("data/blueprints.json") as file:
 		game.add_module(BlueprintsStorageModule, blueprints=json.load(file))
 
+	game.add_module(CardSpawningModule)
+	game.add_module(TextureClippingCacheModule)
+	game.add_module(PlayerStateTrackingModule)
+
+	game.add_module(PlayerTurnTakingModue)
 	game.loop.run(mainloop)

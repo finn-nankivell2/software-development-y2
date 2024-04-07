@@ -50,13 +50,20 @@ class BlueprintsStorageModule(GameModule):
 
 		self.cards = SimpleNamespace(**blueprints["cards"])
 		self.buildings = SimpleNamespace(**blueprints["buildings"])
+		self.scenarios = SimpleNamespace(**blueprints["scenarios"])
 		self._blueprints = blueprints
 
-	def icards(self):
+	def icards(self) -> Iterator[Tuple[str, dict]]:
 		return self.cards.__dict__.items()
 
-	def ibuildings(self):
+	def ibuildings(self) -> Iterator[Tuple[str, dict]]:
 		return self.buildings.__dict__.items()
+
+	def get_card(self, name):
+		return self.cards.__dict__.get(name)
+
+	def get_building(self, name):
+		return self.buildings.__dict__.get(name)
 
 
 class PlayerStateTrackingModule(GameModule):
@@ -82,12 +89,14 @@ class PlayerStateTrackingModule(GameModule):
 
 class CardSpawningModule(GameModule):
 	IDMARKER = "cardspawn"
+	REQUIREMENTS= ["blueprints"]
 
 	def create(self):
 		pass
 
-	def random(self) -> Card:
-		return Card.from_blueprint(random.choice([v for _, v in game.blueprints.icards()]))
+	def random(self, choices: List[str] = []) -> Card:
+		choices = choices if choices else [v for _, v in game.blueprints.icards()]
+		return Card.from_blueprint(random.choice(choices))  # type: ignore
 
 	def get(self, play_id: str) -> Card:
 		bp = game.blueprints.cards.__dict__.get(play_id)
