@@ -101,23 +101,15 @@ class SpritesManager(BaseSpriteManager):
 
 		for k in self._sprites.keys():
 			x = self._sprites.get(k)
-			logging.debug(x)
 			keep = []
 			for sprite in x:
 				if sprite.is_destroyed():
-					print("continue", sprite)
 					continue
 
 				sprite.update_move()
 
 				if not sprite.is_destroyed():
 					keep.append(sprite)
-				else:
-					print("after", sprite)
-
-			for sprite in x:
-				if sprite not in keep:
-					logging.error(sprite)
 
 			self._sprites[k] = [s for s in keep]
 

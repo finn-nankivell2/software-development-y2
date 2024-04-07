@@ -102,4 +102,4 @@
 
 - [ ] - Alternate background angles
 
-- [ ] - Fix massive bug with cards randomly disappearing from the game world
+- [x] - Fix massive bug with cards randomly disappearing from the game world

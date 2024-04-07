@@ -36,7 +36,7 @@ class PlayerTurnTakingModue(GameModule):
 		self.transitioning = False
 
 		for _ in range(3):
-			game.cardspawn.spawn()
+			game.sprites.new(game.cardspawn.random())
 
 		self.turn_count += 1
 
