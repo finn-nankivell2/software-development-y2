@@ -17,6 +17,7 @@ import random
 import math
 import json
 import itertools
+import functools
 from types import SimpleNamespace
 
 from typing import Dict, List, Optional
@@ -37,7 +38,7 @@ from particles import BubbleParticleEmitter
 from cards import Card, Hand, DataCard
 from playspaces import Playspace
 
-from gameutil import ScalingImageSprite, HookSprite
+from gameutil import ScalingImageSprite, HookSprite, ScanlineImageSprite
 from consts import VZERO
 
 from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule
@@ -45,7 +46,7 @@ import fonts
 import palette
 
 from tooltip import Tooltip
-from ui import Button, AbstractButton
+from ui import AbstractButton, NamedButton
 from turntaking import PlayerTurnTakingModue
 
 
@@ -62,18 +63,20 @@ def mainloop():
 	# for _ in range(1000):
 	# 	bg_particles.update_move()
 	# game.sprites.new(bg_particles)
-	game.sprites.new(ScalingImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
+	# game.sprites.new(ScanlineImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
+	# game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
+	game.sprites.new(ScanlineImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
 	for _, blueprint in itertools.islice(reversed(game.blueprints.icards()), 3):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
 	logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
 
-	# for _, blueprint in game.blueprints.ibuildings():
-	# 	game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
+	for _, blueprint in itertools.islice(game.blueprints.ibuildings(), 3):
+		game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
 
-	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
-	game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.plasticrec).with_tooltip())
+	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
+	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.plasticrec).with_tooltip())
 
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
@@ -81,13 +84,13 @@ def mainloop():
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
-	end_turn_rect = FRect(0, 0, 60, 60)
+	end_turn_rect = FRect(0, 0, 140, 100)
 	end_turn_rect.bottomright = game.windowsystem.dimensions - Vector2(20, 20)
 
 	def end_turn_behaviour(*_):
 		game.playerturn.end_turn()
 
-	game.sprites.new(AbstractButton(end_turn_rect, end_turn_behaviour), layer_override="UI")
+	game.sprites.new(NamedButton(end_turn_rect, "End Turn", onclick=end_turn_behaviour), layer_override="UI")
 
 	logging.debug("---------- ASSETS ----------")
 	logging.debug(pformat(game.assets.all()))

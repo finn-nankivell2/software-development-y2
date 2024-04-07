@@ -11,7 +11,9 @@
 		"incinerator": "assets/incinerator2.png",
 		"plasticrec": "assets/plasticrec.png",
 		"composting": "assets/composting.png",
-		"investment": "assets/coins.png"
+		"investment": "assets/coins.png",
+		"endturn": "assets/endturn.png",
+		"citiedlow1": "assets/citiedlow1.png"
 	},
 
 	"fonts": {

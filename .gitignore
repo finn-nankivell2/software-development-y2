@@ -6,3 +6,4 @@
 build/
 **/*.psd
 **/*.log
+**/*.gox

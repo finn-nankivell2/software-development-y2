@@ -20,7 +20,7 @@ class PlayerTurnTakingModue(GameModule):
 
 		for _ in range(3):
 			bprint = random.choice([v for _, v in game.blueprints.icards()])
-			game.sprites.new(Card.from_blueprint(bprint))
+			game.sprites.new(Card.from_blueprint(bprint).with_tooltip())
 
 		self.turn_count += 1
 

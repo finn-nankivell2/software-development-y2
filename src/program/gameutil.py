@@ -119,6 +119,22 @@ class ScalingImageSprite(ImageSprite):
 		self.image = pygame.transform.scale(self.unscaled, game.windowsystem.dimensions)
 
 
+class ScanlineImageSprite(ScalingImageSprite):
+
+	def __init__(self, *args, scans_clr=Color("#000000"), **kwargs):
+		super().__init__(*args, **kwargs)
+		self.image = ScanlineImageSprite._render_scans(self.image.copy(), scans_clr)
+
+	@staticmethod
+	def _render_scans(surface: Surface, clr: Color) -> Surface:
+		w = surface.get_width()
+		for y in range(surface.get_height()):
+			if y % 2 == 0:
+				pygame.draw.line(surface, clr, (0, y), (w - 1, y))
+
+		return surface
+
+
 class HookSprite(Sprite):
 
 	def __init__(self, update_move=None, update_draw=None):

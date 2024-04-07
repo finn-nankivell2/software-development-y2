@@ -14,6 +14,9 @@ from typing import Optional, Dict, List, Tuple, Union, Any, Callable
 import math
 import logging
 import random
+import itertools
+import functools
+
 from dataclasses import dataclass
 from types import SimpleNamespace
 

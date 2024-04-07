@@ -66,12 +66,12 @@
 
 - [x] - Easing functions
 
-- [ ] - Turn taking system
+- [x] - Turn taking system
 
-	- [ ] - End turn button
+	- [x] - End turn button
 
-	- [ ] - Cards fly off to pollution counter
+	- [x] - Cards fly off to pollution counter
 
-	- [ ] - New cards are dealt
+	- [x] - New cards are dealt
 
 	- [x] - Game state system of some kind
