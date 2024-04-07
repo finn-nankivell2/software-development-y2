@@ -4,5 +4,4 @@
 **/.mypy_cache/
 .dmypy.json
 build/
-**/*.psd
 **/*.log
