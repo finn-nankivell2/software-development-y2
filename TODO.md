@@ -22,11 +22,15 @@
 
 - [ ] - Building texture
 
-	- [ ] - Waste Sorting
+	- [ ] - Metal Recycling
+
+	- [ ] - Electronic Recycling
+
+	- [x] - Waste Sorting
 
 ## Game TODO:
 
-- [ ] - Mixed waste
+- [x] - Mixed waste
 
 	- Can be played to incenirator or landfill, but has a chance to cause a negative effect
 
@@ -36,7 +40,7 @@
 
 - [x] - Make a prelude
 
-- [ ] - Card play effects
+- [x] - Card play effects
 
 	- [x] - Become opaque and drift off
 
@@ -103,3 +107,5 @@
 - [ ] - Alternate background angles
 
 - [x] - Fix massive bug with cards randomly disappearing from the game world
+
+- [ ] - Fix ghost tooltips and tooltips not being instantiated with cards
