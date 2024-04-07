@@ -41,7 +41,7 @@ from playspaces import Playspace
 from gameutil import ScalingImageSprite, HookSprite, ScanlineImageSprite
 from consts import VZERO
 
-from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule
+from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule, CardSpawningModule
 import fonts
 import palette
 
@@ -70,9 +70,11 @@ def mainloop():
 	for _, blueprint in itertools.islice(reversed(game.blueprints.icards()), 3):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
 
+	game.sprites.new(Card.from_blueprint(game.blueprints.cards.mixed).with_tooltip())
+
 	logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
 
-	for _, blueprint in itertools.islice(game.blueprints.ibuildings(), 3):
+	for _, blueprint in itertools.islice(reversed(game.blueprints.ibuildings()), 3):
 		game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
 
 	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
@@ -92,11 +94,16 @@ def mainloop():
 
 	game.sprites.new(NamedButton(end_turn_rect, "End Turn", onclick=end_turn_behaviour), layer_override="UI")
 
-	pbar_rect = FRect(0, 0, 300, 43)
+	pbar_rect = FRect(0, 0, 400, 43)
 	pbar_rect.topright = (game.windowsystem.dimensions.x, 100)
-
-	game.spriteglobals.pollution_bar = DodgingProgressBar(pbar_rect, "Pollution", target="pollution")
+	game.spriteglobals.pollution_bar = DodgingProgressBar(pbar_rect, "Pollution", target="pollution").with_tooltip("Pollution increases when cards are left unplayed. If it reaches 100%, you are dead")
 	game.sprites.new(game.spriteglobals.pollution_bar)
+
+	pbar_rect = FRect(0, 0, 200, 43)
+	pbar_rect.topright = (game.windowsystem.dimensions.x, 170)
+	game.sprites.new(DodgingProgressBar(pbar_rect, "Funds", target="funds"))
+
+	game.playerturn.scene_start()
 
 	logging.debug("---------- ASSETS ----------")
 	logging.debug(pformat(game.assets.all()))
@@ -108,6 +115,17 @@ def mainloop():
 	logging.debug(game.playerstate)
 
 	logging.debug("-------------------- GAME START --------------------\n\n")
+
+	game.sprites.new(HookSprite(debug_hook), layer_override="MANAGER")
+
+
+def debug_hook():
+	pass
+	# game.debug.output(f"cards: {len(game.sprites.get('CARD'))}")
+	# game.debug.output(len(game.sprites.HAND.card_map))
+	# game.debug.output([card.data.title for card in game.sprites.get("CARD")])
+	# logging.debug([card.data.title for card in game.sprites.get("CARD")])
+	# logging.debug(game.sprites.get("CARD"))
 
 
 def do_running(self):
@@ -143,6 +161,8 @@ if __name__ == "__main__":
 
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=Color("#ff00ff"))
+
+	game.add_module(CardSpawningModule)
 
 	with open("data/assets.json") as file:
 		jdict = json.load(file)

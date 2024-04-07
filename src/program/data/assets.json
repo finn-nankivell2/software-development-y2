@@ -13,7 +13,8 @@
 		"composting": "assets/composting.png",
 		"investment": "assets/coins.png",
 		"endturn": "assets/endturn.png",
-		"citiedlow1": "assets/citiedlow2.png"
+		"citiedlow1": "assets/citiedlow2.png",
+		"wastesorting": "assets/wastesorting.png"
 	},
 
 	"fonts": {

@@ -1,6 +1,7 @@
 from gamesystem.mods.modulebase import GameModule
 from gameutil import surface_region
 from prelude import *
+from cards import Card
 
 
 @dataclass
@@ -74,3 +75,27 @@ class PlayerStateTrackingModule(GameModule):
 
 	def get_property(self, prop):
 		return self.__dict__[prop]
+
+	def has_property(self, prop):
+		return prop in self.__dict__
+
+
+class CardSpawningModule(GameModule):
+	IDMARKER = "cardspawn"
+
+	def create(self):
+		pass
+
+	def random(self) -> Card:
+		return Card.from_blueprint(random.choice([v for _, v in game.blueprints.icards()]))
+
+	def get(self, play_id: str) -> Card:
+		bp = game.blueprints.cards.__dict__.get(play_id)
+		return Card.from_blueprint(bp)
+
+	def spawn(self, play_id: str, tooltip=True):
+		card = self.get(play_id)
+		if tooltip:
+			card.with_tooltip()
+
+		game.sprites.new(card)

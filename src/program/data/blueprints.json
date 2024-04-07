@@ -84,8 +84,8 @@
 		"mixed": {
 			"texture": "default",
 			"data": {
-				"title": "Mixed",
-				"description": "Rubble waste",
+				"title": "Unknown",
+				"description": "Unknown, mixed waste. Can be playing into landfills and incinerators, but it is risky. It is best to send it to the sorting building so that it can be turned into sorted waste cards",
 				"playable_everywhere": false,
 				"play_id": "mixed"
 			}
@@ -140,7 +140,8 @@
 				],
 				"play_effect": {
 					"for_any": {
-						"pollution": 0.01
+						"pollution": 0.01,
+						"funds": 0.1
 					},
 					"for_card": {
 					}
@@ -167,8 +168,13 @@
 					"chemical",
 					"investment"
 				],
-				"play_effect": {},
-				"space_id": ["landfill"]
+				"play_effect": {
+					"for_any": {
+						"pollution": 0.01,
+						"funds": 0.05
+					}
+				},
+				"space_id": "landfill"
 			}
 		},
 		"plasticrec": {
@@ -178,7 +184,7 @@
 				"description": "Recycles plastic waste played onto it, and produces money from recycled plastic",
 				"accept_ids": ["plastic", "investment"],
 				"play_effect": {},
-				"space_id": ["plasticrec"]
+				"space_id": "plasticrec"
 			}
 		},
 		"composting": {
@@ -188,7 +194,7 @@
 				"description": "Gathers biodegradeable material together to create compost. The resulting compost can be used to create fertilizer or in the strengthening of soils, and can thus be used to generate income",
 				"accept_ids": ["compost", "investment"],
 				"play_effect": {},
-				"space_id": ["composting"]
+				"space_id": "composting"
 			}
 		},
 		"plasticrec": {
@@ -205,7 +211,26 @@
 						}
 					}
 				},
-				"space_id": ["plasticrec"]
+				"space_id": "plasticrec"
+			}
+		},
+		"wastesorting": {
+			"texture": "wastesorting",
+			"data": {
+				"title": "Unknown Waste Sorting",
+				"description": "Turns unknown waste into any two waste cards",
+				"accept_ids": ["mixed"],
+				"play_effect": {
+					"for_any": {},
+					"for_card": {
+						"mixed": {
+							"dealcards": [
+								"random"
+							]
+						}
+					}
+				},
+				"space_id": "plasticrec"
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import fonts
 from playspaces import Playspace
 from tooltip import Tooltip
 import logging
+import copy
 
 
 class DespawningCard(Sprite):
@@ -61,6 +62,7 @@ class DataCard:
 
 	@classmethod
 	def fromjson(cls, j: Dict[str, str]):
+		j = copy.deepcopy(j)
 		return cls(**j)  # type: ignore
 
 
@@ -130,9 +132,9 @@ class Card(Sprite):
 	def update_move(self):
 		hand = game.sprites.HAND
 		rep = hand.get_card_rep(self)
-		if rep.idx > consts.HAND_SIZE:
+		if rep and rep.idx > consts.HAND_SIZE:
 			self.destroy()
-			logging.info(f"Destroyed card with idx: {rep.idx} with data: {self.data}")
+			logging.info(f"Destroyed card because of hand limit with idx: {rep.idx} with data: {self.data}")
 
 		if game.input.mouse_pressed(0) and hand.currently_dragged is None:
 			if self.mouse_over_me() and not self.dragged:
@@ -166,16 +168,24 @@ class Card(Sprite):
 
 		if self.hand_locked:
 			target = hand.get_position_from_card(self)
-			if self.mouse_over_me() and hand.currently_dragged is None:
-				target -= Vector2(0, Card.PICKME_SHIFT_AMT)
+			if target:
+				if self.mouse_over_me() and hand.currently_dragged is None:
+					target -= Vector2(0, Card.PICKME_SHIFT_AMT)
 
-			travel = target - self.rect.bottomleft
-			self.rect.bottomleft += travel / 10
+				travel = target - self.rect.bottomleft
+				self.rect.bottomleft += travel / 10
 
-			if travel.length() < 1:
-				self.rect.bottomleft = target
-			else:
-				self.z = 1
+				if travel.length() < 1:
+					self.rect.bottomleft = target
+				else:
+					self.z = 1
+
+	def __del__(self):
+		logging.warning(f"Garbage collected {self}: {self.data}")
+
+	def destroy(self):
+		super().destroy()
+		logging.debug(f"Destroyed card: {self.data}")
 
 	def destroy_anim(self, **kwargs):
 		self.destroy()
@@ -233,11 +243,11 @@ class Hand(Sprite):
 			if self.get_card_rep(card) is None:
 				self.card_map.append(Hand.CardRep(card, len(self.card_map) - 1))
 
-		for ref in self.card_map:
-			if ref.card.is_destroyed():
-				ref.card.rect.width -= 50
+		# for ref in self.card_map:
+		# 	if ref.card.is_destroyed():
+		# 		ref.card.rect.width -= 50
 
-		self.card_map = [ref for ref in self.card_map if ref.card.rect.width > 1]
+		self.card_map = [ref for ref in self.card_map if not ref.card.is_destroyed()]
 
 		idxs = [ref.idx for ref in self.card_map]
 		self.card_map.sort(key=lambda ref: ref.card.rect.x)
@@ -253,6 +263,7 @@ class Hand(Sprite):
 
 		if self.currently_dragged:
 			self.currently_dragged.z = 2
+
 
 	def get_position_from_card(self, card) -> Optional[Vector2]:
 		total_width = sum(

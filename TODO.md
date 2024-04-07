@@ -2,23 +2,27 @@
 
 ## Pictures TODO:
 
-- [ ] - Plastic
+- [ ] - Cards:
 
-- [x] - Compost
+	- [ ] - Plastic
 
-- [ ] - Aluminium
+	- [x] - Compost
 
-- [ ] - Metal
+	- [ ] - Aluminium
 
-- [ ] - Misc Waste
+	- [ ] - Metal
 
-- [ ] - Chemical
+	- [ ] - Misc Waste
 
-- [x] - Paper
+	- [ ] - Chemical
 
-- [x] - Building texture
+	- [x] - Paper
 
-- [ ] - Background
+
+
+- [ ] - Building texture
+
+	- [ ] - Waste Sorting
 
 ## Game TODO:
 
@@ -75,3 +79,27 @@
 	- [x] - New cards are dealt
 
 	- [x] - Game state system of some kind
+
+- [ ] - Buildings
+
+	- [ ] - Build new buildings
+
+	- [ ] - Building stamina system
+
+	- [ ] - Upgrade system
+
+		- [ ] - Funds UI
+
+		- [ ] - Upgrade list
+
+			- [ ] - Tooltips
+
+- [ ] - Balance stuff
+
+	- [ ] - Difference between landfill and incineration?
+
+	- [ ] - Mixed waste sorting
+
+- [ ] - Alternate background angles
+
+- [ ] - Fix massive bug with cards randomly disappearing from the game world

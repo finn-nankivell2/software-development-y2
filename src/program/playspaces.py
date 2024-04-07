@@ -3,19 +3,33 @@ from gameutil import surface_rounded_corners, shadow_from_rect
 from consts import CARD_RECT
 from tooltip import Tooltip
 from dataclasses import field
+import copy
 
 
 @dataclass(slots=True)
 class Effect:
 	prop: str
-	increment: float
+	value: float
 
 	@classmethod
 	def fromtuple(cls, items):
 		return cls(*items)
 
+	def _special_case(self):
+		match self.prop:
+			case "dealcards":
+				for play_id in self.value:
+					card = game.cardspawn.get(play_id) if play_id != "random" else game.cardspawn.random()
+					game.sprites.new(card)
+
+			case _:
+				raise Exception(f"rule {self.prop} with values {self.value} is invalid")
+
 	def apply(self):
-		game.playerstate.incr_property(self.prop, self.increment)
+		if game.playerstate.has_property(self.prop):
+			game.playerstate.incr_property(self.prop, self.value)
+		else:
+			self._special_case()
 
 
 @dataclass(slots=True)
@@ -82,9 +96,11 @@ class Playspace(Sprite):
 		pygame.draw.rect(self.surface, palette.BLACK, Rect(VZERO, self.rect.size), width=5, border_radius=5)
 
 		self._shadow = shadow_from_rect(self.surface.get_rect(), border_radius=5)
+		self._investments = 0
 
 	@classmethod
 	def from_blueprint(cls, blueprint):
+		blueprint = copy.deepcopy(blueprint)
 		data = DataPlayspace.fromjson(blueprint["data"])
 		texture = game.assets.get(blueprint["texture"])
 
@@ -114,10 +130,16 @@ class Playspace(Sprite):
 		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect))
 		return self
 
-	# TODO
+	def add_investment_token(self):
+		self._investments += 1
+
 	def play_card_onto_space(self, card):
-		for effect in self.data.play_effect.get_applicable(card.data):
-			effect.apply()
+		if card.data.play_id == "investment":
+			# special logic
+			pass
+		else:
+			for effect in self.data.play_effect.get_applicable(card.data):
+				effect.apply()
 
 	def is_dragged(self) -> bool:
 		return self._dragged

@@ -1,6 +1,7 @@
 from prelude import *
 import fonts
 from gameutil import surface_rounded_corners
+from tooltip import Tooltip
 
 Onclick = Optional[Callable]
 
@@ -94,6 +95,10 @@ class ProgressBar(Sprite):
 		self._bar = Surface(self.rect.size, pygame.SRCALPHA)
 		self.rerender()
 
+	def with_tooltip(self, text: str):
+		game.sprites.new(Tooltip(self._text, text, self.rect))
+		return self
+
 	def set_ratio(self, ratio: float, rerender: bool = False):
 		self.ratio = max(0.0, min(ratio, 1.0))
 		if rerender:
@@ -114,8 +119,8 @@ class ProgressBar(Sprite):
 		barbg = FRect(start, ProgressBar.SIDE_PADDING, length, self.rect.height - ProgressBar.SIDE_PADDING*2)
 		barfg = barbg.copy()
 		barfg.width = barbg.width * self.ratio
-		pygame.draw.rect(self._bar, palette.GREY, barbg, border_radius=3)
-		pygame.draw.rect(self._bar, palette.WHITE, barfg, border_radius=3)
+		pygame.draw.rect(self._bar, palette.GREY, barbg)
+		pygame.draw.rect(self._bar, palette.WHITE, barfg)
 
 		self._bar = surface_rounded_corners(self._bar, 5)
 

@@ -1,6 +1,7 @@
 from .baseclass import BaseSpriteManager
 from collections import OrderedDict
 from .modulebase import GameModule
+import logging
 
 
 class SpritesManager(BaseSpriteManager):
@@ -23,6 +24,10 @@ class SpritesManager(BaseSpriteManager):
 		for k in layers:
 			self._sprites[k] = []
 
+		self._queue = {}
+		for k in layers:
+			self._queue[k] = []
+
 		self.game.add_module(SpriteGlobalsManager)
 
 	def new(self, new_sprite, layer_override=None):
@@ -30,9 +35,9 @@ class SpritesManager(BaseSpriteManager):
 		If a string is passed for layer_override the use that value instead of Sprite.LAYER
 		"""
 		if layer_override is not None:
-			self._sprites[layer_override].insert(0, new_sprite)
+			self._queue[layer_override].append(new_sprite)
 		else:
-			self._sprites[new_sprite.LAYER].insert(0, new_sprite)
+			self._queue[new_sprite.LAYER].append(new_sprite)
 
 	def news(self, *new_sprites, layer_override=None):
 		for sprite in new_sprites:
@@ -51,7 +56,7 @@ class SpritesManager(BaseSpriteManager):
 
 	def get(self, layer_name):
 		"""Get a layer of sprites"""
-		return list(filter(lambda s: not s.is_destroyed(), self._sprites[layer_name]))
+		return list(filter(lambda s: not s.is_destroyed(), self._sprites[layer_name])) + self._queue[layer_name]
 
 	def purge(self, *layer_names):
 		"""Delete all sprites from layers
@@ -75,6 +80,11 @@ class SpritesManager(BaseSpriteManager):
 		"""Get the total number of sprites"""
 		return sum(len(x) for x in self._sprites.values())
 
+	def _merge_queue(self):
+		for layer, sprites in self._queue.items():
+			for _ in range(len(sprites)):
+				self._sprites[layer].append(sprites.pop(0))
+
 	def update(self):
 		"""Update all sprites in the SpritesManager
 
@@ -87,18 +97,29 @@ class SpritesManager(BaseSpriteManager):
 		- Updating the SpriteGlobalsManager to ensure the validity of the aliases
 		- Iterating over all layers and sprites and running update_draw for each Sprite
 		"""
+		self._merge_queue()
+
 		for k in self._sprites.keys():
 			x = self._sprites.get(k)
+			logging.debug(x)
 			keep = []
 			for sprite in x:
-				if sprite._destroyed:
+				if sprite.is_destroyed():
+					print("continue", sprite)
 					continue
+
 				sprite.update_move()
 
-				if not sprite._destroyed:
+				if not sprite.is_destroyed():
 					keep.append(sprite)
+				else:
+					print("after", sprite)
 
-			self._sprites[k] = keep
+			for sprite in x:
+				if sprite not in keep:
+					logging.error(sprite)
+
+			self._sprites[k] = [s for s in keep]
 
 		self.game.spriteglobals.update()
 
