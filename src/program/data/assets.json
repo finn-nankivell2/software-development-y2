@@ -7,13 +7,13 @@
 		"compost": "assets/compost.png",
 		"xpbackground": "assets/xp3.png",
 		"buildingbg": "assets/building.png",
-		"landfill": "assets/landfill3.png",
+		"landfill": "assets/landfill.png",
 		"incinerator": "assets/incinerator2.png",
 		"plasticrec": "assets/plasticrec.png",
 		"composting": "assets/composting.png",
 		"investment": "assets/coins.png",
 		"endturn": "assets/endturn.png",
-		"citiedlow1": "assets/citiedlow1.png"
+		"citiedlow1": "assets/citiedlow2.png"
 	},
 
 	"fonts": {

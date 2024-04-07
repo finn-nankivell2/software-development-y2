@@ -15,6 +15,10 @@ class PlayerTurnTakingModue(GameModule):
 		self.turn_count = 1
 		self.transitioning = False
 
+	def scene_start(self):
+		# add sprites here
+		pass
+
 	def next_turn(self):
 		self.transitioning = False
 
@@ -33,8 +37,12 @@ class PlayerTurnTakingModue(GameModule):
 		logging.info(f"Turn {self.turn_count} ended")
 
 		self.transitioning = True
-		for i, card in enumerate(game.sprites.get("CARD")):
-			card.destroy_into_polluting(lifetime=PlayerTurnTakingModue.TURN_TRANSITION_LENGTH - i*5)
 
-		tick = TickCoroutine(PlayerTurnTakingModue.TURN_TRANSITION_LENGTH, self.next_turn)
+		timer = PlayerTurnTakingModue.TURN_TRANSITION_LENGTH if list(game.sprites.get("CARD")) else 10
+		tick = TickCoroutine(timer, self.next_turn)
 		game.sprites.new(tick, layer_override="MANAGER")
+
+		for i, card in enumerate(game.sprites.get("CARD")):
+			lifetime = lifetime=PlayerTurnTakingModue.TURN_TRANSITION_LENGTH - i*5
+			card.destroy_into_polluting(target=Vector2(game.spriteglobals.pollution_bar.rect.midtop), lifetime=lifetime)
+			game.sprites.new(TickCoroutine(lifetime, lambda: game.playerstate.incr_property("pollution", 0.1)), layer_override="MANAGER")

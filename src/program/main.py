@@ -46,7 +46,7 @@ import fonts
 import palette
 
 from tooltip import Tooltip
-from ui import AbstractButton, NamedButton
+from ui import AbstractButton, NamedButton, ProgressBar, TargettingProgressBar, DodgingProgressBar
 from turntaking import PlayerTurnTakingModue
 
 
@@ -64,8 +64,8 @@ def mainloop():
 	# 	bg_particles.update_move()
 	# game.sprites.new(bg_particles)
 	# game.sprites.new(ScanlineImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
-	# game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
-	game.sprites.new(ScanlineImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
+	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
+	# game.sprites.new(ScanlineImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
 	for _, blueprint in itertools.islice(reversed(game.blueprints.icards()), 3):
 		game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
@@ -91,6 +91,12 @@ def mainloop():
 		game.playerturn.end_turn()
 
 	game.sprites.new(NamedButton(end_turn_rect, "End Turn", onclick=end_turn_behaviour), layer_override="UI")
+
+	pbar_rect = FRect(0, 0, 300, 43)
+	pbar_rect.topright = (game.windowsystem.dimensions.x, 100)
+
+	game.spriteglobals.pollution_bar = DodgingProgressBar(pbar_rect, "Pollution", target="pollution")
+	game.sprites.new(game.spriteglobals.pollution_bar)
 
 	logging.debug("---------- ASSETS ----------")
 	logging.debug(pformat(game.assets.all()))
@@ -136,7 +142,7 @@ if __name__ == "__main__":
 	# #54A200
 
 	game.add_module(InputManagerScalingMouse)
-	game.add_module(DebugOverlayManager, fontcolour=(255, 255, 255))
+	game.add_module(DebugOverlayManager, fontcolour=Color("#ff00ff"))
 
 	with open("data/assets.json") as file:
 		jdict = json.load(file)

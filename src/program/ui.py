@@ -1,5 +1,6 @@
 from prelude import *
 import fonts
+from gameutil import surface_rounded_corners
 
 Onclick = Optional[Callable]
 
@@ -20,6 +21,9 @@ class AbstractButton(Sprite):
 
 	def hovered(self) -> bool:
 		return game.input.mouse_within(self.rect)
+
+	def mouse_down_over(self, mbtn=0) -> bool:
+		return self.hovered() and game.input.mouse_down(mbtn)
 
 	def clicked(self, mbtn=0) -> bool:
 		return self.hovered() and game.input.mouse_pressed(mbtn)
@@ -49,21 +53,98 @@ class SurfaceButton(AbstractButton):
 
 class NamedButton(AbstractButton):
 	LAYER = "UI"
+	CLICK_OFFSET = Vector2(-10, -10)
 
 	def __init__(self, rect: FRect, text: str, colour: Color = palette.BLACK, onclick: Onclick = None):
 		super().__init__(rect, onclick)
 		self.c = colour
 		self._text = text
-		self._font = fonts.families.roboto.size(self.rect.height / 4)
+		self._font = fonts.families.roboto.size(self.rect.height // 4)
 		self._rendered = self._font.render(self._text, True, palette.TEXT)
 
 	def update_draw(self):
+		cached_rect = self.rect.copy()
+		hovered = self.hovered()
+		if self.mouse_down_over():
+			self.rect.inflate_ip(-10, -10)
+			hovered = False
+
 		pygame.draw.rect(game.windowsystem.screen, self.c, self.rect, border_radius=5)
 		pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-10, -10), width=2, border_radius=5)
-		game.windowsystem.screen.blit(self._rendered, self.rect.center - Vector2(self._rendered.get_size())/2)
+
+		if hovered:
+			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect, width=2, border_radius=5)
+		game.windowsystem.screen.blit(self._rendered, self.rect.center - Vector2(self._rendered.get_size()) / 2)
+
+		self.rect = cached_rect
+
+
+class ProgressBar(Sprite):
+	LAYER = "UI"
+	SIDE_PADDING = 10
+
+	def __init__(self, rect: FRect, text: str, colour: Color = palette.BLACK):
+		self.rect = rect
+		self._text = text
+		self.c = colour
+		self.ratio = 0.0
+		self._font = fonts.families.roboto.size(int(self.rect.height // 2))
+		self._label = self._font.render(self._text, True, palette.TEXT)
+
+		self._bar = Surface(self.rect.size, pygame.SRCALPHA)
+		self.rerender()
+
+	def set_ratio(self, ratio: float, rerender: bool = False):
+		self.ratio = max(0.0, min(ratio, 1.0))
+		if rerender:
+			self.rerender()
+		return self
+
+	def rerender(self):
+		self._bar.fill(self.c)
+		self._bar.blit( self._label, (ProgressBar.SIDE_PADDING, self._bar.get_height()/2 - self._label.get_height() / 2))
+
+		bw = self._bar.get_width()
+
+		rem = bw - (self._label.get_width() + ProgressBar.SIDE_PADDING*2)
+		start = bw - rem
+		end = bw - ProgressBar.SIDE_PADDING
+		length = end - start
+
+		barbg = FRect(start, ProgressBar.SIDE_PADDING, length, self.rect.height - ProgressBar.SIDE_PADDING*2)
+		barfg = barbg.copy()
+		barfg.width = barbg.width * self.ratio
+		pygame.draw.rect(self._bar, palette.GREY, barbg, border_radius=3)
+		pygame.draw.rect(self._bar, palette.WHITE, barfg, border_radius=3)
+
+		self._bar = surface_rounded_corners(self._bar, 5)
+
+	def update_draw(self):
+		game.windowsystem.screen.blit(self._bar, self.rect.topleft)
 
 
 
-# class ProgressBar(Sprite):
+class TargettingProgressBar(ProgressBar):
+	def __init__(self, *args, target=None, **kwargs):
+		super().__init__(*args, **kwargs)
+		self._target = target
 
-# 	def __init__(self, rect: FRect,
+	def do_targeting(self):
+		value = game.playerstate.get_property(self._target)
+		if self.ratio != value:
+			self.set_ratio(value)
+			self.rerender()
+
+	def update_move(self):
+		if self._target is not None:
+			self.do_targeting()
+
+
+class DodgingProgressBar(TargettingProgressBar):
+	def update_draw(self):
+		if any(space.rect.colliderect(self.rect) for space in game.sprites.get("PLAYSPACE")):
+			self._bar.set_alpha(100)
+		else:
+			self._bar.set_alpha(255)
+
+		super().update_draw()

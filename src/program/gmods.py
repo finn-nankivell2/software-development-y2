@@ -71,3 +71,6 @@ class PlayerStateTrackingModule(GameModule):
 	def incr_property(self, prop, num):
 		self.__dict__[prop] += num
 		logging.debug(f"PlayerStateTrackingModule: {prop} incremented by {num}. Status: {self}")
+
+	def get_property(self, prop):
+		return self.__dict__[prop]

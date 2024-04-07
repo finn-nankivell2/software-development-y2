@@ -25,14 +25,7 @@ class DespawningCard(Sprite):
 		return cls(card.rect.topleft, card._surf.copy(), **kwargs)
 
 	def update_move(self):
-		self.pos += self.vel
-
-		scale_down = Vector2(self._decay, self._decay)
-
-		new_size = Vector2(self.texture.get_size()) - scale_down/2
-		if new_size.x > 0 and new_size.y > 0:
-			self.texture = pygame.transform.scale(self.texture, new_size)
-			self.pos += scale_down/4
+		self.texture = pygame.transform.scale_by(self.texture, (0.98, 0.98))
 
 		self._opacity -= self._decay
 
@@ -53,6 +46,9 @@ class PollutingCard(DespawningCard):
 	@classmethod
 	def from_card(cls, card, target, **kwargs):
 		return cls(card.rect.topleft, target, card._surf, **kwargs)
+
+	def update_draw(self):
+		game.windowsystem.screen.blit(self.texture, self._easing(255 - self._opacity))
 
 
 @dataclass(slots=True)

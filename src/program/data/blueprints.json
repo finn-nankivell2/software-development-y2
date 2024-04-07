@@ -138,7 +138,13 @@
 					"chemical",
 					"investment"
 				],
-				"play_effect": {},
+				"play_effect": {
+					"for_any": {
+						"pollution": 0.01
+					},
+					"for_card": {
+					}
+				},
 				"space_id": ["incinerator"]
 			}
 		},

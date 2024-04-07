@@ -25,7 +25,7 @@ class PlayEffectInfo:
 
 	@classmethod
 	def fromjson(cls, j):
-		for_any = list(map(Effect.fromtuple, j.get("for_any", {})))
+		for_any = list(map(Effect.fromtuple, j.get("for_any", {}).items()))
 		for_card = {
 			play_id: list(map(Effect.fromtuple, effects.items())) for play_id, effects in j.get("for_card", {}).items()
 		}
@@ -33,7 +33,7 @@ class PlayEffectInfo:
 		return cls(for_any, for_card)
 
 	def get_applicable(self, card) -> List[Effect]:
-		effects = self.for_any
+		effects = self.for_any.copy()
 		for k, v in self.for_card.items():
 			if k == card.play_id:
 				effects.extend(v)
