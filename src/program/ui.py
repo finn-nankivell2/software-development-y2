@@ -106,6 +106,7 @@ class ProgressBar(Sprite):
 		return self
 
 	def rerender(self):
+		self._bar.set_alpha(255)
 		self._bar.fill(self.c)
 		self._bar.blit( self._label, (ProgressBar.SIDE_PADDING, self._bar.get_height()/2 - self._label.get_height() / 2))
 

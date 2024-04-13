@@ -96,7 +96,7 @@ class CardSpawningModule(GameModule):
 
 	def random(self, choices: List[str] = []) -> Card:
 		choices = choices if choices else [v for _, v in game.blueprints.icards()]
-		return Card.from_blueprint(random.choice(choices))  # type: ignore
+		return Card.from_blueprint(random.choice(choices)).with_tooltip()  # type: ignore
 
 	def get(self, play_id: str) -> Card:
 		bp = game.blueprints.cards.__dict__.get(play_id)

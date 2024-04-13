@@ -9,7 +9,7 @@ from pygame import Vector2, Rect, FRect, Color, Surface
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem import game
 
-from typing import Optional, Dict, List, Tuple, Union, Any, Callable, Self, Iterator
+from typing import Optional, Dict, List, Tuple, Union, Any, Callable, Iterator
 
 import math
 import logging

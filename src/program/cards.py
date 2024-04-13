@@ -90,7 +90,7 @@ class Card(Sprite):
 		return cls(consts.CARD_RECT, texture, data)
 
 	def with_tooltip(self):
-		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect))
+		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect, parent=self))
 		return self
 
 	def _setup_surfaces(self, texture: Surface):
@@ -179,9 +179,6 @@ class Card(Sprite):
 					self.rect.bottomleft = target
 				else:
 					self.z = 1
-
-	def __del__(self):
-		logging.warning(f"Garbage collected {self}: {self.data}")
 
 	def destroy(self):
 		super().destroy()

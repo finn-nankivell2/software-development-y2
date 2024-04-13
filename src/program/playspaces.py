@@ -62,6 +62,7 @@ class DataPlayspace:
 	accept_ids: List[str]  # What card play_id's are accepted by this playspace
 	play_effect: PlayEffectInfo  # Which game values are changed when the card is played
 	space_id: str  # An identifying string for the building type TODO: Make this an enum
+	stamina: int = 3
 	# TODO: Add an image property
 
 	@classmethod
@@ -95,8 +96,14 @@ class Playspace(Sprite):
 		self.surface = surface_rounded_corners(self.surface, 5)
 		pygame.draw.rect(self.surface, palette.BLACK, Rect(VZERO, self.rect.size), width=5, border_radius=5)
 
+		self._overlay_surface = Surface(rect.size, pygame.SRCALPHA)
+		self._overlay_surface.fill(palette.BLACK)
+		self._overlay_surface = surface_rounded_corners(self._overlay_surface, 5)
+		self._overlay_surface.set_alpha(127)
+
 		self._shadow = shadow_from_rect(self.surface.get_rect(), border_radius=5)
 		self._investments = 0
+		self._stamina = self.data.stamina
 
 	@classmethod
 	def from_blueprint(cls, blueprint):
@@ -127,7 +134,7 @@ class Playspace(Sprite):
 		return rect
 
 	def with_tooltip(self):
-		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect))
+		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect, parent=self))
 		return self
 
 	def add_investment_token(self):
@@ -138,8 +145,12 @@ class Playspace(Sprite):
 			# special logic
 			pass
 		else:
+			self._stamina -= 1
 			for effect in self.data.play_effect.get_applicable(card.data):
 				effect.apply()
+
+	def refill_stamina(self):
+		self._stamina = self.data.stamina
 
 	def is_dragged(self) -> bool:
 		return self._dragged
@@ -147,11 +158,22 @@ class Playspace(Sprite):
 	def _permission_to_drag(self) -> bool:
 		return not any(space.is_dragged() for space in game.sprites.get("PLAYSPACE") if space is not self)
 
+	def card_validation(self, card) -> bool:
+		return card.data.play_id in self.data.accept_ids and self._stamina > 0
+
+	def card_hovering(self, card) -> bool:
+		return self.rect.colliderect(card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
+
+	def card_hovering_exclude(self, card) -> bool:
+		for space in game.sprites.get("PLAYSPACE"):
+			if space.card_hovering(card):
+				return space is self
+		return False
+
 	# TODO: Fix this for when camera stuff is happening
 	def collidecard(self, card) -> bool:
-		colliding = self.rect.colliderect(card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
-		playable = card.data.play_id in self.data.accept_ids
-
+		colliding = self.card_hovering(card)
+		playable = self.card_validation(card)
 		return colliding and playable and not self._dragged
 
 	def _invalid_placement(self) -> bool:
@@ -213,3 +235,28 @@ class Playspace(Sprite):
 		bpos = self.rect.topleft - Vector2(mo, mo)
 
 		game.windowsystem.screen.blit(self.surface, bpos)
+
+		if any(self.card_hovering_exclude(card) for card in game.sprites.get("CARD")):
+			game.windowsystem.screen.blit(self._overlay_surface, self.rect.topleft)
+
+			ov_rect = self.rect.copy()
+			ov_rect.inflate_ip(-30, -90)
+
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, Vector2(ov_rect.topleft) + Vector2(30, 0), 5)
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, Vector2(ov_rect.topleft) + Vector2(0, 30), 5)
+
+			bot_adj = Vector2(ov_rect.bottomleft) + Vector2(0, 30)
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, bot_adj, bot_adj + Vector2(30, 0), 5)
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, bot_adj, bot_adj + Vector2(0, -30), 5)
+
+			right_adj = Vector2(ov_rect.bottomright) + Vector2(0, 30)
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, right_adj, right_adj + Vector2(-30, 0), 5)
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, right_adj, right_adj + Vector2(0, -30), 5)
+
+		STAM_RAD = 12
+		stam_pos = self.rect.topright - Vector2(mo, mo)
+		stam_pos += Vector2(-STAM_RAD * 1.8, 40 + STAM_RAD)
+
+		for _ in range(self._stamina):
+			pygame.draw.circle(game.windowsystem.screen, palette.WHITE, stam_pos, STAM_RAD, int(STAM_RAD*0.7))
+			stam_pos.x -= STAM_RAD * 3

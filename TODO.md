@@ -19,7 +19,6 @@
 	- [x] - Paper
 
 
-
 - [ ] - Building texture
 
 	- [ ] - Metal Recycling
@@ -108,4 +107,6 @@
 
 - [x] - Fix massive bug with cards randomly disappearing from the game world
 
-- [ ] - Fix ghost tooltips and tooltips not being instantiated with cards
+- [x] - Fix ghost tooltips and tooltips not being instantiated with cards
+
+- [ ] - Refactor layer system to use enum

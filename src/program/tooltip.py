@@ -15,14 +15,14 @@ class Tooltip(Sprite):
 		text: str,
 		target: FRect,
 		hover_time: int = consts.TOOLTIP_HOVER_TIME,
-		# titlefont: Font = fonts.NONE_FONT,
-		# bodyfont: Font = fonts.NONE_FONT
 		titlefont: Font = fonts.families.roboto.size(24),
-		bodyfont: Font = fonts.families.roboto.size(16)
+		bodyfont: Font = fonts.families.roboto.size(16),
+		parent: Optional[Any] = None
 	):
 		self.title = title
 		self.text = text
 		self.target = target
+		self.parent = parent
 
 		titlerender = titlefont.render(title, True, palette.TEXT, None, Tooltip.TOOLTIP_WIDTH)
 		textrender = bodyfont.render(text, True, palette.TEXT, None, Tooltip.TOOLTIP_WIDTH)
@@ -69,6 +69,7 @@ class Tooltip(Sprite):
 	def update_move(self):
 		self._update_hover()
 
+
 		if self._should_show():
 			mp = game.input.mouse_pos()
 			self.rect.topleft = mp
@@ -81,6 +82,10 @@ class Tooltip(Sprite):
 
 			if self._out_of_bounds():
 				self.rect.bottomright = mp
+
+		if self.parent and self.parent.is_destroyed():
+			self.destroy()
+
 
 	def update_draw(self):
 		if self._should_show():

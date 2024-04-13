@@ -146,7 +146,8 @@
 					"for_card": {
 					}
 				},
-				"space_id": ["incinerator"]
+				"space_id": ["incinerator"],
+				"stamina": 3
 			}
 		},
 		"landfill": {

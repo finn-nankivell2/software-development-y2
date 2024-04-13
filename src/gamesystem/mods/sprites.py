@@ -114,6 +114,7 @@ class SpritesManager(BaseSpriteManager):
 			self._sprites[k] = [s for s in keep]
 
 		self.game.spriteglobals.update()
+		self._merge_queue()
 
 		for x in self._sprites.values():
 			for sprite in sorted(x, key=lambda spr: spr.z):

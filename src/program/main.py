@@ -8,7 +8,10 @@ import time
 from pprint import pprint, pformat
 import logging
 
-logging.basicConfig(filename="logs/game.log", level=logging.DEBUG)
+if os.path.exists("logs") and os.path.isdir("logs"):
+	logging.basicConfig(filename="logs/game.log", level=logging.DEBUG)
+else:
+	logging.basicConfig(level=logging.ERROR)
 
 pygame.init()
 
@@ -97,11 +100,11 @@ def mainloop():
 	pbar_rect = FRect(0, 0, 400, 43)
 	pbar_rect.topright = (game.windowsystem.dimensions.x, 100)
 	game.spriteglobals.pollution_bar = DodgingProgressBar(pbar_rect, "Pollution", target="pollution").with_tooltip("Pollution increases when cards are left unplayed. If it reaches 100%, you are dead")
-	game.sprites.new(game.spriteglobals.pollution_bar)
+	game.sprites.new(game.spriteglobals.pollution_bar, layer_override="FOREGROUND")
 
 	pbar_rect = FRect(0, 0, 200, 43)
 	pbar_rect.topright = (game.windowsystem.dimensions.x, 170)
-	game.sprites.new(DodgingProgressBar(pbar_rect, "Funds", target="funds"))
+	game.sprites.new(DodgingProgressBar(pbar_rect, "Funds", target="funds"), layer_override="FOREGROUND")
 
 	game.playerturn.scene_start()
 	game.playerturn.next_turn()

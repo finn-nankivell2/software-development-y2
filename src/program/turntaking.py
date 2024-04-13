@@ -56,12 +56,14 @@ class PlayerTurnTakingModue(GameModule):
 		for building in self.scenario.starting_buildings:
 			game.sprites.new(Playspace.from_blueprint(game.blueprints.get_building(building)).with_tooltip())
 
-
 	def next_turn(self):
 		self.transitioning = False
 
 		for _ in range(self.scenario.cards_per_turn):
 			game.sprites.new(game.cardspawn.random())
+
+		for space in game.sprites.get("PLAYSPACE"):
+			space.refill_stamina()
 
 		self.turn_count += 1
 
@@ -79,7 +81,13 @@ class PlayerTurnTakingModue(GameModule):
 		tick = TickCoroutine(timer, self.next_turn)
 		game.sprites.new(tick, layer_override="MANAGER")
 
-		for i, card in enumerate(game.sprites.get("CARD")):
-			lifetime = lifetime=PlayerTurnTakingModue.TURN_TRANSITION_LENGTH - i*5
-			card.destroy_into_polluting(target=Vector2(game.spriteglobals.pollution_bar.rect.midtop), lifetime=lifetime)
-			game.sprites.new(TickCoroutine(lifetime, lambda: game.playerstate.incr_property("pollution", consts.POLLUTION_UNPLAYED_INCR)), layer_override="MANAGER")
+		cards = game.sprites.get("CARD")
+		random.shuffle(cards)
+		for i, card in enumerate(cards):
+			lifetime = PlayerTurnTakingModue.TURN_TRANSITION_LENGTH - i*5
+
+			if card.data.play_id != "investment":
+				card.destroy_into_polluting(target=Vector2(game.spriteglobals.pollution_bar.rect.midtop), lifetime=lifetime)
+				game.sprites.new(TickCoroutine(lifetime, lambda: game.playerstate.incr_property("pollution", consts.POLLUTION_UNPLAYED_INCR)), layer_override="MANAGER")
+			else:
+				card.destroy_anim()
