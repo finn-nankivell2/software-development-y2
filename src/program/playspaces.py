@@ -172,7 +172,7 @@ class Playspace(Sprite):
 
 	# TODO: Fix this for when camera stuff is happening
 	def collidecard(self, card) -> bool:
-		colliding = self.card_hovering(card)
+		colliding = self.card_hovering_exclude(card)
 		playable = self.card_validation(card)
 		return colliding and playable and not self._dragged
 
@@ -257,6 +257,10 @@ class Playspace(Sprite):
 		stam_pos = self.rect.topright - Vector2(mo, mo)
 		stam_pos += Vector2(-STAM_RAD * 1.8, 40 + STAM_RAD)
 
-		for _ in range(self._stamina):
-			pygame.draw.circle(game.windowsystem.screen, palette.WHITE, stam_pos, STAM_RAD, int(STAM_RAD*0.7))
+		for i in range(self.data.stamina):
+			if i+1 > self._stamina:
+				pygame.draw.circle(game.windowsystem.screen, palette.GREY, stam_pos, STAM_RAD, 2)
+			else:
+				pygame.draw.circle(game.windowsystem.screen, palette.WHITE, stam_pos, STAM_RAD, int(STAM_RAD*0.7))
+
 			stam_pos.x -= STAM_RAD * 3
