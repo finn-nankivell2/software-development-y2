@@ -87,7 +87,7 @@
 
 	- [ ] - Build new buildings
 
-	- [ ] - Building stamina system
+	- [x] - Building stamina system
 
 	- [ ] - Upgrade system
 
@@ -101,7 +101,7 @@
 
 	- [ ] - Difference between landfill and incineration?
 
-	- [ ] - Mixed waste sorting
+	- [x] - Mixed waste sorting
 
 - [ ] - Alternate background angles
 
