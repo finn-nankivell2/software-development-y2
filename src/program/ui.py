@@ -30,7 +30,7 @@ class AbstractButton(Sprite):
 		return self.hovered() and game.input.mouse_pressed(mbtn)
 
 	def update_move(self):
-		if self.clicked():
+		if self.clicked() and self.onclick:
 			self.onclick()
 
 	def update_draw(self):
@@ -154,3 +154,40 @@ class DodgingProgressBar(TargettingProgressBar):
 			self._bar.set_alpha(255)
 
 		super().update_draw()
+
+
+
+class Dropdown(AbstractButton):
+	def __init__(self, rect: FRect, elements: Sprite):
+		super().__init__(rect, self.toggle)
+
+		self.elements = elements
+		self._dropped = False
+
+	def toggle(self):
+		self._dropped = not self._dropped
+
+	def set_pos(self, pos: Vector2):
+		self.rect.topleft = pos
+		return self
+
+	def update_move(self):
+		super().update_move()
+
+		if self._dropped and self.elements:
+			self.elements.update_move()
+
+	def update_draw(self):
+		pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
+		pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-5, -5), width=2, border_radius=5)
+
+		tr = vec(self.rect.size) * 0.4
+		if self._dropped:
+			triangle = [self.rect.midbottom + vec(tr.x/2, -tr.y), self.rect.midtop + vec(tr.x/2, tr.y), self.rect.midleft + vec(tr.x, 0)]
+		else:
+			triangle = [self.rect.midbottom - vec(tr.x/2, tr.y), self.rect.midtop - vec(tr.x/2, -tr.y), self.rect.midright - vec(tr.x, 0)]
+
+		pygame.draw.polygon(game.windowsystem.screen, palette.WHITE, triangle)
+
+		if self._dropped and self.elements:
+			self.elements.update_draw()

@@ -4,6 +4,7 @@ from consts import CARD_RECT
 from tooltip import Tooltip
 from dataclasses import field
 import copy
+from ui import Dropdown
 
 
 @dataclass(slots=True)
@@ -54,7 +55,6 @@ class PlayEffectInfo:
 
 		return effects
 
-
 @dataclass(slots=True)
 class DataPlayspace:
 	title: str  # The title of the building
@@ -75,6 +75,7 @@ class Playspace(Sprite):
 	LAYER = "PLAYSPACE"
 	DRAGABLE_BAR_HEIGHT = 35
 	MAX_DRAG_FRAMES = 10
+	DROPDOWN_BUTTON_DIMS = Vector2(30, 50)
 
 	def __init__(self, rect, surface, data):
 		self.rect = rect
@@ -104,6 +105,9 @@ class Playspace(Sprite):
 		self._shadow = shadow_from_rect(self.surface.get_rect(), border_radius=5)
 		self._investments = 0
 		self._stamina = self.data.stamina
+
+		dropdown_rect = FRect(VZERO, Playspace.DROPDOWN_BUTTON_DIMS)
+		self._upgrade_button = Dropdown(dropdown_rect, None).set_pos(self.rect.topright + vec(-dropdown_rect.width*1.2, self.titlebar.height+40))
 
 	@classmethod
 	def from_blueprint(cls, blueprint):
@@ -222,6 +226,8 @@ class Playspace(Sprite):
 			self._dragged_frames = Playspace.MAX_DRAG_FRAMES
 
 		self.titlebar.topleft = self.rect.topleft
+		self._upgrade_button.rect.topright = self.rect.topright + vec(-6, self.titlebar.height + 40)
+		self._upgrade_button.update_move()
 
 		# Should be above other playspaces if it is being dragged or was just dragged
 		self.z = int(self._dragged or self._dragged_frames)
@@ -235,6 +241,7 @@ class Playspace(Sprite):
 
 		game.windowsystem.screen.blit(self.surface, bpos)
 
+		hover_ofs = Vector2(mo, mo)
 		if any(self.card_hovering_exclude(card) for card in game.sprites.get("CARD")):
 			game.windowsystem.screen.blit(self._overlay_surface, self.rect.topleft)
 
@@ -253,7 +260,7 @@ class Playspace(Sprite):
 			pygame.draw.line(game.windowsystem.screen, palette.WHITE, right_adj, right_adj + Vector2(0, -30), 5)
 
 		STAM_RAD = 12
-		stam_pos = self.rect.topright - Vector2(mo, mo)
+		stam_pos = self.rect.topright - hover_ofs
 		stam_pos += Vector2(-STAM_RAD * 1.8, 40 + STAM_RAD)
 
 		for i in range(self.data.stamina):
@@ -264,10 +271,12 @@ class Playspace(Sprite):
 
 			stam_pos.x -= STAM_RAD * 3
 
+		self._upgrade_button.rect.topleft -= hover_ofs
+		self._upgrade_button.update_draw()
+
 		FUNDS_RAD = 20
-		funds_pos = self.rect.topright - Vector2(mo, mo)
-		funds_pos += Vector2(-FUNDS_RAD * 1.6, STAM_RAD*3 + 40)
+		funds_pos = self._upgrade_button.rect.midleft - vec(FUNDS_RAD*1.5, FUNDS_RAD/2)
 
 		for i in range(self._investments):
-			pygame.draw.rect(game.windowsystem.screen, palette.WHITE, FRect(funds_pos, (FUNDS_RAD, FUNDS_RAD)), STAM_RAD)
+			pygame.draw.rect(game.windowsystem.screen, palette.WHITE, FRect(funds_pos, (FUNDS_RAD, FUNDS_RAD)), STAM_RAD, border_radius=3)
 			funds_pos.x -= FUNDS_RAD * 1.8
