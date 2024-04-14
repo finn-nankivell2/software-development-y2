@@ -243,10 +243,6 @@ class Hand(Sprite):
 			if self.get_card_rep(card) is None:
 				self.card_map.append(Hand.CardRep(card, len(self.card_map) - 1))
 
-		# for ref in self.card_map:
-		# 	if ref.card.is_destroyed():
-		# 		ref.card.rect.width -= 50
-
 		self.card_map = [ref for ref in self.card_map if not ref.card.is_destroyed()]
 
 		idxs = [ref.idx for ref in self.card_map]

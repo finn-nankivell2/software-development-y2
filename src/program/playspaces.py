@@ -4,7 +4,7 @@ from consts import CARD_RECT
 from tooltip import Tooltip
 from dataclasses import field
 import copy
-from ui import Dropdown
+from ui import Dropdown, UpgradeMenu
 
 
 @dataclass(slots=True)
@@ -107,7 +107,9 @@ class Playspace(Sprite):
 		self._stamina = self.data.stamina
 
 		dropdown_rect = FRect(VZERO, Playspace.DROPDOWN_BUTTON_DIMS)
-		self._upgrade_button = Dropdown(dropdown_rect, None).set_pos(self.rect.topright + vec(-dropdown_rect.width*1.2, self.titlebar.height+40))
+		dropdown_pos = self.rect.topright + vec(-dropdown_rect.width*1.2, self.titlebar.height+40)
+		self._upgrade_button = Dropdown(dropdown_rect, UpgradeMenu.from_list(["test", "hello", "upgrade", "downgrade", "delete"]).set_pos(dropdown_pos + vec(dropdown_rect.width, 0)))
+		self._upgrade_button.rect.topleft = dropdown_pos
 
 	@classmethod
 	def from_blueprint(cls, blueprint):
@@ -226,8 +228,8 @@ class Playspace(Sprite):
 			self._dragged_frames = Playspace.MAX_DRAG_FRAMES
 
 		self.titlebar.topleft = self.rect.topleft
-		self._upgrade_button.rect.topright = self.rect.topright + vec(-6, self.titlebar.height + 40)
 		self._upgrade_button.update_move()
+		self._upgrade_button.rect.topright = self.rect.topright + vec(-6, self.titlebar.height + 40)
 
 		# Should be above other playspaces if it is being dragged or was just dragged
 		self.z = int(self._dragged or self._dragged_frames)

@@ -29,6 +29,9 @@ class AbstractButton(Sprite):
 	def clicked(self, mbtn=0) -> bool:
 		return self.hovered() and game.input.mouse_pressed(mbtn)
 
+	def unclicked(self, mbtn=0) -> bool:
+		return not self.hovered() and game.input.mouse_pressed(mbtn)
+
 	def update_move(self):
 		if self.clicked() and self.onclick:
 			self.onclick()
@@ -60,7 +63,7 @@ class NamedButton(AbstractButton):
 		super().__init__(rect, onclick)
 		self.c = colour
 		self._text = text
-		self._font = fonts.families.roboto.size(self.rect.height // 4)
+		self._font = fonts.families.roboto.size(int(self.rect.height / 4))
 		self._rendered = self._font.render(self._text, True, palette.TEXT)
 
 	def update_draw(self):
@@ -158,6 +161,8 @@ class DodgingProgressBar(TargettingProgressBar):
 
 
 class Dropdown(AbstractButton):
+	LAYER = "FOREGROUND"
+
 	def __init__(self, rect: FRect, elements: Sprite):
 		super().__init__(rect, self.toggle)
 
@@ -171,15 +176,28 @@ class Dropdown(AbstractButton):
 		self.rect.topleft = pos
 		return self
 
+	def unclicked(self, mbtn=0) -> bool:
+		return not self.hovered() and (not self.elements.hovered() if self.elements else True) and game.input.mouse_pressed(mbtn)
+
 	def update_move(self):
 		super().update_move()
 
 		if self._dropped and self.elements:
 			self.elements.update_move()
 
+		if self.elements:
+			self.elements.set_pos(self.rect.topright + vec(10, 0))
+
+		if self.unclicked():
+			self._dropped = False
+
 	def update_draw(self):
 		pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
-		pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-5, -5), width=2, border_radius=5)
+
+		if self.hovered():
+			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect, width=2, border_radius=5)
+		else:
+			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-5, -5), width=2, border_radius=5)
 
 		tr = vec(self.rect.size) * 0.4
 		if self._dropped:
@@ -191,3 +209,55 @@ class Dropdown(AbstractButton):
 
 		if self._dropped and self.elements:
 			self.elements.update_draw()
+
+
+class UpgradeMenu(Sprite):
+	LAYER = "UI"
+	PADDING = Vector2(10, 10)
+	DEFAULT_BUTTON_SIZE = Vector2(140, 60)
+
+	def __init__(self, rect: FRect, buttons: List[Sprite]):
+		self.rect = rect
+		self.buttons = buttons
+
+		rectw, recth = UpgradeMenu.PADDING
+		rectw += max(b.rect.width for b in buttons)
+
+		for button in self.buttons:
+			recth += button.rect.height
+			button.rect.topleft = Vector2(UpgradeMenu.PADDING.x, recth)
+
+		rectw += UpgradeMenu.PADDING.x
+		recth += UpgradeMenu.PADDING.y
+
+		self.rect.width = rectw
+		self.rect.height = recth
+
+	def set_pos(self, pos: Vector2):
+		self.rect.topleft = pos
+
+		anchor = self.rect.topleft + UpgradeMenu.PADDING
+		for button in self.buttons:
+			button.rect.topleft = anchor
+			anchor.y += button.rect.height
+
+		return self
+
+	@classmethod
+	def from_list(cls, names: List[str]):
+		buttons = [NamedButton(FRect(VZERO, cls.DEFAULT_BUTTON_SIZE), name) for name in names]
+		rect = FRect(0, 0, 0, 0)
+		return cls(rect, buttons)
+
+	def hovered(self) -> bool:
+		return game.input.mouse_within(self.rect)
+
+	def update_move(self):
+		for button in self.buttons:
+			button.update_move()
+
+	def update_draw(self):
+		pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
+
+		for button in self.buttons:
+			button.update_draw()

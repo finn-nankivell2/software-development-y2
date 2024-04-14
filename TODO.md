@@ -94,7 +94,7 @@
 
 		- [x] - Funds UI
 
-		- [ ] - Upgrade list
+		- [x] - Upgrade list
 
 			- [ ] - Tooltips
 
@@ -115,3 +115,5 @@
 - [ ] - Main menu
 
 - [x] - Aspect preserving screen scaling
+
+- [ ] - DOCUMENTATION
