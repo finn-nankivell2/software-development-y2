@@ -33,7 +33,8 @@ class Scenario:
 
 	@classmethod
 	def default(cls):
-		return cls("default", [k for k, _ in game.blueprints.icards()], [k for k, _ in game.blueprints.ibuildings()], 6)
+		return cls("default", ["investment"], [k for k, _ in game.blueprints.ibuildings()], 6)
+		# return cls("default", [k for k, _ in game.blueprints.icards()], [k for k, _ in game.blueprints.ibuildings()], 6)
 
 
 class PlayerTurnTakingModue(GameModule):
@@ -60,7 +61,7 @@ class PlayerTurnTakingModue(GameModule):
 		self.transitioning = False
 
 		for _ in range(self.scenario.cards_per_turn):
-			game.sprites.new(game.cardspawn.random())
+			game.sprites.new(game.cardspawn.random(self.scenario.drawable_cards))
 
 		for space in game.sprites.get("PLAYSPACE"):
 			space.refill_stamina()

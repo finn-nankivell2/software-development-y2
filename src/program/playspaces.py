@@ -164,7 +164,7 @@ class Playspace(Sprite):
 		return not any(space.is_dragged() for space in game.sprites.get("PLAYSPACE") if space is not self)
 
 	def card_validation(self, card) -> bool:
-		return (card.data.play_id in self.data.accept_ids and self._stamina > 0) or card.data.play_id == "investment"
+		return (card.data.play_id in self.data.accept_ids and self._stamina > 0) or (card.data.play_id == "investment" and self._investments < consts.MAX_INVESMENTS)
 
 	def card_hovering(self, card) -> bool:
 		return self.rect.colliderect(card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
