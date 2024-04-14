@@ -27,6 +27,7 @@
 
 	- [x] - Waste Sorting
 
+
 ## Game TODO:
 
 - [x] - Mixed waste
@@ -34,8 +35,6 @@
 	- Can be played to incenirator or landfill, but has a chance to cause a negative effect
 
 	- Can be played to the sorter, which deals more sorted waste cards to you
-
-## Code TODO:
 
 - [x] - Make a prelude
 
@@ -89,9 +88,11 @@
 
 	- [x] - Building stamina system
 
+		- [ ] - Update blueprints to use stamina, remove dataclass default
+
 	- [ ] - Upgrade system
 
-		- [ ] - Funds UI
+		- [x] - Funds UI
 
 		- [ ] - Upgrade list
 
@@ -110,3 +111,7 @@
 - [x] - Fix ghost tooltips and tooltips not being instantiated with cards
 
 - [ ] - Refactor layer system to use enum
+
+- [ ] - Main menu
+
+- [x] - Aspect preserving screen scaling

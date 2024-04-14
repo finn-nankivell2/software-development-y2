@@ -100,6 +100,31 @@ class ScalingWindowSystem(BasicWindowSystem):
 				sys.exit()
 
 
+class AspectScalingWindowSystem(ScalingWindowSystem):
+	def update(self):
+		"""Update the window buffer and events.
+		The Surface is scaled to the size of self.udimensions before being blitted
+		"""
+
+		xscale = self.udimensions.x / self.dimensions.x
+		t = pygame.transform.scale_by(self.screen, (xscale, xscale))
+		yrem = self.udimensions.y - t.get_height()
+
+		self.window.blit(t, (0, 0))  # Decide on where to blit later
+		self.window.blit(t, (0, yrem/2))
+		# self.window.blit(self.uscreen, (0, 0))
+
+		pygame.display.flip()
+		self.screen.fill((0, 0, 0))
+		self.uscreen.fill((0, 0, 0))
+		self.window.fill((0, 0, 0))
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit()
+
+
 class MultiLayerScreenSystem(GameModule):
 	"""Screen system with multiple different layers to render to.
 

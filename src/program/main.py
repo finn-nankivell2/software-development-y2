@@ -28,7 +28,7 @@ from typing import Dict, List, Optional
 from context import gamesystem
 from gamesystem import game, GameModule
 from gamesystem.mods.input import InputManagerScalingMouse
-from gamesystem.mods.window import ScalingWindowSystem, MultiLayerScreenSystem, WInfoModule
+from gamesystem.mods.window import ScalingWindowSystem, MultiLayerScreenSystem, WInfoModule, AspectScalingWindowSystem
 from gamesystem.mods.defaults import SpritesManager, StateManager, GameloopManager, ClockManager
 from gamesystem.mods.debug import DebugOverlayManager
 from gamesystem.mods.assets import AssetManager
@@ -160,8 +160,6 @@ if __name__ == "__main__":
 		flags=pygame.NOFRAME,
 		fill_color=Color("#000000")
 	)
-
-	# #54A200
 
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=Color("#ff00ff"))
