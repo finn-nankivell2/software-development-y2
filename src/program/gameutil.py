@@ -10,6 +10,16 @@ from consts import VZERO
 from easing_functions import CubicEaseInOut
 
 
+
+class VectorMacro:
+	def __init__(_):
+		pass
+
+	def __getitem__(self, args):
+		x, y = args
+		return Vector2(x, y)
+
+
 class EasingVector2:
 
 	def __init__(self, start: Vector2, end: Vector2, func=CubicEaseInOut, duration: int = 30):

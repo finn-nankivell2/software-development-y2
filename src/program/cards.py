@@ -126,6 +126,9 @@ class Card(Sprite):
 	def is_playable(self) -> bool:
 		return self.playspace_collide() is not None
 
+	def is_hovered(self) -> bool:
+		return any(space.card_hovering_exclude(self) for space in game.sprites.get("PLAYSPACE"))
+
 	def mouse_over_me(self) -> bool:
 		return self.rect.collidepoint(game.input.mouse_pos())
 

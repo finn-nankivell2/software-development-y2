@@ -135,8 +135,7 @@
 					"batteries",
 					"electrical",
 					"mixed",
-					"chemical",
-					"investment"
+					"chemical"
 				],
 				"play_effect": {
 					"for_any": {
@@ -166,8 +165,7 @@
 					"batteries",
 					"electrical",
 					"mixed",
-					"chemical",
-					"investment"
+					"chemical"
 				],
 				"play_effect": {
 					"for_any": {
@@ -183,7 +181,7 @@
 			"data": {
 				"title": "Plastic Recycling",
 				"description": "Recycles plastic waste played onto it, and produces money from recycled plastic",
-				"accept_ids": ["plastic", "investment"],
+				"accept_ids": ["plastic"],
 				"play_effect": {
 					"for_card": {
 						"plastic": {
@@ -199,7 +197,7 @@
 			"data": {
 				"title": "Composting",
 				"description": "Gathers biodegradeable material together to create compost. The resulting compost can be used to create fertilizer or in the strengthening of soils, and can thus be used to generate income",
-				"accept_ids": ["compost", "investment"],
+				"accept_ids": ["compost"],
 				"play_effect": {
 					"for_card": {
 						"compost": {
@@ -215,7 +213,7 @@
 			"data": {
 				"title": "Plastic Recycling",
 				"description": "Recycles plastic waste played onto it, and produces money from recycled plastic",
-				"accept_ids": ["plastic", "investment"],
+				"accept_ids": ["plastic"],
 				"play_effect": {
 					"for_any": {},
 					"for_card": {

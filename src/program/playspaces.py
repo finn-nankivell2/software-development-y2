@@ -142,8 +142,7 @@ class Playspace(Sprite):
 
 	def play_card_onto_space(self, card):
 		if card.data.play_id == "investment":
-			# special logic
-			pass
+			self.add_investment_token()
 		else:
 			self._stamina -= 1
 			for effect in self.data.play_effect.get_applicable(card.data):
@@ -159,7 +158,7 @@ class Playspace(Sprite):
 		return not any(space.is_dragged() for space in game.sprites.get("PLAYSPACE") if space is not self)
 
 	def card_validation(self, card) -> bool:
-		return card.data.play_id in self.data.accept_ids and self._stamina > 0
+		return (card.data.play_id in self.data.accept_ids and self._stamina > 0) or card.data.play_id == "investment"
 
 	def card_hovering(self, card) -> bool:
 		return self.rect.colliderect(card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
@@ -242,14 +241,14 @@ class Playspace(Sprite):
 			ov_rect = self.rect.copy()
 			ov_rect.inflate_ip(-30, -90)
 
-			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, Vector2(ov_rect.topleft) + Vector2(30, 0), 5)
-			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, Vector2(ov_rect.topleft) + Vector2(0, 30), 5)
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, ov_rect.topleft + Vector2(30, 0), 5)
+			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, ov_rect.topleft + Vector2(0, 30), 5)
 
-			bot_adj = Vector2(ov_rect.bottomleft) + Vector2(0, 30)
+			bot_adj = ov_rect.bottomleft + Vector2(0, 30)
 			pygame.draw.line(game.windowsystem.screen, palette.WHITE, bot_adj, bot_adj + Vector2(30, 0), 5)
 			pygame.draw.line(game.windowsystem.screen, palette.WHITE, bot_adj, bot_adj + Vector2(0, -30), 5)
 
-			right_adj = Vector2(ov_rect.bottomright) + Vector2(0, 30)
+			right_adj = ov_rect.bottomright + Vector2(0, 30)
 			pygame.draw.line(game.windowsystem.screen, palette.WHITE, right_adj, right_adj + Vector2(-30, 0), 5)
 			pygame.draw.line(game.windowsystem.screen, palette.WHITE, right_adj, right_adj + Vector2(0, -30), 5)
 
@@ -264,3 +263,11 @@ class Playspace(Sprite):
 				pygame.draw.circle(game.windowsystem.screen, palette.WHITE, stam_pos, STAM_RAD, int(STAM_RAD*0.7))
 
 			stam_pos.x -= STAM_RAD * 3
+
+		FUNDS_RAD = 20
+		funds_pos = self.rect.topright - Vector2(mo, mo)
+		funds_pos += Vector2(-FUNDS_RAD * 1.6, STAM_RAD*3 + 40)
+
+		for i in range(self._investments):
+			pygame.draw.rect(game.windowsystem.screen, palette.WHITE, FRect(funds_pos, (FUNDS_RAD, FUNDS_RAD)), STAM_RAD)
+			funds_pos.x -= FUNDS_RAD * 1.8

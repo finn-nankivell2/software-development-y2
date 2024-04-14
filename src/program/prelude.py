@@ -5,6 +5,7 @@ import palette
 
 import pygame
 from pygame import Vector2, Rect, FRect, Color, Surface
+vec = Vector2
 
 from gamesystem.common.sprite import Sprite, SpriteGroup
 from gamesystem import game
