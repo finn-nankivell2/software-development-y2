@@ -117,3 +117,13 @@
 - [x] - Aspect preserving screen scaling
 
 - [ ] - DOCUMENTATION
+
+	- [ ] - Docstrings for reused classes
+
+	- [ ] - Comment documentation
+
+- [ ] - Scenarios menu
+
+- [ ] - Tutorial
+
+- [ ] - Flask server
