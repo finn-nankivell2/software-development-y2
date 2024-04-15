@@ -6,34 +6,14 @@ env:
 	. venv/bin/activate
 	pip install -r requirements.txt
 
-delenv:
-	rm -r venv
-
 dev:
 	. venv/bin/activate
-	python3 src/program/main.py
-
-hackbuild:
-	. venv/bin/activate
-	mkdir build
-	cp -r src/ build/
-	cd build/src
-	mv gamesystem hcktypr/gamesystem
-	echo "import gamesystem" > hcktypr/context.py
-	pyinstaller hcktypr/main.py --onefile --noconsole
-	mv dist/main hcktypr/binary
+	python3 src/main.py
 
 release:
 	. venv/bin/activate
-	mkdir -p build
-	cp -r src/* build/
-	cd build/
-	mv gamesystem program/gamesystem
-	echo "import gamesystem" > program/context.py
-	pyinstaller program/main.py --noconsole --paths=program/gamesystem
-	rm program/*.py program/gamesystem/ -r
-	mv dist/main/* program/
-	mv program/main program/binary
+	pyinstaller src/main.py --onedir --name bruascar
+	cp -r src/assets/ src/data src/fonts src/sfx dist/bruascar
 
 dockerbuild:
 	. venv/bin/activate
@@ -52,11 +32,7 @@ dockerbuild:
 	mv main program
 
 clean:
-	rm -r build
-
-hacktyper:
-	. venv/bin/activate
-	python3 src/hcktypr/main.py
+	rm -r build dist
 
 test:
 	. venv/bin/activate
@@ -69,9 +45,9 @@ yapf:
 mypy:
 	. venv/bin/activate
 	dmypy start
-	mypy src/program/ --pretty
+	mypy src/ --pretty
 	# mypy src/gamesystem/ --pretty
 
 flake8:
 	. venv/bin/activate
-	flake8 src/program
+	flake8 src/
