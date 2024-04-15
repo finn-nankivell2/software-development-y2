@@ -25,13 +25,15 @@ hackbuild:
 
 release:
 	. venv/bin/activate
-	mkdir build
-	cp -r src/ build/
-	cd build/src
+	mkdir -p build
+	cp -r src/* build/
+	cd build/
 	mv gamesystem program/gamesystem
 	echo "import gamesystem" > program/context.py
-	pyinstaller hcktypr/main.py --onefile --noconsole
-	mv dist/main program/binary
+	pyinstaller program/main.py --noconsole --paths=program/gamesystem
+	rm program/*.py program/gamesystem/ -r
+	mv dist/main/* program/
+	mv program/main program/binary
 
 dockerbuild:
 	. venv/bin/activate
