@@ -4,7 +4,7 @@ from consts import CARD_RECT
 from tooltip import Tooltip
 from dataclasses import field
 import copy
-from ui import Dropdown, UpgradeMenu
+from ui import Dropdown, NamedButton, AbstractButton, Onclick
 
 
 @dataclass(slots=True)
@@ -55,12 +55,57 @@ class PlayEffectInfo:
 
 		return effects
 
+	def find_any(self, prop, first=True):
+		matches = filter(lambda e: e.prop == prop, self.for_any)
+		if first:
+			return next(matches, None)
+		return list(matches)
+
+
+
+@dataclass(slots=True)
+class Upgrade:
+	name: str
+	description: str
+	effect_type: str
+	value: Any
+	cost: int
+	bought: bool = False
+
+	@classmethod
+	def fromjson(cls, j: Dict[str, Any]):
+		return cls(**j)
+
+	def can_apply(self, space) -> bool:
+		return space.num_investment_tokens() >= self.cost
+
+	def apply(self, space) -> bool:
+		if not self.can_apply(space):
+			return False
+
+		self.bought = True
+		space.add_investment_token(-self.cost)
+
+		# EXTEND UPGRADE EFFECTS HERE
+		match self.effect_type:
+			case "stamina":
+				space.data.stamina += self.value
+			case "funds":
+				effect = space.data.play_effect.find_any("funds")
+				effect.value = value
+			case "play_effect":
+				pass
+			case eftype:
+				raise ValueError(f"Unknown upgrade effect {eftype}")
+
+
 @dataclass(slots=True)
 class DataPlayspace:
 	title: str  # The title of the building
 	description: str  # The description of the building
 	accept_ids: List[str]  # What card play_id's are accepted by this playspace
 	play_effect: PlayEffectInfo  # Which game values are changed when the card is played
+	upgrades: List[Upgrade]
 	space_id: str  # An identifying string for the building type TODO: Make this an enum
 	stamina: int = 3
 	# TODO: Add an image property
@@ -68,6 +113,7 @@ class DataPlayspace:
 	@classmethod
 	def fromjson(cls, j: Dict[str, str]):
 		j["play_effect"] = PlayEffectInfo.fromjson(j.get("play_effect", {}))
+		j["upgrades"] = list(map(Upgrade.fromjson, j.get("upgrades", [])))
 		return cls(**j)  # type: ignore
 
 
@@ -108,7 +154,7 @@ class Playspace(Sprite):
 
 		dropdown_rect = FRect(VZERO, Playspace.DROPDOWN_BUTTON_DIMS)
 		dropdown_pos = self.rect.topright + vec(-dropdown_rect.width*1.2, self.titlebar.height+40)
-		self._upgrade_button = Dropdown(dropdown_rect, UpgradeMenu.from_list(["test", "hello", "upgrade", "downgrade", "delete"]).set_pos(dropdown_pos + vec(dropdown_rect.width, 0)))
+		self._upgrade_button = Dropdown(dropdown_rect, UpgradeMenu.from_playspace(self).set_pos(dropdown_pos + vec(dropdown_rect.width, 0)))
 		self._upgrade_button.rect.topleft = dropdown_pos
 
 	@classmethod
@@ -143,8 +189,11 @@ class Playspace(Sprite):
 		game.sprites.new(Tooltip(self.data.title, self.data.description, self.rect, parent=self))
 		return self
 
-	def add_investment_token(self):
-		self._investments += 1
+	def add_investment_token(self, num=1):
+		self._investments += num
+
+	def num_investment_tokens(self) -> int:
+		return self._investments
 
 	def play_card_onto_space(self, card):
 		if card.data.play_id == "investment":
@@ -287,3 +336,98 @@ class Playspace(Sprite):
 		for i in range(self._investments):
 			pygame.draw.rect(game.windowsystem.screen, palette.WHITE, FRect(funds_pos, (FUNDS_RAD, FUNDS_RAD)), STAM_RAD, border_radius=3)
 			funds_pos.x -= FUNDS_RAD * 1.8
+
+
+class UpgradeButton(NamedButton):
+	LAYER = "UI"
+
+	def __init__(self, rect: FRect, upgrade: Upgrade, playspace: Playspace):
+		super().__init__(rect, upgrade.name)
+		self.space = playspace
+		self.upgrade = upgrade
+
+	def update_draw(self):
+		cached_rect = self.rect.copy()
+		hovered = self.hovered()
+		if self.mouse_down_over():
+			self.rect.inflate_ip(-10, -10)
+			hovered = False
+
+		pygame.draw.rect(game.windowsystem.screen, self.c, self.rect, border_radius=5)
+		pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-10, -10), width=2, border_radius=5)
+
+		if hovered:
+			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect, width=2, border_radius=5)
+
+		game.windowsystem.screen.blit(self._rendered, self.rect.midleft + Vector2(20, -self._rendered.get_height()/2))
+
+		upgrade_pip_rect = FRect(VZERO, (20, 20))
+		upgrade_pip_rect.midright = self.rect.midright - Vector2(20, 0)
+
+		clr = Color(255, 0, 0) if not self.upgrade.can_apply(self.space) and self.mouse_down_over() else palette.WHITE
+		pygame.draw.rect(game.windowsystem.screen, clr, upgrade_pip_rect, border_radius=5)
+
+		cost_render = self._font.render(str(self.upgrade.cost), True, clr)
+		game.windowsystem.screen.blit(cost_render, self.rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size())/2)
+
+		self.rect = cached_rect
+
+
+class UpgradeMenu(Sprite):
+	LAYER = "UI"
+	PADDING = Vector2(10, 10)
+	DEFAULT_BUTTON_SIZE = Vector2(180, 60)
+
+	def __init__(self, rect: FRect, buttons: List[Sprite]):
+		self.rect = rect
+		self.buttons = buttons
+
+		rectw, recth = UpgradeMenu.PADDING
+		rectw += UpgradeMenu.DEFAULT_BUTTON_SIZE.x if not buttons else max(b.rect.width for b in buttons)
+
+		for button in self.buttons:
+			recth += button.rect.height
+			button.rect.topleft = Vector2(UpgradeMenu.PADDING.x, recth)
+
+		rectw += UpgradeMenu.PADDING.x
+		recth += UpgradeMenu.PADDING.y
+
+		self.rect.width = rectw
+		self.rect.height = recth
+
+	def set_pos(self, pos: Vector2):
+		self.rect.topleft = pos
+
+		anchor = self.rect.topleft + UpgradeMenu.PADDING
+		for button in self.buttons:
+			button.rect.topleft = anchor
+			anchor.y += button.rect.height
+
+		return self
+
+	# TESTING METHOD
+	@classmethod
+	def from_list(cls, names: List[str]):
+		buttons = [NamedButton(FRect(VZERO, cls.DEFAULT_BUTTON_SIZE), name) for name in names]
+		rect = FRect(0, 0, 0, 0)
+		return cls(rect, buttons)
+
+	@classmethod
+	def from_playspace(cls, space: Playspace):
+		upgrades = space.data.upgrades
+		buttons = [UpgradeButton(FRect(VZERO, cls.DEFAULT_BUTTON_SIZE), upg, space).set_onclick(functools.partial(upg.apply, space)) for upg in upgrades]
+		rect = FRect(0, 0, 0, 0)
+		return cls(rect, buttons)
+
+	def hovered(self) -> bool:
+		return game.input.mouse_within(self.rect)
+
+	def update_move(self):
+		for button in self.buttons:
+			button.update_move()
+
+	def update_draw(self):
+		pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
+
+		for button in self.buttons:
+			button.update_draw()

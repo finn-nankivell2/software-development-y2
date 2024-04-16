@@ -111,6 +111,8 @@
 
 			- [ ] - Tooltips
 
+			- [ ] - Upgrade Button class
+
 - [ ] - Balance stuff
 
 	- [ ] - Difference between landfill and incineration?

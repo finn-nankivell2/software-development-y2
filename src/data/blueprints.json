@@ -193,6 +193,15 @@
 						}
 					}
 				},
+				"upgrades": [
+					{
+						"name": "Capacity",
+						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
+						"effect_type": "stamina",
+						"value": 1,
+						"cost": 1
+					}
+				],
 				"space_id": "plasticrec"
 			}
 		},
@@ -226,6 +235,15 @@
 						}
 					}
 				},
+				"upgrades": [
+					{
+						"name": "Capacity",
+						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
+						"effect_type": "stamina",
+						"value": 1,
+						"cost": 1
+					}
+				],
 				"space_id": "plasticrec"
 			}
 		}
