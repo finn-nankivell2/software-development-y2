@@ -119,6 +119,8 @@
 
 	- [x] - Mixed waste sorting
 
+	- [ ] - Should capacity upgrades refund stamina?
+
 - [ ] - Alternate background angles
 
 - [x] - Fix massive bug with cards randomly disappearing from the game world

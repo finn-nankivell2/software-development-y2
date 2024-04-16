@@ -387,8 +387,8 @@ class UpgradeButton(NamedButton):
 			cost_render = self._font.render(str(self.upgrade.cost), True, clr)
 			game.windowsystem.screen.blit(cost_render, self.rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size())/2)
 
-		self._tooltip.update_draw()
 		self.rect = cached_rect
+		self._tooltip.update_draw()
 
 
 
