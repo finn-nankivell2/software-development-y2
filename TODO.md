@@ -109,9 +109,9 @@
 
 		- [x] - Upgrade list
 
-			- [ ] - Tooltips
+			- [x] - Tooltips
 
-			- [ ] - Upgrade Button class
+			- [x] - Upgrade Button class
 
 - [ ] - Balance stuff
 

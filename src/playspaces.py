@@ -62,7 +62,6 @@ class PlayEffectInfo:
 		return list(matches)
 
 
-
 @dataclass(slots=True)
 class Upgrade:
 	name: str
@@ -92,7 +91,7 @@ class Upgrade:
 				space.data.stamina += self.value
 			case "funds":
 				effect = space.data.play_effect.find_any("funds")
-				effect.value = value
+				effect.value += self.value
 			case "play_effect":
 				pass
 			case eftype:
@@ -346,6 +345,21 @@ class UpgradeButton(NamedButton):
 		self.space = playspace
 		self.upgrade = upgrade
 
+		self._greyout = Surface(self.rect.size, pygame.SRCALPHA)
+		self._greyout.fill(palette.BLACK)
+		self._greyout.set_alpha(125)
+		self._greyout = surface_rounded_corners(self._greyout, 5)
+
+		self._tooltip = Tooltip(self.upgrade.name, self.upgrade.description, self.rect, parent=self)
+
+	def hovered(self) -> bool:
+		return super().hovered() and not self.upgrade.bought
+
+	def update_move(self):
+		super().update_move()
+		self._tooltip.update_move()
+		self.z = 5 if self._tooltip.visible() else 0
+
 	def update_draw(self):
 		cached_rect = self.rect.copy()
 		hovered = self.hovered()
@@ -364,13 +378,18 @@ class UpgradeButton(NamedButton):
 		upgrade_pip_rect = FRect(VZERO, (20, 20))
 		upgrade_pip_rect.midright = self.rect.midright - Vector2(20, 0)
 
-		clr = Color(255, 0, 0) if not self.upgrade.can_apply(self.space) and self.mouse_down_over() else palette.WHITE
-		pygame.draw.rect(game.windowsystem.screen, clr, upgrade_pip_rect, border_radius=5)
+		if self.upgrade.bought:
+			game.windowsystem.screen.blit(self._greyout, self.rect)
+		else:
+			clr = Color(255, 0, 0) if not self.upgrade.can_apply(self.space) and self.mouse_down_over() else palette.WHITE
+			pygame.draw.rect(game.windowsystem.screen, clr, upgrade_pip_rect, border_radius=5)
 
-		cost_render = self._font.render(str(self.upgrade.cost), True, clr)
-		game.windowsystem.screen.blit(cost_render, self.rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size())/2)
+			cost_render = self._font.render(str(self.upgrade.cost), True, clr)
+			game.windowsystem.screen.blit(cost_render, self.rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size())/2)
 
+		self._tooltip.update_draw()
 		self.rect = cached_rect
+
 
 
 class UpgradeMenu(Sprite):
@@ -429,5 +448,5 @@ class UpgradeMenu(Sprite):
 	def update_draw(self):
 		pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
 
-		for button in self.buttons:
+		for button in sorted(self.buttons, key=lambda btn: btn.z):
 			button.update_draw()

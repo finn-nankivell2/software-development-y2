@@ -2,6 +2,7 @@ from prelude import *
 import fonts
 from gameutil import surface_rounded_corners
 from tooltip import Tooltip
+from particles import DeflatingParticle
 
 Onclick = Optional[Callable]
 
@@ -136,12 +137,14 @@ class TargettingProgressBar(ProgressBar):
 	def __init__(self, *args, target=None, **kwargs):
 		super().__init__(*args, **kwargs)
 		self._target = target
+		self._og_rect = self.rect.copy()
 
 	def do_targeting(self):
 		value = game.playerstate.get_property(self._target)
 		if self.ratio != value:
 			self.set_ratio(value)
 			self.rerender()
+			game.sprites.new(DeflatingParticle(self.rect.inflate(20, 20), palette.GREY, 60))
 
 	def update_move(self):
 		if self._target is not None:

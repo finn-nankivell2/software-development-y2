@@ -187,10 +187,8 @@
 				"description": "Recycles plastic waste played onto it, and produces money from recycled plastic",
 				"accept_ids": ["plastic"],
 				"play_effect": {
-					"for_card": {
-						"plastic": {
-							"funds": 0.1
-						}
+					"for_any": {
+						"funds": 0.1
 					}
 				},
 				"upgrades": [
@@ -199,6 +197,20 @@
 						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
 						"effect_type": "stamina",
 						"value": 1,
+						"cost": 1
+					},
+					{
+						"name": "Capacity II",
+						"description": "Increases stamina by 2 pips, allowing for more cards to be played in a turn",
+						"effect_type": "stamina",
+						"value": 2,
+						"cost": 3
+					},
+					{
+						"name": "Resale",
+						"description": "Increases the funds gained when playing plastic to the building",
+						"effect_type": "funds",
+						"value": 0.1,
 						"cost": 1
 					}
 				],

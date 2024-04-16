@@ -49,6 +49,8 @@ class Tooltip(Sprite):
 		self._shown = 0
 		self.hover_time = hover_time
 
+		self.invisible = False
+
 	def _update_hover(self):
 		if game.input.mouse_within(self.target):
 			if game.input.mouse.any():
@@ -60,8 +62,8 @@ class Tooltip(Sprite):
 		else:
 			self._shown = 0
 
-	def _should_show(self):
-		return self._shown >= self.hover_time
+	def visible(self):
+		return self._shown >= self.hover_time and not self.invisible
 
 	def _out_of_bounds(self):
 		return self.rect.clamp(game.windowsystem.rect) != self.rect
@@ -69,8 +71,7 @@ class Tooltip(Sprite):
 	def update_move(self):
 		self._update_hover()
 
-
-		if self._should_show():
+		if self.visible():
 			mp = game.input.mouse_pos()
 			self.rect.topleft = mp
 
@@ -86,7 +87,6 @@ class Tooltip(Sprite):
 		if self.parent and self.parent.is_destroyed():
 			self.destroy()
 
-
 	def update_draw(self):
-		if self._should_show():
+		if self.visible():
 			game.windowsystem.screen.blit(self._surface, self.rect.topleft)

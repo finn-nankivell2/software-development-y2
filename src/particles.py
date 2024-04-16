@@ -42,6 +42,23 @@ class SurfaceParticle(Particle):
 		game.windowsystem.screen.blit(self.surface, self.pos - Vector2(self.surface.get_size()) / 2)
 
 
+class DeflatingParticle(Particle):
+	def __init__(self, rect, colour, lifetime=60):
+		super().__init__(Vector2(rect.topleft), rect.width, VZERO, colour, lifetime)
+		self.rect = rect
+		self._deflate = -self.rect.height / lifetime
+
+	def update_move(self):
+		self.rect.inflate_ip(self._deflate, self._deflate)
+		if self.rect.height < 1 or self.rect.width < 1:
+			self.destroy()
+
+	def update_draw(self):
+		pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
+
+
+
+
 def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[Particle]:
 	parts = []
 	for _ in range(number):
