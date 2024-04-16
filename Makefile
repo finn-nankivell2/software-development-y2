@@ -12,24 +12,15 @@ dev:
 
 release:
 	. venv/bin/activate
-	pyinstaller src/main.py --onedir --name bruascar
+	pyinstaller bruascar.spec --noconfirm
 	cp -r src/assets/ src/data src/fonts src/sfx dist/bruascar
 
-# dockerbuild:
-# 	. venv/bin/activate
-# 	mkdir build
-# 	cp -r src/* build/
-# 	cp requirements.txt build/program
-# 	cd build/
-# 	mv gamesystem program/gamesystem
-# 	echo "import gamesystem" > program/context.py
-# 	mv program src
-# 	docker run -v $(shell pwd)/build/src:/usr/app/src kaspary/pyinstaller_build main.py
-# 	cp src/build/dist/main.exe src
-# 	cp src/build/dist/main src
-# 	cd src
-# 	mv main.exe program.exe
-# 	mv main program
+run:
+	./dist/bruascar/bruascar
+
+dockerbuild:
+	. venv/bin/activate
+	docker run -v $(shell pwd):/usr/app/src kaspary/pyinstaller_build src/main.py
 
 clean:
 	rm -rf build dist

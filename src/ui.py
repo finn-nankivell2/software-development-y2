@@ -7,7 +7,6 @@ Onclick = Optional[Callable]
 
 
 class AbstractButton(Sprite):
-
 	def __init__(self, rect: FRect, onclick: Onclick = None):
 		self.rect = rect
 		self.onclick = onclick
@@ -171,6 +170,9 @@ class Dropdown(AbstractButton):
 
 	def toggle(self):
 		self._dropped = not self._dropped
+
+	def is_down(self) -> bool:
+		return self._dropped
 
 	def set_pos(self, pos: Vector2):
 		self.rect.topleft = pos

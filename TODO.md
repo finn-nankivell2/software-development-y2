@@ -28,6 +28,19 @@
 	- [x] - Waste Sorting
 
 
+## Sounds TODO:
+
+- [ ] - Card play sounds
+
+- [ ] - Polluting sounds
+
+- [ ] - Investment sounds
+
+- [ ] - UI clicking sounds
+
+- [ ] - Music
+
+
 ## Game TODO:
 
 - [x] - Mixed waste

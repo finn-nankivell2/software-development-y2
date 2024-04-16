@@ -20,7 +20,7 @@ class Effect:
 		match self.prop:
 			case "dealcards":
 				for play_id in self.value:
-					card = game.cardspawn.get(play_id) if play_id != "random" else game.cardspawn.random()
+					card = game.cardspawn.get(play_id) if play_id != "random" else game.playerturn.scenario.random_card(exclude=["mixed"])
 					game.sprites.new(card)
 
 			case _:
@@ -232,7 +232,12 @@ class Playspace(Sprite):
 		self._upgrade_button.rect.topright = self.rect.topright + vec(-6, self.titlebar.height + 40)
 
 		# Should be above other playspaces if it is being dragged or was just dragged
-		self.z = int(self._dragged or self._dragged_frames)
+		if self._dragged or self._dragged_frames:
+			self.z = 2 * int(self._dragged or self._dragged_frames)
+		elif self._upgrade_button.is_down():
+			self.z = 1
+		else:
+			self.z = 0
 
 	def update_draw(self):
 		if self._dragged_frames > 0:

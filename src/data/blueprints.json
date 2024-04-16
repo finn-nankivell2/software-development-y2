@@ -142,8 +142,7 @@
 						"pollution": 0.01,
 						"funds": 0.1
 					},
-					"for_card": {
-					}
+					"for_card": {}
 				},
 				"space_id": ["incinerator"],
 				"stamina": 3
@@ -171,6 +170,11 @@
 					"for_any": {
 						"pollution": 0.01,
 						"funds": 0.05
+					},
+					"for_card": {
+						"mixed": {
+							"pollution": 0.05
+						}
 					}
 				},
 				"space_id": "landfill"
@@ -185,7 +189,7 @@
 				"play_effect": {
 					"for_card": {
 						"plastic": {
-							"funds": 1.0
+							"funds": 0.1
 						}
 					}
 				},
@@ -201,28 +205,11 @@
 				"play_effect": {
 					"for_card": {
 						"compost": {
-							"funds": 1.0
+							"funds": 0.1
 						}
 					}
 				},
 				"space_id": "composting"
-			}
-		},
-		"plasticrec": {
-			"texture": "plasticrec",
-			"data": {
-				"title": "Plastic Recycling",
-				"description": "Recycles plastic waste played onto it, and produces money from recycled plastic",
-				"accept_ids": ["plastic"],
-				"play_effect": {
-					"for_any": {},
-					"for_card": {
-						"plastic": {
-							"funds": 1.0
-						}
-					}
-				},
-				"space_id": "plasticrec"
 			}
 		},
 		"wastesorting": {
@@ -235,10 +222,7 @@
 					"for_any": {},
 					"for_card": {
 						"mixed": {
-							"dealcards": [
-								"random",
-								"random"
-							]
+							"dealcards": ["random", "random"]
 						}
 					}
 				},
@@ -247,9 +231,15 @@
 		}
 	},
 	"scenarios": {
-		"plastic": {
-			"name": "Plastic"
-
+		"plastic_sorting": {
+			"name": "Plastic Sorting",
+			"starting_buildings": ["landfill", "plasticrec", "wastesorting"],
+			"drawable_cards": {
+				"investment": 0.05,
+				"plastic": 0.6,
+				"mixed": 0.35
+			},
+			"cards_per_turn": 4
 		}
 	}
 }

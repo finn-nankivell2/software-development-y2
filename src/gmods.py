@@ -59,11 +59,17 @@ class BlueprintsStorageModule(GameModule):
 	def ibuildings(self) -> Iterator[Tuple[str, dict]]:
 		return self.buildings.__dict__.items()
 
+	def iscenarios(self) -> Iterator[Tuple[str, dict]]:
+		return self.scenarios.__dict__.items()
+
 	def get_card(self, name):
 		return self.cards.__dict__.get(name)
 
 	def get_building(self, name):
 		return self.buildings.__dict__.get(name)
+
+	def get_scenario(self, name):
+		return self.scenarios.__dict__.get(name)
 
 
 class PlayerStateTrackingModule(GameModule):

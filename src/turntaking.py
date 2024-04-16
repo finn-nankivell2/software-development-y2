@@ -23,7 +23,7 @@ class InvestmentWatcher(Sprite):
 @dataclass
 class Scenario:
 	name: str
-	drawable_cards: List[str]
+	drawable_cards: Dict[str, float]
 	starting_buildings: List[str]
 	cards_per_turn: int
 
@@ -33,8 +33,32 @@ class Scenario:
 
 	@classmethod
 	def default(cls):
-		return cls("default", ["investment"], [k for k, _ in game.blueprints.ibuildings()], 6)
-		# return cls("default", [k for k, _ in game.blueprints.icards()], [k for k, _ in game.blueprints.ibuildings()], 6)
+		return cls("default", {"investment": 1.0}, [k for k, _ in game.blueprints.ibuildings()], 6)
+
+	def random_card_id(self, exclude: List[str] = []) -> str:
+		roll = random.uniform(0, 1.0)
+		start = 0
+
+		highest_chance = None
+
+		for play_id, chance in self.drawable_cards.items():
+			if play_id in exclude:
+				continue
+
+			if start < roll <= start + chance:
+				return play_id
+			start += chance
+
+			if chance == max(c for _, c in self.drawable_cards.items()):
+				highest_chance = play_id
+
+		if start != 1:
+			logging.warn(f"Draw chances {start} do not add up to 1.0")
+
+		return highest_chance
+
+	def random_card(self, *args, **kwargs) -> Card:
+		return game.cardspawn.get(self.random_card_id(*args, **kwargs)).with_tooltip()
 
 
 class PlayerTurnTakingModue(GameModule):
@@ -47,21 +71,28 @@ class PlayerTurnTakingModue(GameModule):
 		self.reset()
 		self.scenario = Scenario.default()
 
+	def set_scenario_id(self, scenario_id):
+		self.scenario = Scenario.from_blueprint(game.blueprints.get_scenario(scenario_id))
+
 	def reset(self):
 		self.turn_count = 1
 		self.transitioning = False
+
+	def deal_card(self):
+		game.sprites.new(self.scenario.random_card())
 
 	def scene_start(self):
 		game.sprites.new(InvestmentWatcher())
 
 		for building in self.scenario.starting_buildings:
-			game.sprites.new(Playspace.from_blueprint(game.blueprints.get_building(building)).with_tooltip())
+			bp = game.blueprints.get_building(building)
+			game.sprites.new(Playspace.from_blueprint(bp).with_tooltip())
 
 	def next_turn(self):
 		self.transitioning = False
 
 		for _ in range(self.scenario.cards_per_turn):
-			game.sprites.new(game.cardspawn.random(self.scenario.drawable_cards))
+			self.deal_card()
 
 		for space in game.sprites.get("PLAYSPACE"):
 			space.refill_stamina()

@@ -2,7 +2,7 @@ from pygame import Vector2, FRect
 
 VZERO = Vector2(0, 0)
 CARD_RECT = FRect(0, 860, 150, 220)
-BUILDING_RECT = FRect(20, 20, 400, 250)
+BUILDING_RECT = FRect(100, 100, 400, 250)
 
 HAND_SIZE = 1000
 TOOLTIP_HOVER_TIME = 40
