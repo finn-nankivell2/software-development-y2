@@ -49,6 +49,9 @@ class PlayEffectInfo:
 
 	def get_applicable(self, card) -> List[Effect]:
 		effects = self.for_any.copy()
+		if card.play_id == "investment":  # special case
+			effects = []
+
 		for k, v in self.for_card.items():
 			if k == card.play_id:
 				effects.extend(v)
@@ -92,8 +95,18 @@ class Upgrade:
 			case "funds":
 				effect = space.data.play_effect.find_any("funds")
 				effect.value += self.value
+			case "pollution":
+				game.playerstate.pollution += self.value
 			case "play_effect":
-				pass
+				effect_id, patched = self.value
+				effect = space.data.play_effect.find_any(effect_id)
+				effect.value = patched
+			case "transform":
+				space.destroy()
+				transformed = Playspace.from_blueprint(game.blueprints.get_building(self.value))
+				transformed.rect = space.rect
+				game.sprites.new(transformed.with_tooltip())
+
 			case eftype:
 				raise ValueError(f"Unknown upgrade effect {eftype}")
 
@@ -199,8 +212,8 @@ class Playspace(Sprite):
 			self.add_investment_token()
 		else:
 			self._stamina -= 1
-			for effect in self.data.play_effect.get_applicable(card.data):
-				effect.apply()
+		for effect in self.data.play_effect.get_applicable(card.data):
+			effect.apply()
 
 	def refill_stamina(self):
 		self._stamina = self.data.stamina
@@ -395,7 +408,7 @@ class UpgradeButton(NamedButton):
 class UpgradeMenu(Sprite):
 	LAYER = "UI"
 	PADDING = Vector2(10, 10)
-	DEFAULT_BUTTON_SIZE = Vector2(180, 60)
+	DEFAULT_BUTTON_SIZE = Vector2(240, 60)
 
 	def __init__(self, rect: FRect, buttons: List[Sprite]):
 		self.rect = rect

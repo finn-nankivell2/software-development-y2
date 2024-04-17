@@ -177,6 +177,30 @@
 						}
 					}
 				},
+				"stamina": 4,
+				"upgrades": [
+					{
+						"name": "Carbon Capture",
+						"description": "Reduces the amount of pollution created by playing a card here",
+						"effect_type": "play_effect",
+						"value": ["pollution", 0.05],
+						"cost": 2
+					},
+					{
+						"name": "Usage Fee",
+						"description": "Increases funds earned when cards are played here",
+						"effect_type": "funds",
+						"value": 0.05,
+						"cost": 1
+					},
+					{
+						"name": "Grassroots",
+						"description": "Converts the landfill into a grassy hill",
+						"effect_type": "transform",
+						"value": "landfill_hill",
+						"cost": 5
+					}
+				],
 				"space_id": "landfill"
 			}
 		},
@@ -191,6 +215,7 @@
 						"funds": 0.1
 					}
 				},
+				"stamina": 2,
 				"upgrades": [
 					{
 						"name": "Capacity",
@@ -217,6 +242,44 @@
 				"space_id": "plasticrec"
 			}
 		},
+		"metalrec": {
+			"texture": "metalrec",
+			"data": {
+				"title": "Metal Recycling",
+				"description": "Recycles metal waste played onto it, such as aluminium. Metal is cleaned before being melted down before being reformed into new shapes. Has a low default capacity",
+				"accept_ids": ["aluminium"],
+				"play_effect": {
+					"for_any": {
+						"funds": 0.2
+					}
+				},
+				"stamina": 1,
+				"upgrades": [
+					{
+						"name": "Capacity",
+						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
+						"effect_type": "stamina",
+						"value": 1,
+						"cost": 2
+					},
+					{
+						"name": "Capacity II",
+						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
+						"effect_type": "stamina",
+						"value": 2,
+						"cost": 3
+					},
+					{
+						"name": "Reduced Overhead",
+						"description": "Reduce operations costs, thus increasing the funds gained when playing metal to the building",
+						"effect_type": "funds",
+						"value": 0.2,
+						"cost": 1
+					}
+				],
+				"space_id": "plasticrec"
+			}
+		},
 		"composting": {
 			"texture": "composting",
 			"data": {
@@ -237,17 +300,23 @@
 			"texture": "wastesorting",
 			"data": {
 				"title": "Unknown Waste Sorting",
-				"description": "Turns unknown waste into any two waste cards",
+				"description": "Turns unknown waste into two known waste cards (including investments)",
 				"accept_ids": ["mixed"],
 				"play_effect": {
-					"for_any": {},
-					"for_card": {
-						"mixed": {
-							"dealcards": ["random", "random"]
-						}
-					}
+					"for_any": {
+						"dealcards": ["random", "random"]
+					},
+					"for_card": {}
 				},
+				"stamina": 2,
 				"upgrades": [
+					{
+						"name": "Subsidization",
+						"description": "Sorting unknown waste generates 1 investment card",
+						"effect_type": "play_effect",
+						"value": ["dealcards", ["random", "random", "investment"]],
+						"cost": 3
+					},
 					{
 						"name": "Capacity",
 						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
@@ -258,16 +327,50 @@
 				],
 				"space_id": "plasticrec"
 			}
+		},
+		"landfill_hill": {
+			"texture": "landfill_hill",
+			"data": {
+				"title": "Hill",
+				"description": "A hill made from a landfill, converted into a park. Reduces pollution when invested in",
+				"accept_ids": [],
+				"play_effect": {
+					"for_card": {
+						"investment": {
+							"pollution": -0.01
+						}
+					}
+				},
+				"stamina": 0,
+				"space_id": "landfill_hill",
+				"upgrades": [
+					{
+						"name": "Cleanup",
+						"description": "Decreases global pollution",
+						"effect_type": "pollution",
+						"value": -0.2,
+						"cost": 3
+					},
+					{
+						"name": "Cleanup",
+						"description": "Decreases global pollution",
+						"effect_type": "pollution",
+						"value": -0.2,
+						"cost": 3
+					}
+				]
+			}
 		}
 	},
 	"scenarios": {
-		"plastic_sorting": {
-			"name": "Plastic Sorting",
-			"starting_buildings": ["landfill", "plasticrec", "wastesorting"],
+		"plastic_metal_sorting": {
+			"name": "Plastic and ALuminium Sorting",
+			"starting_buildings": ["landfill", "plasticrec", "wastesorting", "metalrec"],
 			"drawable_cards": {
 				"investment": 0.05,
-				"plastic": 0.65,
-				"mixed": 0.3
+				"plastic": 0.32,
+				"aluminium": 0.32,
+				"mixed": 0.31
 			},
 			"cards_per_turn": 4
 		}

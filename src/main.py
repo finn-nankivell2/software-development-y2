@@ -59,7 +59,7 @@ def mainloop():
 
 	gradient = list(map(Color, gradient))
 
-	game.playerturn.set_scenario_id("plastic_sorting")
+	game.playerturn.set_scenario_id("plastic_metal_sorting")
 	# bg_grad = [gradient[0], gradient[1]]
 
 	# bg_particles = BubbleParticleEmitter(pos=game.windowsystem.dimensions / 2, colours=bg_grad)

@@ -14,7 +14,9 @@
 		"investment": "assets/coins.png",
 		"endturn": "assets/endturn.png",
 		"citiedlow1": "assets/citiedlow2.png",
-		"wastesorting": "assets/wastesorting.png"
+		"wastesorting": "assets/wastesorting.png",
+		"metalrec": "assets/metalrec3.png",
+		"landfill_hill": "assets/hill.png"
 	},
 
 	"fonts": {

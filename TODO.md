@@ -21,7 +21,7 @@
 
 - [ ] - Building texture
 
-	- [ ] - Metal Recycling
+	- [x] - Metal Recycling
 
 	- [ ] - Electronic Recycling
 
@@ -112,6 +112,10 @@
 			- [x] - Tooltips
 
 			- [x] - Upgrade Button class
+
+			- [ ] - Upgrade effects
+
+				- [ ] - Building transform effect
 
 - [ ] - Balance stuff
 
