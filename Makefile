@@ -10,6 +10,11 @@ dev:
 	. venv/bin/activate
 	python3 src/main.py
 
+backend:
+	. venv/bin/activate
+	cd server
+	flask --app hello run
+
 release:
 	. venv/bin/activate
 	pyinstaller bruascar.spec --noconfirm
