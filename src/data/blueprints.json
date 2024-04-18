@@ -396,6 +396,7 @@
 	},
 	"scenarios": {
 		"plastic_metal_sorting": {
+			"scenario_id": "plastic_metal_sorting",
 			"name": "Plastic and Aluminium Sorting",
 			"starting_buildings": [
 				"landfill",

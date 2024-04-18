@@ -2,6 +2,7 @@ from gamesystem.mods.modulebase import GameModule
 from gameutil import surface_region
 from prelude import *
 from cards import Card
+from datetime import datetime
 
 
 @dataclass
@@ -72,12 +73,36 @@ class BlueprintsStorageModule(GameModule):
 		return self.scenarios.__dict__.get(name)
 
 
+class CameraSpoofingModule(GameModule):
+	IDMARKER = "camera"
+
+	def create(self):
+		self.speed = 10
+
+	def update(self):
+		vel = 0
+		if game.input.key_down(pygame.K_a, pygame.K_LEFT):
+			vel += self.speed
+		if game.input.key_down(pygame.K_d, pygame.K_RIGHT):
+			vel -= self.speed
+
+		for space in game.sprites.get("PLAYSPACE"):
+			space.rect.x += vel
+
+
 class PlayerStateTrackingModule(GameModule):
 	IDMARKER = "playerstate"
 
 	def create(self):
+		self.reset()
+
+	def reset(self):
 		self.pollution = 0.0
 		self.funds = 0.1
+		self.start_time = datetime.now()
+
+	def time_since_game_start(self):
+		return datetime.now() - self.start_time
 
 	def update(self):
 		for prop, val in self.__dict__.items():
@@ -97,13 +122,14 @@ class PlayerStateTrackingModule(GameModule):
 
 class CardSpawningModule(GameModule):
 	IDMARKER = "cardspawn"
-	REQUIREMENTS= ["blueprints"]
+	REQUIREMENTS = ["blueprints"]
 
 	def create(self):
 		pass
 
 	def random(self, choices: List[str] = []) -> Card:
-		choices = [game.blueprints.get_card(card) for card in choices] if choices else [v for _, v in game.blueprints.icards()]
+		choices = [game.blueprints.get_card(card) for card in choices
+					] if choices else [v for _, v in game.blueprints.icards()]
 		return Card.from_blueprint(random.choice(choices)).with_tooltip()  # type: ignore
 
 	def get(self, play_id: str) -> Card:

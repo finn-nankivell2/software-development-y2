@@ -44,6 +44,8 @@
 
 - [ ] - Music
 
+	- [ ] - Internal playlist system?
+
 
 ## Game TODO:
 
@@ -72,6 +74,12 @@
 - [x] - Palette module
 
 - [ ] - Camera module
+
+	- [x] - Just move the buildings left and right
+
+	- [ ] - Mouse corner touch movement
+
+	- [ ] - Move speed increase / easing
 
 - [x] - Audio
 
@@ -145,15 +153,13 @@
 
 - [x] - Fix ghost tooltips and tooltips not being instantiated with cards
 
-- [ ] - Refactor layer system to use enum
-
 - [ ] - Main menu
 
-	- [ ] - Play: go to scenarios menu
+	- [x] - Play: go to scenarios menu
 
 	- [ ] - Tutorial
 
-	- [ ] - Exit
+	- [x] - Exit
 
 - [x] - Aspect preserving screen scaling
 
@@ -164,6 +170,10 @@
 	- [ ] - Comment documentation
 
 - [ ] - Scenarios menu
+
+	- [ ] - Fancy scenario choice ui
+
+	- [ ] - Highscores
 
 - [ ] - Tutorial
 
@@ -179,10 +189,16 @@
 
 		- [x] Remove update_move
 
-- [ ] - Transitions
+	- [ ] - End of game stats
 
-	- [ ] - Completion hook
+- [x] - Transitions
 
-	- [ ] - Reduction
+	- [x] - Completion hook
+
+	- [x] - Reduction
 
 - [ ] - Stylish player debug log ui
+
+- [x] - Fix upgrade tooltips being misplaced
+
+	- [x] - cached_rect fix

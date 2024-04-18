@@ -4,6 +4,8 @@ from gamesystem.common.coroutines import TickCoroutine
 from cards import PollutingCard, Card
 from playspaces import Playspace
 import fonts
+from gameutil import EasingVector2, BoxesTransition
+from ui import NamedButton
 
 
 
@@ -17,7 +19,7 @@ class InvestmentWatcher(Sprite):
 			tokens += 1
 
 		for _ in range(tokens):
-			game.sprites.new(Card.from_blueprint(game.blueprints.cards.investment))
+			game.sprites.new(Card.from_blueprint(game.blueprints.cards.investment).with_tooltip())
 
 
 
@@ -32,27 +34,64 @@ class PollutionWatcher(Sprite):
 
 class GameComplete(Sprite):
 	LAYER = "UI"
+	ANIM_TIMING = 50
 
-	def __init__(self, rect: FRect, victory: bool):
+	def __init__(self, rect: FRect, victory: bool, disable_callback: Optional[Callable] = None):
 		self.surface = Surface(rect.size)
 		self.surface.fill(palette.BLACK)
-		self.surface.set_alpha(125)
+		self.surface.set_alpha(GameComplete.ANIM_TIMING)
 
 		self.message = "You win!" if victory else "You lose!"
 		self._font = fonts.families.roboto.size(70)
 		self._render = self._font.render(self.message, True, palette.TEXT)
+		self._font_easing = EasingVector2(Vector2(game.windowsystem.dimensions.x/2, -200), Vector2(game.windowsystem.dimensions / 2), duration = GameComplete.ANIM_TIMING)
+		self._font_pos = self._font_easing(0)
+
+		self._frames = 0
+		self._disable_callback = disable_callback
+		self._add_buttons_lock = False
+
+	def _alpha_halfway(self):
+		return self._frames >= GameComplete.ANIM_TIMING
 
 	def update_move(self):
-		pass
+		self._frames += 1
+		if self._alpha_halfway():
+			if self._frames < GameComplete.ANIM_TIMING*2:
+				if self._disable_callback:
+					self._disable_callback()
+					self._disable_callback = None
+				self._font_pos = self._font_easing(self._frames - GameComplete.ANIM_TIMING)
+			elif not self._add_buttons_lock:
+				def main_menu():
+					game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(game.loop.functions.menu)))
+
+				buttons_start_at = self._font_pos.copy()
+				buttons_size = Vector2(300, 120)
+				game.sprites.new(NamedButton(
+					FRect(buttons_start_at + Vector2(-(buttons_size.x + 30), 80), buttons_size),
+					"MENU",
+					onclick = main_menu
+				))
+
+				game.sprites.new(NamedButton(
+					FRect(buttons_start_at + Vector2(30, 80), buttons_size),
+					"SUBMIT STATS",
+					onclick = lambda: "we'll get to it eventually"
+				))
+				self._add_buttons_lock = True
 
 	def update_draw(self):
+		self.surface.set_alpha(min(self._frames, GameComplete.ANIM_TIMING)*4)
 		game.windowsystem.screen.blit(self.surface, VZERO)
-		game.windowsystem.screen.blit(self._render, (game.windowsystem.dimensions - self._render.get_size()) / 2)
+		if self._alpha_halfway():
+			game.windowsystem.screen.blit(self._render, self._font_pos - Vector2(self._render.get_size())/2)
 
 
 @dataclass
 class Scenario:
 	name: str
+	scenario_id: str
 	drawable_cards: Dict[str, float]
 	starting_buildings: List[str]
 	buildable_buildings: List[str]
@@ -64,7 +103,7 @@ class Scenario:
 
 	@classmethod
 	def default(cls):
-		return cls(name="DEFAULT", drawable_cards={"investment": 0.5, "plastic": 0.5}, starting_buildings=["landfill", "incinerator"], buildable_buildings=["plasticrec"], cards_per_turn=4)
+		return cls(name="DEFAULT", scenario_id="default", drawable_cards={"investment": 0.5, "plastic": 0.5}, starting_buildings=["landfill", "incinerator"], buildable_buildings=["plasticrec"], cards_per_turn=4)
 
 	def random_card_id(self, exclude: List[str] = []) -> str:
 		roll = random.uniform(0, 1.0)
@@ -106,12 +145,7 @@ class PlayerTurnTakingModue(GameModule):
 		self.scenario = Scenario.from_blueprint(game.blueprints.get_scenario(scenario_id))
 		self.reset()
 
-	def _game_complete_init(self, victory: bool):
-		if self.game_complete:
-			return
-
-		self.game_complete = True
-
+	def _game_end_disable_elements(self):
 		def empty(*args, **kwargs):
 			pass
 
@@ -124,7 +158,14 @@ class PlayerTurnTakingModue(GameModule):
 		for button in game.sprites.get("UI"):
 			button.hovered = empty
 
-		game.sprites.new(GameComplete(game.windowsystem.rect.copy(), victory))
+	def _game_complete_init(self, victory: bool):
+		if self.game_complete:
+			return
+
+		self.game_complete = True
+
+		game.sprites.new(GameComplete(game.windowsystem.rect.copy(), victory, disable_callback=self._game_end_disable_elements))
+		self._game_end_disable_elements()
 
 	def you_win(self):
 		self._game_complete_init(True)

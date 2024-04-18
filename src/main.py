@@ -41,10 +41,10 @@ from particles import BubbleParticleEmitter
 from cards import Card, Hand, DataCard
 from playspaces import Playspace
 
-from gameutil import ScalingImageSprite, HookSprite, ScanlineImageSprite, BoxesTransition
+from gameutil import ScalingImageSprite, HookSprite, BoxesTransition, ImageSprite
 from consts import VZERO
 
-from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule, CardSpawningModule
+from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule, CardSpawningModule, CameraSpoofingModule
 import fonts
 import palette
 
@@ -58,19 +58,38 @@ def main_menu():
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
 	def start_game():
-		game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
+		game.loop.run(scenario_choice)
+		# game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
 
-	game.sprites.new(NamedButton(FRect(200, 300, 200, 100), "PLAY", onclick = start_game))
-	game.sprites.new(NamedButton(FRect(200, 450, 200, 100), "TUTORIAL"))
-	game.sprites.new(NamedButton(FRect(200, 600, 200, 100), "EXIT", onclick = game.loop.stop))
+	game.sprites.new(NamedButton(FRect(200, 500, 200, 100), "PLAY", onclick = start_game))
+	game.sprites.new(NamedButton(FRect(200, 650, 200, 100), "TUTORIAL"))
+	game.sprites.new(NamedButton(FRect(200, 800, 200, 100), "EXIT", onclick = lambda: game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = game.loop.stop))))
+
+	game.sprites.new(ImageSprite(Vector2(100, 150), game.assets.logo), layer_override="FOREGROUND")
 
 
-def mainloop():
-	game.sprites.purge_preserve("TRANSITION")
-	game.playerturn.set_scenario_id("plastic_metal_sorting")
-
+def scenario_choice():
+	game.sprites.purge_preserve("TRANSITION", "BACKGROUND")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
+	def start_game(scenario_id):
+		game.playerturn.set_scenario_id(scenario_id)
+		game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
+
+	game.sprites.new(ImageSprite(Vector2(200, 150), game.assets.scenarios), layer_override="FOREGROUND")
+	button_start = FRect(200, 400, 500, 100)
+
+	for scen_id, scenario in game.blueprints.iscenarios():
+		game.sprites.new(NamedButton(button_start.copy(), scenario["name"].upper(), onclick = functools.partial(start_game, scen_id)))
+		button_start.topleft += Vector2(0, 150)
+
+	button_start.width = 200
+	game.sprites.new(NamedButton(button_start, "MAIN MENU", onclick = lambda: game.loop.run(main_menu)))
+
+def mainloop():
+	game.playerstate.reset()
+	game.sprites.purge_preserve("TRANSITION")
+	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
@@ -122,6 +141,7 @@ def do_running(self):
 	self.game.clock.update()
 	self.game.state.update()
 	self.game.input.update()
+	self.game.camera.update()
 	self.game.sprites.update()
 	self.game.playerstate.update()
 	self.game.debug.update()
@@ -167,4 +187,7 @@ if __name__ == "__main__":
 	game.add_module(PlayerStateTrackingModule)
 
 	game.add_module(PlayerTurnTakingModue)
+	game.add_module(CameraSpoofingModule)
+
+	game.loop.functions = SimpleNamespace(gameplay=mainloop, menu=main_menu)
 	game.loop.run(main_menu)

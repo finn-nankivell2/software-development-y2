@@ -273,7 +273,7 @@ class Playspace(Sprite):
 			self.collidecard(card) for card in game.sprites.get("CARD")
 		) or self.rect.bottom > game.windowsystem.dimensions.y - CARD_RECT.height or any(
 			self.rect.colliderect(space.rect) for space in game.sprites.get("PLAYSPACE") if space is not self
-		) or self.rect.clamp(game.windowsystem.rect) != self.rect
+		) or self.rect.y < 0
 
 	def _drop_drag(self):
 		self._dragged = False
@@ -409,25 +409,25 @@ class UpgradeButton(NamedButton):
 		self.z = 5 if self._tooltip.visible() else 0
 
 	def update_draw(self):
-		cached_rect = self.rect.copy()
+		rect = self.rect.copy()
 		hovered = self.hovered()
 		if self.mouse_down_over():
 			self.rect.inflate_ip(-10, -10)
 			hovered = False
 
-		pygame.draw.rect(game.windowsystem.screen, self.c, self.rect, border_radius=5)
-		pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-10, -10), width=2, border_radius=5)
+		pygame.draw.rect(game.windowsystem.screen, self.c, rect, border_radius=5)
+		pygame.draw.rect(game.windowsystem.screen, palette.GREY, rect.inflate(-10, -10), width=2, border_radius=5)
 
 		if hovered:
-			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect, width=2, border_radius=5)
+			pygame.draw.rect(game.windowsystem.screen, palette.GREY, rect, width=2, border_radius=5)
 
-		game.windowsystem.screen.blit(self._rendered, self.rect.midleft + Vector2(20, -self._rendered.get_height() / 2))
+		game.windowsystem.screen.blit(self._rendered, rect.midleft + Vector2(20, -self._rendered.get_height() / 2))
 
 		upgrade_pip_rect = FRect(VZERO, (20, 20))
-		upgrade_pip_rect.midright = self.rect.midright - Vector2(20, 0)
+		upgrade_pip_rect.midright = rect.midright - Vector2(20, 0)
 
 		if self.upgrade.bought:
-			game.windowsystem.screen.blit(self._greyout, self.rect)
+			game.windowsystem.screen.blit(self._greyout, rect)
 		else:
 			clr = Color(255, 0,
 						0) if not self.upgrade.can_apply(self.space) and self.mouse_down_over() else palette.WHITE
@@ -435,10 +435,9 @@ class UpgradeButton(NamedButton):
 
 			cost_render = self._font.render(str(self.upgrade.cost), True, clr)
 			game.windowsystem.screen.blit(
-				cost_render, self.rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size()) / 2
+				cost_render, rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size()) / 2
 			)
 
-		self.rect = cached_rect
 		self._tooltip.update_draw()
 
 

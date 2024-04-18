@@ -17,15 +17,15 @@ backend:
 
 release:
 	. venv/bin/activate
-	pyinstaller bruascar.spec --noconfirm
-	cp -r src/assets/ src/data src/fonts src/sfx dist/bruascar
+	pyinstaller theworks.spec --noconfirm
+	cp -r src/assets/ src/data src/fonts src/sfx dist/TheWorks
 
 run:
-	./dist/bruascar/bruascar
+	./dist/TheWorks/TheWorks
 
-dockerbuild:
-	. venv/bin/activate
-	docker run -v $(shell pwd):/usr/app/src kaspary/pyinstaller_build src/main.py
+# dockerbuild:
+# 	. venv/bin/activate
+# 	docker run -v $(shell pwd):/usr/app/src kaspary/pyinstaller_build src/main.py
 
 clean:
 	rm -rf build dist

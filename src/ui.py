@@ -67,20 +67,18 @@ class NamedButton(AbstractButton):
 		self._rendered = self._font.render(self._text, True, palette.TEXT)
 
 	def update_draw(self):
-		cached_rect = self.rect.copy()
+		rect = self.rect.copy()
 		hovered = self.hovered()
 		if self.mouse_down_over():
-			self.rect.inflate_ip(-10, -10)
+			rect.inflate_ip(-10, -10)
 			hovered = False
 
-		pygame.draw.rect(game.windowsystem.screen, self.c, self.rect, border_radius=5)
-		pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-10, -10), width=2, border_radius=5)
+		pygame.draw.rect(game.windowsystem.screen, self.c, rect, border_radius=5)
+		pygame.draw.rect(game.windowsystem.screen, palette.GREY, rect.inflate(-10, -10), width=2, border_radius=5)
 
 		if hovered:
-			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect, width=2, border_radius=5)
-		game.windowsystem.screen.blit(self._rendered, self.rect.center - Vector2(self._rendered.get_size()) / 2)
-
-		self.rect = cached_rect
+			pygame.draw.rect(game.windowsystem.screen, palette.GREY, rect, width=2, border_radius=5)
+		game.windowsystem.screen.blit(self._rendered, rect.center - Vector2(self._rendered.get_size()) / 2)
 
 
 class ProgressBar(Sprite):

@@ -20,7 +20,9 @@
 		"metalrec": "assets/metalrec3.png",
 		"landfill_hill": "assets/hill.png",
 		"construction": "assets/construction.png",
-		"wincondition": "assets/wincondition.png"
+		"wincondition": "assets/wincondition.png",
+		"logo": "assets/logo.png",
+		"scenarios": "assets/scenarios.png"
 	},
 
 	"fonts": {
