@@ -76,13 +76,13 @@ class PlayerStateTrackingModule(GameModule):
 	IDMARKER = "playerstate"
 
 	def create(self):
-		self.pollution = 0
-		self.score = 0
+		self.pollution = 0.0
 		self.funds = 0.1
 
 	def update(self):
 		for prop, val in self.__dict__.items():
-			self.__dict__[prop] = min(max(0, val), 1.0)
+			if isinstance(val, float):
+				self.__dict__[prop] = min(max(0, val), 1.0)
 
 	def incr_property(self, prop, num):
 		self.__dict__[prop] += num

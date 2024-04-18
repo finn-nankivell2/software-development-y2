@@ -3,6 +3,7 @@ from gamesystem import GameModule
 from gamesystem.common.coroutines import TickCoroutine
 from cards import PollutingCard, Card
 from playspaces import Playspace
+import fonts
 
 
 
@@ -26,6 +27,27 @@ class PollutionWatcher(Sprite):
 	def update_move(self):
 		if game.playerstate.pollution >= 1.0:
 			game.playerturn.game_over()
+
+
+
+class GameComplete(Sprite):
+	LAYER = "UI"
+
+	def __init__(self, rect: FRect, victory: bool):
+		self.surface = Surface(rect.size)
+		self.surface.fill(palette.BLACK)
+		self.surface.set_alpha(125)
+
+		self.message = "You win!" if victory else "You lose!"
+		self._font = fonts.families.roboto.size(70)
+		self._render = self._font.render(self.message, True, palette.TEXT)
+
+	def update_move(self):
+		pass
+
+	def update_draw(self):
+		game.windowsystem.screen.blit(self.surface, VZERO)
+		game.windowsystem.screen.blit(self._render, (game.windowsystem.dimensions - self._render.get_size()) / 2)
 
 
 @dataclass
@@ -82,16 +104,38 @@ class PlayerTurnTakingModue(GameModule):
 
 	def set_scenario_id(self, scenario_id):
 		self.scenario = Scenario.from_blueprint(game.blueprints.get_scenario(scenario_id))
+		self.reset()
+
+	def _game_complete_init(self, victory: bool):
+		if self.game_complete:
+			return
+
+		self.game_complete = True
+
+		def empty(*args, **kwargs):
+			pass
+
+		for card in game.sprites.get("CARD"):
+			card.destroy_anim()
+
+		for space in game.sprites.get("PLAYSPACE"):
+			space.update_move = empty
+
+		for button in game.sprites.get("UI"):
+			button.hovered = empty
+
+		game.sprites.new(GameComplete(game.windowsystem.rect.copy(), victory))
 
 	def you_win(self):
-		print("YOU WIN")
+		self._game_complete_init(True)
 
-	def game_over(self, won: bool = True):
-		print("YOU LOSE")
+	def game_over(self):
+		self._game_complete_init(False)
 
 	def reset(self):
 		self.turn_count = 1
 		self.transitioning = False
+		self.game_complete = False
 
 	def deal_card(self):
 		game.sprites.new(self.scenario.random_card())
@@ -105,17 +149,22 @@ class PlayerTurnTakingModue(GameModule):
 			game.sprites.new(Playspace.from_blueprint(bp).with_tooltip())
 
 	def next_turn(self):
+		if self.game_complete:
+			return
+
 		self.transitioning = False
 
 		for _ in range(self.scenario.cards_per_turn):
-			self.deal_card()
+			game.sprites.new(self.scenario.random_card())
 
 		for space in game.sprites.get("PLAYSPACE"):
 			space.refill_stamina()
 
-		self.turn_count += 1
+		chance = random.uniform(0, 1)
+		if chance < game.playerstate.pollution:
+			game.cardspawn.spawn("mixed")
 
-	# TODO: Random polluting card lifetimes
+		self.turn_count += 1
 
 	def end_turn(self):
 		if self.transitioning:

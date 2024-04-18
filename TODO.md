@@ -137,6 +137,8 @@
 
 		- Yes
 
+	- [x] - Pollution chance to draw another card
+
 - [ ] - Alternate background angles
 
 - [x] - Fix massive bug with cards randomly disappearing from the game world
@@ -146,6 +148,12 @@
 - [ ] - Refactor layer system to use enum
 
 - [ ] - Main menu
+
+	- [ ] - Play: go to scenarios menu
+
+	- [ ] - Tutorial
+
+	- [ ] - Exit
 
 - [x] - Aspect preserving screen scaling
 
@@ -161,12 +169,20 @@
 
 - [ ] - Flask server
 
-- [ ] - Fix pollution progress bar underflow
+- [x] - Fix pollution progress bar underflow
 
 - [ ] - WIN STATE / LOSE STATE (important!!!!!)
 
-	- [ ] - Playspace movement locked?
+	- [x] - Playspace movement locked
 
-	- [ ] - Card movement locked?
+	- [x] - Card movement locked
 
-		- Remove update_move?
+		- [x] Remove update_move
+
+- [ ] - Transitions
+
+	- [ ] - Completion hook
+
+	- [ ] - Reduction
+
+- [ ] - Stylish player debug log ui

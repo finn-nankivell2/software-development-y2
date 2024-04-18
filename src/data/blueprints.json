@@ -22,7 +22,7 @@
 			"texture": "metal",
 			"data": {
 				"title": "Metal",
-				"description": "Recycleable aluminium waste (scrap, industrial, etc). Should be sent to metal processing",
+				"description": "Recycleable aluminium waste (scrap, industrial, etc). Should be sent to metal processing. Cannot be sent to a landfill",
 				"playable_everywhere": false,
 				"play_id": "metal"
 			}
@@ -181,7 +181,6 @@
 					"paper",
 					"compost",
 					"rubble",
-					"metal",
 					"timber",
 					"glass",
 					"batteries",
@@ -363,7 +362,7 @@
 				"accept_ids": [],
 				"play_effect": {},
 				"stamina": 0,
-				"construction_cost": 9,
+				"construction_cost": 1,
 				"space_id": "wincondition"
 			}
 		},

@@ -6,6 +6,8 @@ import math
 from pygame import Vector2, Color, Surface, FRect, Rect
 from typing import List, Union, Iterator, Tuple, Callable, Any
 from consts import VZERO
+from dataclasses import dataclass
+import palette
 
 from easing_functions import CubicEaseInOut
 
@@ -142,6 +144,53 @@ class HookSprite(Sprite):
 		self.update_draw = update_draw if update_draw is not None else lambda: None
 
 
+
+class BoxesTransition(Sprite):
+	@dataclass
+	class Box:
+		pos: Vector2
+		incr: float
+		target: float
+		width: float = 0
+
+		def update(self):
+			self.width += incr
+			if self.width > target:
+				self.width = target
+
+		def complete(self):
+			return self.width >= target
+
+	def __init__(self, rect: FRect, chunks: Tuple[int, int], colour: Color = palette.BLACK, lifetime=60):
+		self.rect = rect
+		self.boxes = []
+		self._lifetime = lifetime
+
+		ch_x, ch_y = chunks
+		self._box_height = ch_y
+
+		for y in range(rect.y, rect.height, rect.height/ch_y):
+			for x in range(rect.x, rect.width, rect.width/ch_y):
+				self.boxes.append(BoxesTransition.Box(
+					Vector2(x, y),
+					random.uniform(ch_x/self._lifetime, ch_x/self._lifetime/2),
+					ch_x,
+				))
+
+	def update_move(self):
+		for box in self.boxes:
+			box.update()
+
+		if all(b.complete() for b in self.boxes):
+			pass
+
+	def update_draw(self):
+		for box in self.boxes:
+			pygame.draw.rect(game.windowsystem.screen, palette.BLACK, (box.pos.x, box.pos.y, box.width, self._box_height))
+
+
+
+# Module exports
 __all__ = [
 	traverse_surface.__name__,
 	transmute_surface_palette.__name__,
@@ -151,5 +200,6 @@ __all__ = [
 	ImageSprite.__name__,
 	ScalingImageSprite.__name__,
 	EasingVector2.__name__,
-	SteppingEasingVector2.__name__
+	SteppingEasingVector2.__name__,
+	BoxesTransition.__name__
 ]

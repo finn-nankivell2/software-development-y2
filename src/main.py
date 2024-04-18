@@ -53,7 +53,17 @@ from ui import AbstractButton, NamedButton, ProgressBar, TargettingProgressBar, 
 from turntaking import PlayerTurnTakingModue
 
 
+def main_menu():
+	game.sprites.purge()
+	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
+
+	game.sprites.new(NamedButton(FRect(200, 300, 200, 100), "PLAY", onclick = lambda: game.loop.run(mainloop)))
+	game.sprites.new(NamedButton(FRect(200, 450, 200, 100), "TUTORIAL"))
+	game.sprites.new(NamedButton(FRect(200, 600, 200, 100), "EXIT", onclick = game.loop.stop))
+
+
 def mainloop():
+	game.sprites.purge()
 	game.playerturn.set_scenario_id("plastic_metal_sorting")
 
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
@@ -109,6 +119,7 @@ def do_running(self):
 	self.game.state.update()
 	self.game.input.update()
 	self.game.sprites.update()
+	self.game.playerstate.update()
 	self.game.debug.update()
 	self.game.windowsystem.update()
 
@@ -152,4 +163,4 @@ if __name__ == "__main__":
 	game.add_module(PlayerStateTrackingModule)
 
 	game.add_module(PlayerTurnTakingModue)
-	game.loop.run(mainloop)
+	game.loop.run(main_menu)

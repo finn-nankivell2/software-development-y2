@@ -26,7 +26,7 @@
 	"fonts": {
 		"roboto": {
 			"path": "fonts/RobotoCondensed-Medium.ttf",
-			"sizes": [14, 20, 25, 35]
+			"sizes": [14, 20, 25, 35, 70]
 		}
 	},
 
