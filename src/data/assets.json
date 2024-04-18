@@ -2,9 +2,11 @@
 	"textures": {
 		"plastic": "assets/plastic2.png",
 		"default": "assets/cool.png",
-		"cans": "assets/cans.png",
+		"aluminium": "assets/aluminium.png",
+		"metal": "assets/metal2.png",
 		"paper": "assets/paper.png",
 		"compost": "assets/compost.png",
+		"mixed": "assets/unknown.png",
 		"xpbackground": "assets/xp3.png",
 		"buildingbg": "assets/building.png",
 		"landfill": "assets/landfill.png",

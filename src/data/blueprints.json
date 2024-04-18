@@ -10,12 +10,21 @@
 			}
 		},
 		"aluminium": {
-			"texture": "cans",
+			"texture": "aluminium",
 			"data": {
 				"title": "Aluminium",
 				"description": "Recycleable aluminium waste (cans, scrap, etc). Should be sent to metal processing",
 				"playable_everywhere": false,
 				"play_id": "aluminium"
+			}
+		},
+		"metal": {
+			"texture": "metal",
+			"data": {
+				"title": "Metal",
+				"description": "Recycleable aluminium waste (scrap, industrial, etc). Should be sent to metal processing",
+				"playable_everywhere": false,
+				"play_id": "metal"
 			}
 		},
 		"paper": {
@@ -82,7 +91,7 @@
 			}
 		},
 		"mixed": {
-			"texture": "default",
+			"texture": "mixed",
 			"data": {
 				"title": "Unknown",
 				"description": "Unknown, mixed waste. Can be playing into landfills and incinerators, but it is risky. It is best to send it to the sorting building so that it can be turned into sorted waste cards",
@@ -112,7 +121,7 @@
 			"texture": "investment",
 			"data": {
 				"title": "Investment",
-				"description": "Investment waste",
+				"description": "Used for upgrading and creating buildings",
 				"playable_everywhere": true,
 				"play_id": "investment"
 			}
@@ -172,6 +181,7 @@
 					"paper",
 					"compost",
 					"rubble",
+					"metal",
 					"timber",
 					"glass",
 					"batteries",
@@ -261,7 +271,7 @@
 			"data": {
 				"title": "Metal Recycling",
 				"description": "Recycles metal waste played onto it, such as aluminium. Metal is cleaned before being melted down before being reformed into new shapes. Has a low default capacity",
-				"accept_ids": ["aluminium"],
+				"accept_ids": ["aluminium", "metal"],
 				"play_effect": {
 					"for_any": {
 						"funds": 0.2
@@ -353,6 +363,7 @@
 				"accept_ids": [],
 				"play_effect": {},
 				"stamina": 0,
+				"construction_cost": 9,
 				"space_id": "wincondition"
 			}
 		},
@@ -403,7 +414,8 @@
 			"drawable_cards": {
 				"investment": 0.05,
 				"plastic": 0.32,
-				"aluminium": 0.32,
+				"aluminium": 0.20,
+				"metal": 0.12,
 				"mixed": 0.31
 			},
 			"cards_per_turn": 4

@@ -4,19 +4,21 @@
 
 - [ ] - Cards:
 
-	- [ ] - Plastic
+	- [x] - Plastic
 
 	- [x] - Compost
 
-	- [ ] - Aluminium
+	- [x] - Aluminium
 
-	- [ ] - Metal
+	- [x] - Metal
 
-	- [ ] - Misc Waste
+	- [x] - Unknown
 
-	- [ ] - Chemical
+	- [x] - Chemical
 
 	- [x] - Paper
+
+	- [ ] - Investment
 
 
 - [ ] - Building texture

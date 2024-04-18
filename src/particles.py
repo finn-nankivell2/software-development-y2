@@ -43,6 +43,7 @@ class SurfaceParticle(Particle):
 
 
 class DeflatingParticle(Particle):
+
 	def __init__(self, rect, colour, lifetime=60):
 		super().__init__(Vector2(rect.topleft), rect.width, VZERO, colour, lifetime)
 		self.rect = rect
@@ -55,8 +56,6 @@ class DeflatingParticle(Particle):
 
 	def update_draw(self):
 		pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
-
-
 
 
 def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[Particle]:

@@ -25,7 +25,7 @@ class PollutionWatcher(Sprite):
 
 	def update_move(self):
 		if game.playerstate.pollution >= 1.0:
-			game.playerturn.game_over(False)
+			game.playerturn.game_over()
 
 
 @dataclass
@@ -83,13 +83,11 @@ class PlayerTurnTakingModue(GameModule):
 	def set_scenario_id(self, scenario_id):
 		self.scenario = Scenario.from_blueprint(game.blueprints.get_scenario(scenario_id))
 
+	def you_win(self):
+		print("YOU WIN")
+
 	def game_over(self, won: bool = True):
-		if won:
-			print("YOU WIN")
-			exit()
-		else:
-			print("YOU LOSE")
-			exit()
+		print("YOU LOSE")
 
 	def reset(self):
 		self.turn_count = 1

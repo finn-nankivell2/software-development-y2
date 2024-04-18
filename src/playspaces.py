@@ -95,6 +95,7 @@ class Upgrade:
 		match self.effect_type:
 			case "stamina":
 				space.data.stamina += self.value
+				space._stamina += self.value
 			case "funds":
 				effect = space.data.play_effect.find_any("funds")
 				effect.value += self.value
@@ -155,8 +156,9 @@ class Playspace(Sprite):
 				)
 
 			self.data.upgrades = upgrades
+
 		elif self.data.space_id == "wincondition":
-			game.playerturn.game_over(True)
+			game.playerturn.you_win()
 
 		self.titlebar = self.rect.copy()
 		self.titlebar.height = Playspace.DRAGABLE_BAR_HEIGHT
