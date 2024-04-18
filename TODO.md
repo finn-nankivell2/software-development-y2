@@ -18,7 +18,7 @@
 
 	- [x] - Paper
 
-	- [ ] - Investment
+	- [x] - Investment
 
 
 - [ ] - Building texture
@@ -29,7 +29,7 @@
 
 	- [x] - Waste Sorting
 
-	- [ ] - Plastic recycling
+	- [x] - Plastic recycling
 
 
 ## Sounds TODO:
@@ -113,7 +113,7 @@
 
 		- [ ] - Update blueprints to use stamina, remove dataclass default
 
-	- [ ] - Upgrade system
+	- [x] - Upgrade system
 
 		- [x] - Funds UI
 
@@ -123,9 +123,9 @@
 
 			- [x] - Upgrade Button class
 
-			- [ ] - Upgrade effects
+			- [x] - Upgrade effects
 
-				- [ ] - Building transform effect
+				- [x] - Building transform effect
 
 - [ ] - Balance stuff
 
@@ -133,7 +133,9 @@
 
 	- [x] - Mixed waste sorting
 
-	- [ ] - Should capacity upgrades refund stamina?
+	- [x] - Should capacity upgrades refund stamina?
+
+		- Yes
 
 - [ ] - Alternate background angles
 
