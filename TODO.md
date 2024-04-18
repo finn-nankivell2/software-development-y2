@@ -29,6 +29,8 @@
 
 	- [x] - Waste Sorting
 
+	- [ ] - Plastic recycling
+
 
 ## Sounds TODO:
 

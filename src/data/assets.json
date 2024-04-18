@@ -1,6 +1,6 @@
 {
 	"textures": {
-		"plastic": "assets/plastic2.png",
+		"plastic": "assets/plastic.png",
 		"default": "assets/cool.png",
 		"aluminium": "assets/aluminium.png",
 		"metal": "assets/metal2.png",
@@ -11,9 +11,9 @@
 		"buildingbg": "assets/building.png",
 		"landfill": "assets/landfill.png",
 		"incinerator": "assets/incinerator2.png",
-		"plasticrec": "assets/plasticrec.png",
+		"plasticrec": "assets/plasticrec2.png",
 		"composting": "assets/composting.png",
-		"investment": "assets/coins.png",
+		"investment": "assets/investment2.png",
 		"endturn": "assets/endturn.png",
 		"citiedlow1": "assets/citiedlow2.png",
 		"wastesorting": "assets/wastesorting.png",
