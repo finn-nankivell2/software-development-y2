@@ -16,7 +16,9 @@
 		"citiedlow1": "assets/citiedlow2.png",
 		"wastesorting": "assets/wastesorting.png",
 		"metalrec": "assets/metalrec3.png",
-		"landfill_hill": "assets/hill.png"
+		"landfill_hill": "assets/hill.png",
+		"construction": "assets/construction.png",
+		"wincondition": "assets/wincondition.png"
 	},
 
 	"fonts": {

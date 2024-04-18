@@ -54,37 +54,9 @@ from turntaking import PlayerTurnTakingModue
 
 
 def mainloop():
-	with open("data/colours.json") as file:
-		gradient = json.load(file)
-
-	gradient = list(map(Color, gradient))
-
 	game.playerturn.set_scenario_id("plastic_metal_sorting")
-	# bg_grad = [gradient[0], gradient[1]]
 
-	# bg_particles = BubbleParticleEmitter(pos=game.windowsystem.dimensions / 2, colours=bg_grad)
-	# for _ in range(1000):
-	# 	bg_particles.update_move()
-	# game.sprites.new(bg_particles)
-	# game.sprites.new(ScanlineImageSprite(VZERO, game.assets.xpbackground), layer_override="BACKGROUND")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
-	# game.sprites.new(ScanlineImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
-
-	# for _, blueprint in itertools.islice(reversed(game.blueprints.icards()), 3):
-	# 	game.sprites.new(Card.from_blueprint(blueprint).with_tooltip())
-
-	# game.sprites.new(Card.from_blueprint(game.blueprints.cards.mixed).with_tooltip())
-
-	# logging.debug("\n".join(k for k, _ in game.blueprints.ibuildings()))
-
-	# for _, blueprint in itertools.islice(reversed(game.blueprints.ibuildings()), 3):
-	# 	game.sprites.new(Playspace.from_blueprint(blueprint).with_tooltip())
-
-	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
-	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.plasticrec).with_tooltip())
-
-	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
-	# game.sprites.new(Playspace.from_blueprint(game.blueprints.buildings.incinerator).with_tooltip())
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
@@ -143,7 +115,7 @@ def do_running(self):
 
 if __name__ == "__main__":
 	game.add_module(
-		SpritesManager, layers=["MANAGER", "BACKGROUND", "PLAYSPACE", "CARD", "PARTICLE", "FONT", "FOREGROUND", "UI"]
+		SpritesManager, layers=["MANAGER", "BACKGROUND", "LOWPARTICLE", "PLAYSPACE", "CARD", "PARTICLE", "FONT", "FOREGROUND", "UI"]
 	)
 
 	game.add_module(GameloopManager, loop_hook=do_running)

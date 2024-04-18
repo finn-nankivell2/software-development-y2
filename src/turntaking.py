@@ -20,11 +20,20 @@ class InvestmentWatcher(Sprite):
 
 
 
+class PollutionWatcher(Sprite):
+	LAYER = "MANAGER"
+
+	def update_move(self):
+		if game.playerstate.pollution >= 1.0:
+			game.playerturn.game_over(False)
+
+
 @dataclass
 class Scenario:
 	name: str
 	drawable_cards: Dict[str, float]
 	starting_buildings: List[str]
+	buildable_buildings: List[str]
 	cards_per_turn: int
 
 	@classmethod
@@ -33,7 +42,7 @@ class Scenario:
 
 	@classmethod
 	def default(cls):
-		return cls("default", {"investment": 1.0}, [k for k, _ in game.blueprints.ibuildings()], 6)
+		return cls(name="DEFAULT", drawable_cards={"investment": 0.5, "plastic": 0.5}, starting_buildings=["landfill", "incinerator"], buildable_buildings=["plasticrec"], cards_per_turn=4)
 
 	def random_card_id(self, exclude: List[str] = []) -> str:
 		roll = random.uniform(0, 1.0)
@@ -74,6 +83,14 @@ class PlayerTurnTakingModue(GameModule):
 	def set_scenario_id(self, scenario_id):
 		self.scenario = Scenario.from_blueprint(game.blueprints.get_scenario(scenario_id))
 
+	def game_over(self, won: bool = True):
+		if won:
+			print("YOU WIN")
+			exit()
+		else:
+			print("YOU LOSE")
+			exit()
+
 	def reset(self):
 		self.turn_count = 1
 		self.transitioning = False
@@ -83,6 +100,7 @@ class PlayerTurnTakingModue(GameModule):
 
 	def scene_start(self):
 		game.sprites.new(InvestmentWatcher())
+		game.sprites.new(PollutionWatcher())
 
 		for building in self.scenario.starting_buildings:
 			bp = game.blueprints.get_building(building)

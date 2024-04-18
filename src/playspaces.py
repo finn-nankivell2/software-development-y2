@@ -5,6 +5,7 @@ from tooltip import Tooltip
 from dataclasses import field
 import copy
 from ui import Dropdown, NamedButton, AbstractButton, Onclick
+from particles import DeflatingParticle
 
 
 @dataclass(slots=True)
@@ -20,7 +21,9 @@ class Effect:
 		match self.prop:
 			case "dealcards":
 				for play_id in self.value:
-					card = game.cardspawn.get(play_id) if play_id != "random" else game.playerturn.scenario.random_card(exclude=["mixed"])
+					card = game.cardspawn.get(play_id) if play_id != "random" else game.playerturn.scenario.random_card(
+						exclude=["mixed"]
+					)
 					game.sprites.new(card)
 
 			case _:
@@ -105,6 +108,7 @@ class Upgrade:
 				space.destroy()
 				transformed = Playspace.from_blueprint(game.blueprints.get_building(self.value))
 				transformed.rect = space.rect
+				game.sprites.new(DeflatingParticle(transformed.rect.inflate(40, 40), palette.GREY), layer_override="LOWPARTICLE")
 				game.sprites.new(transformed.with_tooltip())
 
 			case eftype:
@@ -120,10 +124,11 @@ class DataPlayspace:
 	upgrades: List[Upgrade]
 	space_id: str  # An identifying string for the building type TODO: Make this an enum
 	stamina: int = 3
-	# TODO: Add an image property
+	construction_cost: int = 1
 
 	@classmethod
 	def fromjson(cls, j: Dict[str, str]):
+		j = j.copy()
 		j["play_effect"] = PlayEffectInfo.fromjson(j.get("play_effect", {}))
 		j["upgrades"] = list(map(Upgrade.fromjson, j.get("upgrades", [])))
 		return cls(**j)  # type: ignore
@@ -138,6 +143,20 @@ class Playspace(Sprite):
 	def __init__(self, rect, surface, data):
 		self.rect = rect
 		self.data = data
+
+		if self.data.space_id == "construction":
+			upgrades = []
+			for space_id in game.playerturn.scenario.buildable_buildings:
+				space_data = DataPlayspace.fromjson(game.blueprints.get_building(space_id)["data"])
+				upgrades.append(
+					Upgrade(
+						space_data.title, space_data.description, "transform", space_id, space_data.construction_cost
+					)
+				)
+
+			self.data.upgrades = upgrades
+		elif self.data.space_id == "wincondition":
+			game.playerturn.game_over(True)
 
 		self.titlebar = self.rect.copy()
 		self.titlebar.height = Playspace.DRAGABLE_BAR_HEIGHT
@@ -165,8 +184,10 @@ class Playspace(Sprite):
 		self._stamina = self.data.stamina
 
 		dropdown_rect = FRect(VZERO, Playspace.DROPDOWN_BUTTON_DIMS)
-		dropdown_pos = self.rect.topright + vec(-dropdown_rect.width*1.2, self.titlebar.height+40)
-		self._upgrade_button = Dropdown(dropdown_rect, UpgradeMenu.from_playspace(self).set_pos(dropdown_pos + vec(dropdown_rect.width, 0)))
+		dropdown_pos = self.rect.topright + vec(-dropdown_rect.width * 1.2, self.titlebar.height + 40)
+		self._upgrade_button = Dropdown(
+			dropdown_rect, UpgradeMenu.from_playspace(self).set_pos(dropdown_pos + vec(dropdown_rect.width, 0))
+		)
 		self._upgrade_button.rect.topleft = dropdown_pos
 
 	@classmethod
@@ -225,7 +246,8 @@ class Playspace(Sprite):
 		return not any(space.is_dragged() for space in game.sprites.get("PLAYSPACE") if space is not self)
 
 	def card_validation(self, card) -> bool:
-		return (card.data.play_id in self.data.accept_ids and self._stamina > 0) or (card.data.play_id == "investment" and self._investments < consts.MAX_INVESMENTS)
+		return (card.data.play_id in self.data.accept_ids and
+				self._stamina > 0) or (card.data.play_id == "investment" and self._investments < consts.MAX_INVESMENTS)
 
 	def card_hovering(self, card) -> bool:
 		return self.rect.colliderect(card.rect.inflate(-card.PLAYABLE_OVERLAP, -card.PLAYABLE_OVERLAP))
@@ -316,8 +338,12 @@ class Playspace(Sprite):
 			ov_rect = self.rect.copy()
 			ov_rect.inflate_ip(-30, -90)
 
-			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, ov_rect.topleft + Vector2(30, 0), 5)
-			pygame.draw.line(game.windowsystem.screen, palette.WHITE, ov_rect.topleft, ov_rect.topleft + Vector2(0, 30), 5)
+			pygame.draw.line(
+				game.windowsystem.screen, palette.WHITE, ov_rect.topleft, ov_rect.topleft + Vector2(30, 0), 5
+			)
+			pygame.draw.line(
+				game.windowsystem.screen, palette.WHITE, ov_rect.topleft, ov_rect.topleft + Vector2(0, 30), 5
+			)
 
 			bot_adj = ov_rect.bottomleft + Vector2(0, 30)
 			pygame.draw.line(game.windowsystem.screen, palette.WHITE, bot_adj, bot_adj + Vector2(30, 0), 5)
@@ -332,10 +358,10 @@ class Playspace(Sprite):
 		stam_pos += Vector2(-STAM_RAD * 1.8, 40 + STAM_RAD)
 
 		for i in range(self.data.stamina):
-			if i+1 > self._stamina:
+			if i + 1 > self._stamina:
 				pygame.draw.circle(game.windowsystem.screen, palette.GREY, stam_pos, STAM_RAD, 2)
 			else:
-				pygame.draw.circle(game.windowsystem.screen, palette.WHITE, stam_pos, STAM_RAD, int(STAM_RAD*0.7))
+				pygame.draw.circle(game.windowsystem.screen, palette.WHITE, stam_pos, STAM_RAD, int(STAM_RAD * 0.7))
 
 			stam_pos.x -= STAM_RAD * 3
 
@@ -343,10 +369,16 @@ class Playspace(Sprite):
 		self._upgrade_button.update_draw()
 
 		FUNDS_RAD = 20
-		funds_pos = self._upgrade_button.rect.midleft - vec(FUNDS_RAD*1.5, FUNDS_RAD/2)
+		funds_pos = self._upgrade_button.rect.midleft - vec(FUNDS_RAD * 1.5, FUNDS_RAD / 2)
 
 		for i in range(self._investments):
-			pygame.draw.rect(game.windowsystem.screen, palette.WHITE, FRect(funds_pos, (FUNDS_RAD, FUNDS_RAD)), STAM_RAD, border_radius=3)
+			pygame.draw.rect(
+				game.windowsystem.screen,
+				palette.WHITE,
+				FRect(funds_pos, (FUNDS_RAD, FUNDS_RAD)),
+				STAM_RAD,
+				border_radius=3
+			)
 			funds_pos.x -= FUNDS_RAD * 1.8
 
 
@@ -386,7 +418,7 @@ class UpgradeButton(NamedButton):
 		if hovered:
 			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect, width=2, border_radius=5)
 
-		game.windowsystem.screen.blit(self._rendered, self.rect.midleft + Vector2(20, -self._rendered.get_height()/2))
+		game.windowsystem.screen.blit(self._rendered, self.rect.midleft + Vector2(20, -self._rendered.get_height() / 2))
 
 		upgrade_pip_rect = FRect(VZERO, (20, 20))
 		upgrade_pip_rect.midright = self.rect.midright - Vector2(20, 0)
@@ -394,15 +426,17 @@ class UpgradeButton(NamedButton):
 		if self.upgrade.bought:
 			game.windowsystem.screen.blit(self._greyout, self.rect)
 		else:
-			clr = Color(255, 0, 0) if not self.upgrade.can_apply(self.space) and self.mouse_down_over() else palette.WHITE
+			clr = Color(255, 0,
+						0) if not self.upgrade.can_apply(self.space) and self.mouse_down_over() else palette.WHITE
 			pygame.draw.rect(game.windowsystem.screen, clr, upgrade_pip_rect, border_radius=5)
 
 			cost_render = self._font.render(str(self.upgrade.cost), True, clr)
-			game.windowsystem.screen.blit(cost_render, self.rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size())/2)
+			game.windowsystem.screen.blit(
+				cost_render, self.rect.midright - Vector2(50, 0) - Vector2(cost_render.get_size()) / 2
+			)
 
 		self.rect = cached_rect
 		self._tooltip.update_draw()
-
 
 
 class UpgradeMenu(Sprite):
@@ -447,7 +481,10 @@ class UpgradeMenu(Sprite):
 	@classmethod
 	def from_playspace(cls, space: Playspace):
 		upgrades = space.data.upgrades
-		buttons = [UpgradeButton(FRect(VZERO, cls.DEFAULT_BUTTON_SIZE), upg, space).set_onclick(functools.partial(upg.apply, space)) for upg in upgrades]
+		buttons = [
+			UpgradeButton(FRect(VZERO, cls.DEFAULT_BUTTON_SIZE), upg,
+							space).set_onclick(functools.partial(upg.apply, space)) for upg in upgrades
+		]
 		rect = FRect(0, 0, 0, 0)
 		return cls(rect, buttons)
 

@@ -119,6 +119,19 @@
 		}
 	},
 	"buildings": {
+		"construction": {
+			"texture": "construction",
+			"data": {
+				"title": "Construction",
+				"description": "Building under construction. Choose an upgrade to transform it into the desired building",
+				"accept_ids": [],
+				"play_effect": {},
+				"space_id": "construction",
+				"stamina": 0,
+				"upgrades": []
+			}
+		},
+
 		"incinerator": {
 			"texture": "incinerator",
 			"data": {
@@ -216,6 +229,7 @@
 					}
 				},
 				"stamina": 2,
+				"construction_cost": 2,
 				"upgrades": [
 					{
 						"name": "Capacity",
@@ -314,7 +328,10 @@
 						"name": "Subsidization",
 						"description": "Sorting unknown waste generates 1 investment card",
 						"effect_type": "play_effect",
-						"value": ["dealcards", ["random", "random", "investment"]],
+						"value": [
+							"dealcards",
+							["random", "random", "investment"]
+						],
 						"cost": 3
 					},
 					{
@@ -326,6 +343,17 @@
 					}
 				],
 				"space_id": "plasticrec"
+			}
+		},
+		"wincondition": {
+			"texture": "wincondition",
+			"data": {
+				"title": "Victory Monument",
+				"description": "Building required to win the game",
+				"accept_ids": [],
+				"play_effect": {},
+				"stamina": 0,
+				"space_id": "wincondition"
 			}
 		},
 		"landfill_hill": {
@@ -364,8 +392,14 @@
 	},
 	"scenarios": {
 		"plastic_metal_sorting": {
-			"name": "Plastic and ALuminium Sorting",
-			"starting_buildings": ["landfill", "plasticrec", "wastesorting", "metalrec"],
+			"name": "Plastic and Aluminium Sorting",
+			"starting_buildings": [
+				"landfill",
+				"plasticrec",
+				"wastesorting",
+				"metalrec"
+			],
+			"buildable_buildings": ["wincondition"],
 			"drawable_cards": {
 				"investment": 0.05,
 				"plastic": 0.32,

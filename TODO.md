@@ -97,7 +97,13 @@
 
 - [ ] - Buildings
 
-	- [ ] - Build new buildings
+	- [x] - Build new buildings
+
+		- [x] - Investment special case
+
+		- [x] - Wincondition building special case
+
+		- [x] - Construction building special case
 
 	- [x] - Building stamina system
 
@@ -148,3 +154,13 @@
 - [ ] - Tutorial
 
 - [ ] - Flask server
+
+- [ ] - Fix pollution progress bar underflow
+
+- [ ] - WIN STATE / LOSE STATE (important!!!!!)
+
+	- [ ] - Playspace movement locked?
+
+	- [ ] - Card movement locked?
+
+		- Remove update_move?

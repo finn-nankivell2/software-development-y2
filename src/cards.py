@@ -1,6 +1,6 @@
 from prelude import *
 from gameutil import surface_rounded_corners, surface_keepmask, shadow_from_rect, EasingVector2
-from particles import particle_explosion, SurfaceParticle
+from particles import particle_explosion, SurfaceParticle, DeflatingParticle
 import json
 import fonts
 from playspaces import Playspace
@@ -123,6 +123,9 @@ class Card(Sprite):
 
 		return None
 
+	def is_not_in_hand(self) -> bool:
+		return self.rect.centery < game.windowsystem.dimensions.y - consts.CARD_RECT.y/2
+
 	def is_playable(self) -> bool:
 		return self.playspace_collide() is not None
 
@@ -152,6 +155,12 @@ class Card(Sprite):
 			if space:
 				space.play_card_onto_space(self)
 				self.destroy_anim()
+			elif self.data.play_id == "investment" and self.is_not_in_hand():
+				self.destroy_anim()
+				construction = Playspace.from_blueprint(game.blueprints.get_building("construction"))
+				construction.rect.topleft = self.rect.topleft
+				game.sprites.new(DeflatingParticle(construction.rect.inflate(40, 40), palette.GREY), layer_override="LOWPARTICLE")
+				game.sprites.new(construction)
 
 		# Logic for if the Card is being dragged
 		if self.dragged:
@@ -220,7 +229,6 @@ class FollowMouse(Sprite):
 
 class Hand(Sprite):
 	LAYER = "MANAGER"
-
 	CARD_SPACING = 20
 
 	@dataclass
