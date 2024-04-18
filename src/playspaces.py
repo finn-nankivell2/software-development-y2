@@ -76,6 +76,7 @@ class Upgrade:
 	value: Any
 	cost: int
 	bought: bool = False
+	persist: bool = False
 
 	@classmethod
 	def fromjson(cls, j: Dict[str, Any]):
@@ -88,7 +89,7 @@ class Upgrade:
 		if not self.can_apply(space):
 			return False
 
-		self.bought = True
+		self.bought = True and not self.persist
 		space.add_investment_token(-self.cost)
 
 		# EXTEND UPGRADE EFFECTS HERE

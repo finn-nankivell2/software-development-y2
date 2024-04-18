@@ -4,12 +4,12 @@ import pygame
 import random
 import math
 from pygame import Vector2, Color, Surface, FRect, Rect
-from typing import List, Union, Iterator, Tuple, Callable, Any
+from typing import List, Union, Iterator, Tuple, Callable, Any, Optional
 from consts import VZERO
 from dataclasses import dataclass
 import palette
 
-from easing_functions import CubicEaseInOut
+from easing_functions import CubicEaseInOut, BackEaseInOut
 
 
 class EasingVector2:
@@ -146,35 +146,62 @@ class HookSprite(Sprite):
 
 
 class BoxesTransition(Sprite):
+	LAYER = "TRANSITION"
+
 	@dataclass
 	class Box:
 		pos: Vector2
-		incr: float
-		target: float
+		start: Vector2
+		lifetime: int
+		fullwidth: float
+		func: BackEaseInOut
 		width: float = 0
+		tick: int = 0
+		diminshing: bool = False
 
 		def update(self):
-			self.width += incr
-			if self.width > target:
-				self.width = target
+			self.tick += 1
+
+			if self.diminshing:
+				self.pos.x = self.func(self.tick)
+				self.width = self.fullwidth - (self.pos.x - self.start.x)
+			else:
+				self.width = self.func(self.tick)
 
 		def complete(self):
-			return self.width >= target
+			if self.diminshing:
+				return self.width <= 0
 
-	def __init__(self, rect: FRect, chunks: Tuple[int, int], colour: Color = palette.BLACK, lifetime=60):
+			return self.tick >= self.lifetime
+
+	def __init__(self, rect: FRect, chunks: Tuple[int, int], colour: Color = palette.BLACK, lifetime=60, callback: Optional[Callable] = None):
 		self.rect = rect
 		self.boxes = []
 		self._lifetime = lifetime
+		self._frames = 0
+		self._callback = callback
+		self._halfway = False
+		self.colour = colour
 
 		ch_x, ch_y = chunks
-		self._box_height = ch_y
+		self._box_width = self.rect.width/ch_x
+		self._box_height = self.rect.height/ch_y
 
-		for y in range(rect.y, rect.height, rect.height/ch_y):
-			for x in range(rect.x, rect.width, rect.width/ch_y):
+		for i in range(ch_y):
+			y = i * self._box_height
+
+			x_offset = 20 * (i % 2)
+
+			for j in range(ch_x + i % 2):
+				x = j * self._box_width
+
+				lf = self._lifetime - random.randint(0, self._lifetime/2)
 				self.boxes.append(BoxesTransition.Box(
-					Vector2(x, y),
-					random.uniform(ch_x/self._lifetime, ch_x/self._lifetime/2),
-					ch_x,
+					Vector2(x - x_offset, y),
+					Vector2(x - x_offset, y),
+					lf,
+					self._box_width,
+					BackEaseInOut(0, self._box_width, lf)
 				))
 
 	def update_move(self):
@@ -182,11 +209,20 @@ class BoxesTransition(Sprite):
 			box.update()
 
 		if all(b.complete() for b in self.boxes):
-			pass
+			if self._halfway:
+				self.destroy()
+			else:
+				self._callback()
+				self._halfway = True
+
+				for box in self.boxes:
+					box.diminshing = True
+					box.func = BackEaseInOut(box.pos.x, box.pos.x + box.width, box.lifetime)
+					box.tick = 0
 
 	def update_draw(self):
 		for box in self.boxes:
-			pygame.draw.rect(game.windowsystem.screen, palette.BLACK, (box.pos.x, box.pos.y, box.width, self._box_height))
+			pygame.draw.rect(game.windowsystem.screen, self.colour, (box.pos.x, box.pos.y, box.width, self._box_height))
 
 
 

@@ -41,7 +41,7 @@ from particles import BubbleParticleEmitter
 from cards import Card, Hand, DataCard
 from playspaces import Playspace
 
-from gameutil import ScalingImageSprite, HookSprite, ScanlineImageSprite
+from gameutil import ScalingImageSprite, HookSprite, ScanlineImageSprite, BoxesTransition
 from consts import VZERO
 
 from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule, CardSpawningModule
@@ -54,19 +54,23 @@ from turntaking import PlayerTurnTakingModue
 
 
 def main_menu():
-	game.sprites.purge()
+	game.sprites.purge_preserve("TRANSITION")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
-	game.sprites.new(NamedButton(FRect(200, 300, 200, 100), "PLAY", onclick = lambda: game.loop.run(mainloop)))
+	def start_game():
+		game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
+
+	game.sprites.new(NamedButton(FRect(200, 300, 200, 100), "PLAY", onclick = start_game))
 	game.sprites.new(NamedButton(FRect(200, 450, 200, 100), "TUTORIAL"))
 	game.sprites.new(NamedButton(FRect(200, 600, 200, 100), "EXIT", onclick = game.loop.stop))
 
 
 def mainloop():
-	game.sprites.purge()
+	game.sprites.purge_preserve("TRANSITION")
 	game.playerturn.set_scenario_id("plastic_metal_sorting")
 
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
+
 
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
@@ -126,7 +130,7 @@ def do_running(self):
 
 if __name__ == "__main__":
 	game.add_module(
-		SpritesManager, layers=["MANAGER", "BACKGROUND", "LOWPARTICLE", "PLAYSPACE", "CARD", "PARTICLE", "FONT", "FOREGROUND", "UI"]
+		SpritesManager, layers=["MANAGER", "BACKGROUND", "LOWPARTICLE", "PLAYSPACE", "CARD", "PARTICLE", "FONT", "FOREGROUND", "UI", "TRANSITION"]
 	)
 
 	game.add_module(GameloopManager, loop_hook=do_running)

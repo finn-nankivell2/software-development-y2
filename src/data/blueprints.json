@@ -387,14 +387,8 @@
 						"description": "Decreases global pollution",
 						"effect_type": "pollution",
 						"value": -0.2,
-						"cost": 3
-					},
-					{
-						"name": "Cleanup",
-						"description": "Decreases global pollution",
-						"effect_type": "pollution",
-						"value": -0.2,
-						"cost": 3
+						"cost": 3,
+						"persist": true
 					}
 				]
 			}
