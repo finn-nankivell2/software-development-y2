@@ -11,6 +11,7 @@ class AbstractButton(Sprite):
 	def __init__(self, rect: FRect, onclick: Onclick = None):
 		self.rect = rect
 		self.onclick = onclick
+		self.disabled = False
 
 	def set_onclick(self, onclick: Optional[Callable]):
 		self.onclick = onclick
@@ -21,7 +22,7 @@ class AbstractButton(Sprite):
 		return self
 
 	def hovered(self) -> bool:
-		return game.input.mouse_within(self.rect)
+		return game.input.mouse_within(self.rect) and not self.disabled
 
 	def mouse_down_over(self, mbtn=0) -> bool:
 		return self.hovered() and game.input.mouse_down(mbtn)
@@ -158,6 +159,43 @@ class DodgingProgressBar(TargettingProgressBar):
 
 		super().update_draw()
 
+
+class UserDebugLog(Sprite):
+	LAYER = "UI"
+	LOG_SHOW_LENGTH = 10
+
+	def __init__(self, rect: FRect, num_lines: int = 9, text_size: int = 30, colour = palette.BLACK):
+		self.rect = rect
+		self.num_lines = num_lines
+		self.text_size = text_size
+		self._font = fonts.families.roboto.size(text_size)
+		self._queue = [f"test{i}" for i in range(20) ]
+
+		self.colour = colour
+		self._tick = UserDebugLog.LOG_SHOW_LENGTH
+
+	def display_to_queue(self, text):
+		self._queue.push(text)
+
+	def update_move(self):
+		if len(self._queue) > self.num_lines:
+			self._tick -= 1
+
+		if self._tick < 1:
+			self._tick = UserDebugLog.LOG_SHOW_LENGTH
+			self._queue.pop(0)
+
+	def update_draw(self):
+		pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
+		# pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-5, -5), border_radius=5, width=2)
+
+		rect = self.rect.copy()
+		rect.inflate_ip(-20, -20)
+		rect.height = self.text_size
+		for text in itertools.islice(self._queue, self.num_lines):
+			render = self._font.render(text, True, palette.TEXT)
+			game.windowsystem.screen.blit(render, rect)
+			rect.y += rect.height
 
 
 class Dropdown(AbstractButton):

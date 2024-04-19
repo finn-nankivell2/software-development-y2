@@ -4,7 +4,7 @@ from gamesystem.common.coroutines import TickCoroutine
 from cards import PollutingCard, Card
 from playspaces import Playspace
 import fonts
-from gameutil import EasingVector2, BoxesTransition
+from gameutil import EasingVector2, BoxesTransition, ImageSprite
 from ui import NamedButton
 import requests
 
@@ -67,14 +67,30 @@ class GameComplete(Sprite):
 					game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(game.loop.functions.menu)))
 
 				def submit_scores_to_server():
+					submit_btn.disabled = True
 					data = {
 						"username": "default",
 						"turn_count": game.playerturn.turn_count,
 						"seconds": 2,
 						"pollution": int(game.playerstate.pollution * 100)
 					}
-					response = requests.post(consts.SERVER_ADDRESS + "/upload", json=data)
-					print(response.text)
+					text = "Submitted"
+					try:
+						response = requests.post(consts.SERVER_ADDRESS + "/upload", json=data)
+					except Exception as e:
+						text = "Error!"
+						logging.error(f"Request failed with {e} error")
+
+					res_text = fonts.families.roboto.size(45).render(text, True, palette.TEXT)
+					padding = Vector2(20, 20)
+					bg = Surface(res_text.get_size() + padding)
+					bg.fill(palette.BLACK)
+					bg.blit(res_text, padding/2)
+
+					game.sprites.new(ImageSprite(
+						submit_btn.rect.midright + Vector2(30, -35),
+						bg
+					), layer_override="UI")
 
 				buttons_start_at = self._font_pos.copy()
 				buttons_size = Vector2(300, 120)
@@ -84,11 +100,13 @@ class GameComplete(Sprite):
 					onclick = return_to_main_menu
 				))
 
-				game.sprites.new(NamedButton(
+				submit_btn = NamedButton(
 					FRect(buttons_start_at + Vector2(30, 80), buttons_size),
 					"SUBMIT STATS",
 					onclick = submit_scores_to_server
-				))
+				)
+
+				game.sprites.new(submit_btn)
 				self._add_buttons_lock = True
 
 	def update_draw(self):

@@ -119,7 +119,7 @@
 
 	- [x] - Building stamina system
 
-		- [ ] - Update blueprints to use stamina, remove dataclass default
+		- [x] - Update blueprints to use stamina, remove dataclass default
 
 	- [x] - Upgrade system
 
@@ -135,9 +135,9 @@
 
 				- [x] - Building transform effect
 
-- [ ] - Balance stuff
+- [x] - Balance stuff
 
-	- [ ] - Difference between landfill and incineration?
+	- [x] - Difference between landfill and incineration?
 
 	- [x] - Mixed waste sorting
 
@@ -173,13 +173,37 @@
 
 	- [ ] - Fancy scenario choice ui
 
-	- [ ] - Highscores
+- [ ] - More scenarios
+
+	- [ ] - Industrial waste
+
+		- [ ] - Chemical
+
+		- [ ] - Paint
+
+		- [ ] - Metal
+
+		- [ ] - Paper
+
+		- [ ] - Glass
+
+	- [ ] - Electrical waste
+
+		- [ ] - Batteries
+
+		- [ ] - Electrical
+
+	- [ ] - Farm waste
+
+		- [ ] - Composting
+
+		- [ ] - Chemical
 
 - [ ] - Tutorial
 
 - [x] - Flask server
 
-- [ ] - Client side integration
+- [x] - Client side integration
 
 - [x] - Fix pollution progress bar underflow
 
@@ -199,7 +223,7 @@
 
 	- [x] - Reduction
 
-- [ ] - Stylish player debug log ui
+- [x] - Stylish player debug log ui
 
 - [x] - Fix upgrade tooltips being misplaced
 

@@ -159,6 +159,7 @@
 					"mixed",
 					"chemical"
 				],
+				"stamina": 3,
 				"play_effect": {
 					"for_any": {
 						"pollution": 0.01,
@@ -167,6 +168,29 @@
 					"for_card": {}
 				},
 				"space_id": ["incinerator"],
+				"upgrades": [
+					{
+						"name": "Electrify",
+						"description": "Uses heat for energy generation, increasing funds gained when a card is played here",
+						"effect_type": "funds",
+						"value": 0.1,
+						"cost": 2
+					},
+					{
+						"name": "Electrify II",
+						"description": "Increases efficiency of energy production, increasing funds gained",
+						"effect_type": "funds",
+						"value": 0.2,
+						"cost": 4
+					},
+					{
+						"name": "Filtering",
+						"description": "Improves gas discharge filtering, reducing the pollution",
+						"effect_type": "funds",
+						"value": 0.2,
+						"cost": 4
+					}
+				],
 				"stamina": 3
 			}
 		},
@@ -206,7 +230,7 @@
 						"name": "Carbon Capture",
 						"description": "Reduces the amount of pollution created by playing a card here",
 						"effect_type": "play_effect",
-						"value": ["pollution", 0.05],
+						"value": ["pollution", 0.005],
 						"cost": 2
 					},
 					{
@@ -310,6 +334,7 @@
 				"title": "Composting",
 				"description": "Gathers biodegradeable material together to create compost. The resulting compost can be used to create fertilizer or in the strengthening of soils, and can thus be used to generate income",
 				"accept_ids": ["compost"],
+				"stamina": 2,
 				"play_effect": {
 					"for_card": {
 						"compost": {

@@ -51,7 +51,7 @@ import palette
 import requests
 
 from tooltip import Tooltip
-from ui import AbstractButton, NamedButton, ProgressBar, TargettingProgressBar, DodgingProgressBar
+from ui import AbstractButton, NamedButton, ProgressBar, TargettingProgressBar, DodgingProgressBar, UserDebugLog
 from turntaking import PlayerTurnTakingModue
 
 
@@ -114,6 +114,12 @@ def mainloop():
 	pbar_rect = FRect(0, 0, 200, 43)
 	pbar_rect.topright = (game.windowsystem.dimensions.x, 170)
 	game.sprites.new(DodgingProgressBar(pbar_rect, "Funds", target="funds"), layer_override="FOREGROUND")
+
+	debug_rect = FRect(0, 0, 150, 300)
+	debug_rect.topright = game.windowsystem.dimensions - Vector2(-20, 550)
+
+	game.sprites.PLAYER_DEBUG = UserDebugLog(debug_rect)
+	game.sprites.new(game.sprites.PLAYER_DEBUG)
 
 	game.playerturn.scene_start()
 	game.playerturn.next_turn()
@@ -194,4 +200,4 @@ if __name__ == "__main__":
 	game.add_module(CameraSpoofingModule)
 
 	game.loop.functions = SimpleNamespace(gameplay=mainloop, menu=main_menu)
-	game.loop.run(main_menu)
+	game.loop.run(mainloop)
