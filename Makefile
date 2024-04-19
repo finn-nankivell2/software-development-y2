@@ -13,7 +13,12 @@ dev:
 backend:
 	. venv/bin/activate
 	cd server
-	flask --app hello run
+	flask --app backend run
+
+backendtest:
+	http POST :5000/upload username=pass turn_count=10 seconds=320 pollution=20 --print b
+	http POST :5000/upload username=fail --print b
+	http POST :5000/upload username=fail turn_count=20 seconds=220 pollution=120 --print b
 
 release:
 	. venv/bin/activate

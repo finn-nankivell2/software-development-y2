@@ -177,7 +177,9 @@
 
 - [ ] - Tutorial
 
-- [ ] - Flask server
+- [x] - Flask server
+
+- [ ] - Client side integration
 
 - [x] - Fix pollution progress bar underflow
 

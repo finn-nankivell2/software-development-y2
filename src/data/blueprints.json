@@ -22,7 +22,7 @@
 			"texture": "metal",
 			"data": {
 				"title": "Metal",
-				"description": "Recycleable aluminium waste (scrap, industrial, etc). Should be sent to metal processing. Cannot be sent to a landfill",
+				"description": "Recycleable metal waste (scrap, industrial, etc). Should be sent to metal processing. Cannot be sent to a landfill",
 				"playable_everywhere": false,
 				"play_id": "metal"
 			}
@@ -199,6 +199,7 @@
 						}
 					}
 				},
+				"construction_cost": 3,
 				"stamina": 4,
 				"upgrades": [
 					{
@@ -252,7 +253,7 @@
 						"description": "Increases stamina by 2 pips, allowing for more cards to be played in a turn",
 						"effect_type": "stamina",
 						"value": 2,
-						"cost": 3
+						"cost": 2
 					},
 					{
 						"name": "Resale",
@@ -287,14 +288,14 @@
 					},
 					{
 						"name": "Capacity II",
-						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
+						"description": "Increases stamina by 2 pips, allowing for more cards to be played in a turn",
 						"effect_type": "stamina",
 						"value": 2,
 						"cost": 3
 					},
 					{
 						"name": "Reduced Overhead",
-						"description": "Reduce operations costs, thus increasing the funds gained when playing metal to the building",
+						"description": "Reduce operations costs, increasing the funds gained when playing metal to the building",
 						"effect_type": "funds",
 						"value": 0.2,
 						"cost": 1
@@ -334,7 +335,7 @@
 				"stamina": 2,
 				"upgrades": [
 					{
-						"name": "Subsidization",
+						"name": "Subsidy",
 						"description": "Sorting unknown waste generates 1 investment card",
 						"effect_type": "play_effect",
 						"value": [
@@ -398,17 +399,18 @@
 		"plastic_metal_sorting": {
 			"scenario_id": "plastic_metal_sorting",
 			"name": "Plastic and Aluminium Sorting",
+			"description": "In this scenario, sort plastic, aluminium and metal waste out from unknown waste cards, and play them to their correct facilities. There is a very low chance of drawing investment cards in this scenario",
 			"starting_buildings": [
 				"landfill",
 				"plasticrec",
 				"wastesorting",
 				"metalrec"
 			],
-			"buildable_buildings": ["wincondition"],
+			"buildable_buildings": ["wincondition", "landfill", "wastesorting"],
 			"drawable_cards": {
-				"investment": 0.05,
-				"plastic": 0.32,
-				"aluminium": 0.20,
+				"investment": 0.01,
+				"plastic": 0.34,
+				"aluminium": 0.22,
 				"metal": 0.12,
 				"mixed": 0.31
 			},

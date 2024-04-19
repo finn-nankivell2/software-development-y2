@@ -92,6 +92,7 @@ class GameComplete(Sprite):
 class Scenario:
 	name: str
 	scenario_id: str
+	description: str
 	drawable_cards: Dict[str, float]
 	starting_buildings: List[str]
 	buildable_buildings: List[str]
@@ -103,7 +104,7 @@ class Scenario:
 
 	@classmethod
 	def default(cls):
-		return cls(name="DEFAULT", scenario_id="default", drawable_cards={"investment": 0.5, "plastic": 0.5}, starting_buildings=["landfill", "incinerator"], buildable_buildings=["plasticrec"], cards_per_turn=4)
+		return cls(name="Default", scenario_id="default", description="Default Scenario", drawable_cards={"investment": 0.5, "plastic": 0.5}, starting_buildings=["landfill", "incinerator"], buildable_buildings=["plasticrec"], cards_per_turn=4)
 
 	def random_card_id(self, exclude: List[str] = []) -> str:
 		roll = random.uniform(0, 1.0)

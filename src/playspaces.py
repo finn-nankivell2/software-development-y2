@@ -412,7 +412,7 @@ class UpgradeButton(NamedButton):
 		rect = self.rect.copy()
 		hovered = self.hovered()
 		if self.mouse_down_over():
-			self.rect.inflate_ip(-10, -10)
+			rect.inflate_ip(-10, -10)
 			hovered = False
 
 		pygame.draw.rect(game.windowsystem.screen, self.c, rect, border_radius=5)

@@ -61,9 +61,9 @@ def main_menu():
 		game.loop.run(scenario_choice)
 		# game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
 
-	game.sprites.new(NamedButton(FRect(200, 500, 200, 100), "PLAY", onclick = start_game))
-	game.sprites.new(NamedButton(FRect(200, 650, 200, 100), "TUTORIAL"))
-	game.sprites.new(NamedButton(FRect(200, 800, 200, 100), "EXIT", onclick = lambda: game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = game.loop.stop))))
+	game.sprites.new(NamedButton(FRect(150, 500, 200, 100), "PLAY", onclick = start_game))
+	game.sprites.new(NamedButton(FRect(400, 500, 200, 100), "TUTORIAL"))
+	game.sprites.new(NamedButton(FRect(650, 500, 200, 100), "EXIT", onclick = lambda: game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = game.loop.stop))))
 
 	game.sprites.new(ImageSprite(Vector2(100, 150), game.assets.logo), layer_override="FOREGROUND")
 
@@ -80,7 +80,9 @@ def scenario_choice():
 	button_start = FRect(200, 400, 500, 100)
 
 	for scen_id, scenario in game.blueprints.iscenarios():
-		game.sprites.new(NamedButton(button_start.copy(), scenario["name"].upper(), onclick = functools.partial(start_game, scen_id)))
+		scenario_start = NamedButton(button_start.copy(), scenario["name"].upper(), onclick = functools.partial(start_game, scen_id))
+		game.sprites.new(scenario_start)
+		game.sprites.new(Tooltip(scenario["name"], scenario["description"], scenario_start.rect, parent = scenario_start))
 		button_start.topleft += Vector2(0, 150)
 
 	button_start.width = 200
