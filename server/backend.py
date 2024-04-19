@@ -13,6 +13,7 @@ app = Flask(__name__)
 # seconds, int
 # pollution, int
 
+# Class representing an entity in the sqlite3 database
 @dataclass
 class Entry:
 	username: str
@@ -36,6 +37,7 @@ class Entry:
 		);
 		"""
 
+# Check if the user's POST data is valid and meets all requirements
 def _verify_upload_data(data):
 	def get_and_assert(key):
 		d = data.get(key)
@@ -53,14 +55,16 @@ def _verify_upload_data(data):
 	assert 0 <= pollution <= 100, "pollution must be an integer between 0 and 100"
 
 
+# POST route for the user's scoring data
 @app.route("/upload", methods = ["POST"])
 def upload():
 	data = request.get_json(force=True)
 	try:
 		_verify_upload_data(data)
 	except AssertionError as e:
-		return str(e)
+		return str(e)  # Return an error if the _verify_upload_data function failed
 
+	# Insert data into the database
 	entry = Entry.from_data(data)
 	con = sqlite3.connect("highscores.db")
 	cur = con.cursor()
@@ -70,6 +74,7 @@ def upload():
 	return "Submitted"
 
 
+# List of all highscores, organised by lowest time first. Games where the pollution >= 100 are not included, as the player lost that game
 @app.route("/")
 def index():
 	html = "<h1>Username, Turns, Seconds, Pollution Percentage</h1>"
@@ -80,6 +85,7 @@ def index():
 	con = sqlite3.connect("highscores.db")
 	cur = con.cursor()
 
+	# Add all the entities to the html
 	for score in cur.execute(highscoresq).fetchall():
 		entry = Entry(*score[1:])
 		html += f"<p>{entry.username}, {entry.turn_count}, {entry.seconds}, {entry.pollution}</p>"
@@ -87,6 +93,7 @@ def index():
 	return html
 
 
+# Create the base table if it does not already exist
 def startup():
 	con = sqlite3.connect("highscores.db")
 	creationq = """

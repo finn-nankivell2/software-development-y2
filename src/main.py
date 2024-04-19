@@ -52,13 +52,15 @@ import requests
 
 from tooltip import Tooltip
 from ui import AbstractButton, NamedButton, ProgressBar, TargettingProgressBar, DodgingProgressBar, UserDebugLog
-from turntaking import PlayerTurnTakingModue
+from turntaking import PlayerTurnTakingModule
 
 
+# Create a boxes transition and change to a new gameloop halfway through
 def boxes_loop_transition(loop):
 	return lambda: game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(loop)))
 
 
+# Setup menu, with a slideshow, text, and buttons
 def tutorial_menu():
 	game.sprites.purge_preserve("TRANSITION")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
@@ -103,6 +105,7 @@ def tutorial_menu():
 				textrend = font.render(text, True, palette.TEXT)
 				game.windowsystem.screen.blit(textrend, self.rect.midbottom - Vector2(textrend.get_width()/2, textrend.get_height()*3))
 
+	# Tutorial texts and accompanying images
 	game.sprites.new(Tutorial(game.windowsystem.rect.inflate(-300, -300).move(0, -100), [
 		("Welcome to The Works. In this game, you must play cards onto the correct buildings", game.assets.tutorial1),
 		("Cards are dealt into your hand at the start of every turn. Mouse over them to learn more about them", game.assets.tutorial2),
@@ -114,13 +117,13 @@ def tutorial_menu():
 	]))
 
 
+# Main menu with the game logo and buttons to different gameloops
 def main_menu():
 	game.sprites.purge_preserve("TRANSITION")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
 	def start_game():
 		game.loop.run(scenario_choice)
-		# game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
 
 	game.sprites.new(NamedButton(FRect(150, 500, 200, 100), "PLAY", onclick = start_game))
 	game.sprites.new(NamedButton(FRect(400, 500, 200, 100), "TUTORIAL", onclick = boxes_loop_transition(tutorial_menu)))
@@ -129,6 +132,7 @@ def main_menu():
 	game.sprites.new(ImageSprite(Vector2(100, 150), game.assets.logo), layer_override="FOREGROUND")
 
 
+# Game menu for choosing which scenario you want to play
 def scenario_choice():
 	game.sprites.purge_preserve("TRANSITION", "BACKGROUND")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
@@ -137,9 +141,11 @@ def scenario_choice():
 		game.playerturn.set_scenario_id(scenario_id)
 		game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
 
+	# Scenario logo
 	game.sprites.new(ImageSprite(Vector2(200, 150), game.assets.scenarios), layer_override="FOREGROUND")
 	button_start = FRect(200, 400, 500, 100)
 
+	# Iterate scenarios and create a button for each
 	for scen_id, scenario in game.blueprints.iscenarios():
 		scenario_start = NamedButton(button_start.copy(), scenario["name"].upper(), onclick = functools.partial(start_game, scen_id))
 		game.sprites.new(scenario_start)
@@ -151,11 +157,14 @@ def scenario_choice():
 	button_start.width = 200
 	game.sprites.new(NamedButton(button_start, "MAIN MENU", onclick = lambda: game.loop.run(main_menu)))
 
+
+# Gameplay loop
 def mainloop():
 	game.playerstate.reset()
 	game.sprites.purge_preserve("TRANSITION")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
 
+	# Create important globals like HAND
 	game.sprites.HAND = Hand(FRect(0, game.windowsystem.dimensions.y - 20, game.windowsystem.dimensions.x, 80))
 	game.sprites.new(game.sprites.HAND)
 
@@ -165,8 +174,10 @@ def mainloop():
 	def end_turn_behaviour(*_):
 		game.playerturn.end_turn()
 
+	# Button to end the turn
 	game.sprites.new(NamedButton(end_turn_rect, "End Turn", onclick=end_turn_behaviour), layer_override="UI")
 
+	# Create progress bars
 	pbar_rect = FRect(0, 0, 400, 43)
 	pbar_rect.topright = (game.windowsystem.dimensions.x, 100)
 	game.spriteglobals.pollution_bar = DodgingProgressBar(pbar_rect, "Pollution", target="pollution").with_tooltip("Pollution increases when cards are left unplayed. If it reaches 100%, you are dead")
@@ -176,6 +187,7 @@ def mainloop():
 	pbar_rect.topright = (game.windowsystem.dimensions.x, 170)
 	game.sprites.new(DodgingProgressBar(pbar_rect, "Funds", target="funds"), layer_override="FOREGROUND")
 
+	# Start the scene and deal cards
 	game.playerturn.scene_start()
 	game.playerturn.next_turn()
 
@@ -190,18 +202,8 @@ def mainloop():
 
 	logging.debug("-------------------- GAME START --------------------\n\n")
 
-	game.sprites.new(HookSprite(debug_hook), layer_override="MANAGER")
 
-
-def debug_hook():
-	pass
-	# game.debug.output(f"cards: {len(game.sprites.get('CARD'))}")
-	# game.debug.output(len(game.sprites.HAND.card_map))
-	# game.debug.output([card.data.title for card in game.sprites.get("CARD")])
-	# logging.debug([card.data.title for card in game.sprites.get("CARD")])
-	# logging.debug(game.sprites.get("CARD"))
-
-
+# Uodate certain modules every frame
 def do_running(self):
 	self.game.clock.update()
 	self.game.state.update()
@@ -213,46 +215,58 @@ def do_running(self):
 	self.game.windowsystem.update()
 
 
+# Add all modules on program start
 if __name__ == "__main__":
+	# Sprites handler manages all the gameobjects in the game and sorts them into layers and Z axises
 	game.add_module(
 		SpritesManager, layers=["MANAGER", "BACKGROUND", "LOWPARTICLE", "PLAYSPACE", "CARD", "PARTICLE", "FONT", "FOREGROUND", "UI", "TRANSITION"]
 	)
 
+	# GameloopManager updates the game every frame
 	game.add_module(GameloopManager, loop_hook=do_running)
 	game.add_module(StateManager)
 	game.add_module(ClockManager)
 
 	game.add_module(WInfoModule)
 
+	# ScalingWindowSystem creates a window and an internal buffer that scales to the window size
 	game.add_module(
 		ScalingWindowSystem,
 		size=game.winfo.display_size,
 		user_size=game.winfo.display_size,
-		caption="program",
+		caption="TheWorks",
 		flags=pygame.NOFRAME,
 		fill_color=Color("#000000")
 	)
 
+	# InputManagerScalingMouse manages game input (keyboard, mouse)
 	game.add_module(InputManagerScalingMouse)
 	game.add_module(DebugOverlayManager, fontcolour=Color("#ff00ff"))
 
 
+	# Load the data/assets.json file and create modules based on its contents
 	with open("data/assets.json") as file:
 		jdict = json.load(file)
 		textures, sfx = jdict["textures"], jdict["sfx"]
 
+		# Load all textures defined in the json
 		game.add_module(AssetManager, assets=textures)
+
+		# Load all audio files defined in the json
 		game.add_module(AudioManagerNumChannels, sounds=sfx, num_channels=30)
 
+	# Create the BlueprintsStorageModule based on the data/blueprints.json file, which defines all the game data
 	with open("data/blueprints.json") as file:
 		game.add_module(BlueprintsStorageModule, blueprints=json.load(file))
 
+	# Add misc custom modules
 	game.add_module(CardSpawningModule)
 	game.add_module(TextureClippingCacheModule)
 	game.add_module(PlayerStateTrackingModule)
-
-	game.add_module(PlayerTurnTakingModue)
+	game.add_module(PlayerTurnTakingModule)
 	game.add_module(CameraSpoofingModule)
 
 	game.loop.functions = SimpleNamespace(gameplay=mainloop, menu=main_menu)
+
+	# Run the game's entrypoint loop function
 	game.loop.run(main_menu)

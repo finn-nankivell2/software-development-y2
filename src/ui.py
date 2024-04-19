@@ -7,12 +7,14 @@ from particles import DeflatingParticle
 Onclick = Optional[Callable]
 
 
+# Base class that all buttons inherit from
 class AbstractButton(Sprite):
 	def __init__(self, rect: FRect, onclick: Onclick = None):
 		self.rect = rect
 		self.onclick = onclick
 		self.disabled = False
 
+	# Set the function that will run when the button is clicked
 	def set_onclick(self, onclick: Optional[Callable]):
 		self.onclick = onclick
 		return self
@@ -21,26 +23,33 @@ class AbstractButton(Sprite):
 		self.rect.topleft = pos  # type: ignore
 		return self
 
+	# Is the button currently being hovered by the mouse
 	def hovered(self) -> bool:
 		return game.input.mouse_within(self.rect) and not self.disabled
 
+	# Is the mouse hovering the button and pressed down
 	def mouse_down_over(self, mbtn=0) -> bool:
 		return self.hovered() and game.input.mouse_down(mbtn)
 
+	# Is the button clicked on this frame only (subsequent frames of the mouse being pressed do not count)
 	def clicked(self, mbtn=0) -> bool:
 		return self.hovered() and game.input.mouse_pressed(mbtn)
 
+	# Is the mouse clicked but not hovering the button
 	def unclicked(self, mbtn=0) -> bool:
 		return not self.hovered() and game.input.mouse_pressed(mbtn)
 
+	# Check if clicked and run methods if so
 	def update_move(self):
 		if self.clicked() and self.onclick:
 			self.onclick()
+			game.audio.sounds.button.play()
 
 	def update_draw(self):
 		pygame.draw.rect(game.windowsystem.screen, palette.ERROR, self.rect)
 
 
+# Button that renders a Surface
 class SurfaceButton(AbstractButton):
 	LAYER = "UI"
 
@@ -56,17 +65,19 @@ class SurfaceButton(AbstractButton):
 		game.windowsystem.screen.blit(self._texture, self.rect)
 
 
+# Button that has a text label
 class NamedButton(AbstractButton):
 	LAYER = "UI"
-	CLICK_OFFSET = Vector2(-10, -10)
+	CLICK_OFFSET = Vector2(-10, -10) # Button temporarily shrinks be this amount when clicked on
 
 	def __init__(self, rect: FRect, text: str, colour: Color = palette.BLACK, onclick: Onclick = None):
 		super().__init__(rect, onclick)
 		self.c = colour
 		self._text = text
 		self._font = fonts.families.roboto.size(int(self.rect.height / 4))
-		self._rendered = self._font.render(self._text, True, palette.TEXT)
+		self._rendered = self._font.render(self._text, True, palette.TEXT)  # Render the text label
 
+	# Draw the button background and render text on top
 	def update_draw(self):
 		rect = self.rect.copy()
 		hovered = self.hovered()
@@ -82,6 +93,7 @@ class NamedButton(AbstractButton):
 		game.windowsystem.screen.blit(self._rendered, rect.center - Vector2(self._rendered.get_size()) / 2)
 
 
+# Progress bar from 0 to 100 with a label
 class ProgressBar(Sprite):
 	LAYER = "UI"
 	SIDE_PADDING = 10
@@ -101,6 +113,7 @@ class ProgressBar(Sprite):
 		game.sprites.new(Tooltip(self._text, text, self.rect))
 		return self
 
+	# Set the percentage filled
 	def set_ratio(self, ratio: float, rerender: bool = False):
 		self.ratio = max(0.0, min(ratio, 1.0))
 		if rerender:
@@ -132,6 +145,7 @@ class ProgressBar(Sprite):
 
 
 
+# ProgressBar that watches a specific stat in the PlayerStateTrackingModule, and updates when that state updates
 class TargettingProgressBar(ProgressBar):
 	def __init__(self, *args, target=None, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -150,6 +164,7 @@ class TargettingProgressBar(ProgressBar):
 			self.do_targeting()
 
 
+# TargettingProgressBar that becomes transparent when a Playspace is under it
 class DodgingProgressBar(TargettingProgressBar):
 	def update_draw(self):
 		if any(space.rect.colliderect(self.rect) for space in game.sprites.get("PLAYSPACE")):
@@ -160,6 +175,7 @@ class DodgingProgressBar(TargettingProgressBar):
 		super().update_draw()
 
 
+# UNUSED
 class UserDebugLog(Sprite):
 	LAYER = "UI"
 	LOG_SHOW_LENGTH = 10
@@ -198,6 +214,7 @@ class UserDebugLog(Sprite):
 			rect.y += rect.height * 1.2
 
 
+# Button that toggles another sprite on and off
 class Dropdown(AbstractButton):
 	LAYER = "FOREGROUND"
 
@@ -217,6 +234,7 @@ class Dropdown(AbstractButton):
 		self.rect.topleft = pos
 		return self
 
+	# If mouse clicks elsewhere, toggle off
 	def unclicked(self, mbtn=0) -> bool:
 		return not self.hovered() and (not self.elements.hovered() if self.elements else True) and game.input.mouse_pressed(mbtn)
 
@@ -240,6 +258,7 @@ class Dropdown(AbstractButton):
 		else:
 			pygame.draw.rect(game.windowsystem.screen, palette.GREY, self.rect.inflate(-5, -5), width=2, border_radius=5)
 
+		# Draw arrow
 		tr = vec(self.rect.size) * 0.4
 		if self._dropped:
 			triangle = [self.rect.midbottom + vec(tr.x/2, -tr.y), self.rect.midtop + vec(tr.x/2, tr.y), self.rect.midleft + vec(tr.x, 0)]

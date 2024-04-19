@@ -36,6 +36,7 @@ class Promise:
 		self.complete = True
 
 
+# Layer of abstraction over both a Vector2 and an easing function
 class EasingVector2:
 
 	def __init__(self, start: Vector2, end: Vector2, func=CubicEaseInOut, duration: int = 30):
@@ -54,6 +55,7 @@ class EasingVector2:
 		return self(alpha)
 
 
+# EasingVector2 that handles the alpha increments itself
 class SteppingEasingVector2(EasingVector2):
 
 	def __init__(self, *args, **kwargs):
@@ -68,6 +70,7 @@ class SteppingEasingVector2(EasingVector2):
 		return self(self._step)
 
 
+# Apply a draw function to a Surface, and mask out the drawn on areas
 def surface_keepmask(surface: Surface, masking: Callable[[Surface, Color], Any]) -> Surface:
 	dest = Surface(surface.get_size(), pygame.SRCALPHA)
 	dest2 = Surface(surface.get_size(), pygame.SRCALPHA)
@@ -89,18 +92,21 @@ def surface_keepmask(surface: Surface, masking: Callable[[Surface, Color], Any])
 	return dest2
 
 
+# Give a surface rounded corners
 def surface_rounded_corners(surface: Surface, corner_radius: int) -> Surface:
 	return surface_keepmask(
 		surface, lambda surf, col: pygame.draw.rect(surf, col, surf.get_rect(), border_radius=corner_radius)
 	)
 
 
+# Generate a blurry shadow Surface given a Rect
 def shadow_from_rect(rect: Rect, colour: Color = Color("#000000aa"), shrink_by=10, blur_radius=8, **kwargs) -> Surface:
 	surf = Surface(rect.size, pygame.SRCALPHA)
 	pygame.draw.rect(surf, colour, rect.inflate(-shrink_by, -shrink_by), **kwargs)
 	return pygame.transform.gaussian_blur(surf, blur_radius)
 
 
+# Iterate over every coordinate in a Surface
 def traverse_surface(surface: Surface) -> Iterator[Tuple[int, int]]:
 	w, h = surface.get_size()
 
@@ -109,6 +115,7 @@ def traverse_surface(surface: Surface) -> Iterator[Tuple[int, int]]:
 			yield (x, y)
 
 
+# Change a Surface's palette to a set of new colours
 def transmute_surface_palette(surface: Surface, palette_map: List[Tuple[Color, Color]]) -> Surface:
 	surface.lock()
 	for pos in traverse_surface(surface):
@@ -121,12 +128,14 @@ def transmute_surface_palette(surface: Surface, palette_map: List[Tuple[Color, C
 	return surface
 
 
+# Get a region of a Surface defined by a Rect
 def surface_region(surface: Surface, region: Union[Rect, FRect]) -> Surface:
 	target = Surface(region.size, pygame.SRCALPHA)
 	target.blit(surface, (0, 0), region)
 	return target
 
 
+# Sprite that renders a given Surface every frame at a given position
 class ImageSprite(Sprite):
 
 	def __init__(self, pos: Vector2, image: Surface):
@@ -137,6 +146,7 @@ class ImageSprite(Sprite):
 		game.windowsystem.screen.blit(self.image, self.pos)
 
 
+# Extension of ImageSprite that also upscales the image to the window size
 class ScalingImageSprite(ImageSprite):
 
 	def __init__(self, pos: Vector2, image: Surface):
@@ -145,6 +155,7 @@ class ScalingImageSprite(ImageSprite):
 		self.image = pygame.transform.scale(self.unscaled, game.windowsystem.dimensions)
 
 
+# Extension of the ScalingImageSprite that also renders a scanline effect on top of the image, darkening it and creating an optical illusion
 class ScanlineImageSprite(ScalingImageSprite):
 
 	def __init__(self, *args, scans_clr=Color("#000000"), **kwargs):
@@ -161,6 +172,7 @@ class ScanlineImageSprite(ScalingImageSprite):
 		return surface
 
 
+# Sprite that runs a callback every frame
 class HookSprite(Sprite):
 
 	def __init__(self, update_move=None, update_draw=None):
@@ -169,9 +181,11 @@ class HookSprite(Sprite):
 
 
 
+# Transition effect that creates little boxes that fill the screen, using easing functions to make it smoother. Optionally runs a callback to change the scene at the halfway point
 class BoxesTransition(Sprite):
 	LAYER = "TRANSITION"
 
+	# Internal representation of a box wiping across a portion of the screen
 	@dataclass
 	class Box:
 		pos: Vector2
@@ -186,6 +200,7 @@ class BoxesTransition(Sprite):
 		def update(self):
 			self.tick += 1
 
+			# Should grow if not diminishing, shrink if diminishing
 			if self.diminshing:
 				self.pos.x = self.func(self.tick)
 				self.width = self.fullwidth - (self.pos.x - self.start.x)
@@ -211,6 +226,7 @@ class BoxesTransition(Sprite):
 		self._box_width = self.rect.width/ch_x
 		self._box_height = self.rect.height/ch_y
 
+		# Create a number of Boxes equal to chunks[0] * chunks[1]
 		for i in range(ch_y):
 			y = i * self._box_height
 
@@ -228,10 +244,12 @@ class BoxesTransition(Sprite):
 					BackEaseInOut(0, self._box_width, lf)
 				))
 
+	# Update all Boxes
 	def update_move(self):
 		for box in self.boxes:
 			box.update()
 
+		# If every Box is complete, begin shrinking them, and run the callback
 		if all(b.complete() for b in self.boxes):
 			if self._halfway:
 				self.destroy()
@@ -244,6 +262,7 @@ class BoxesTransition(Sprite):
 					box.func = BackEaseInOut(box.pos.x, box.pos.x + box.width, box.lifetime)
 					box.tick = 0
 
+	# Draw all boxes
 	def update_draw(self):
 		for box in self.boxes:
 			pygame.draw.rect(game.windowsystem.screen, self.colour, (box.pos.x, box.pos.y, box.width, self._box_height+1))

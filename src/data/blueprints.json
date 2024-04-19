@@ -336,12 +336,43 @@
 				"accept_ids": ["compost"],
 				"stamina": 2,
 				"play_effect": {
-					"for_card": {
-						"compost": {
-							"funds": 0.1
-						}
+					"for_all": {
+						"funds": 0.1
 					}
 				},
+				"upgrades": [
+					{
+						"name": "Fertilizer",
+						"description": "Turn compost into fertilizer and use it on your farm. Increases funds gained",
+						"effect_type": "funds",
+						"value": 0.2,
+						"cost": 1
+					},
+					{
+						"name": "High Grade Resale",
+						"description": "Sell higher grade fertilizer. Whenever you play a card to this composter, generate one investment card",
+						"effect_type": "play_effect",
+						"value": [
+							"dealcards",
+							["investment"]
+						],
+						"cost": 4
+					},
+					{
+						"name": "Capacity",
+						"description": "Increases stamina by 1 pip, allowing for more cards to be played in a turn",
+						"effect_type": "stamina",
+						"value": 1,
+						"cost": 1
+					},
+					{
+						"name": "Capacity II",
+						"description": "Increases stamina by 2 pips, allowing for more cards to be played in a turn",
+						"effect_type": "stamina",
+						"value": 2,
+						"cost": 2
+					}
+				],
 				"space_id": "composting"
 			}
 		},
@@ -388,7 +419,7 @@
 				"accept_ids": [],
 				"play_effect": {},
 				"stamina": 0,
-				"construction_cost": 1,
+				"construction_cost": 9,
 				"space_id": "wincondition"
 			}
 		},
@@ -440,6 +471,43 @@
 				"mixed": 0.31
 			},
 			"cards_per_turn": 4
+		},
+		"farm_waste": {
+			"scenario_id": "farm_waste",
+			"name": "Industrial Farming Waste",
+			"description": "In this scenario, deal with various kinds of waste produced in industrial farming, such as food / livestock waste, pesticides, and construction materials",
+			"starting_buildings": [
+				"landfill",
+				"composting",
+				"metalrec"
+			],
+			"buildable_buildings": ["wincondition", "landfill", "composting", "wastesorting"],
+			"drawable_cards": {
+				"investment": 0.01,
+				"compost": 0.60,
+				"chemical": 0.13,
+				"rubble": 0.13,
+				"metal": 0.13
+			},
+			"cards_per_turn": 5
+		},
+		"electrical_components_waste": {
+			"scenario_id": "electrical_components_waste",
+			"name": "Electrical Component Recycling",
+			"description": "In this scenario, you must deal with differnt forms of electrical waste, such as batteries and broken components",
+			"starting_buildings": [
+				"incinerator",
+				"wastesorting",
+				"metalrec"
+			],
+			"buildable_buildings": ["wincondition", "landfill", "wastesorting"],
+			"drawable_cards": {
+				"investment": 0.01,
+				"batteries": 0.30,
+				"electrical": 0.30,
+				"aluminium": 0.39
+			},
+			"cards_per_turn": 5
 		}
 	}
 }

@@ -41,6 +41,9 @@
 
 	"sfx": {
 		"card_switch": "sfx/card_switch.wav",
-		"err": "sfx/err.wav"
+		"err": "sfx/err.wav",
+		"dispose": "sfx/dispose.wav",
+		"polluting": "sfx/polluting.wav",
+		"button": "sfx/button.wav"
 	}
 }

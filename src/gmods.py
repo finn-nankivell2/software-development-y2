@@ -5,6 +5,9 @@ from cards import Card
 from datetime import datetime
 
 
+# User definied modules for streamlining certain game systems
+
+
 @dataclass
 class CachedTexture:
 	texture: Surface
@@ -12,6 +15,7 @@ class CachedTexture:
 	size: Vector2
 
 
+# Clips Surfaces to a certain size, and caches them for further use
 class TextureClippingCacheModule(GameModule):
 	IDMARKER = "textclip"
 	_textures: List[CachedTexture]
@@ -28,6 +32,7 @@ class TextureClippingCacheModule(GameModule):
 	def contains(self, texture: Surface, size: Vector2):
 		return self.get_tex(texture, size) is not None
 
+	# Return the cached version if that Surface with those dimensions is already availible. Otherwise create a new clipped Surface
 	def get_or_insert(self, texture: Surface, size: Vector2) -> Surface:
 		if size[0] > texture.get_width() and size[1] > texture.get_height():
 			raise ValueError(f"Texture size ({Vector2(texture.get_size())}) cannot be less than passed size ({size})")
@@ -42,6 +47,8 @@ class TextureClippingCacheModule(GameModule):
 		return clipped
 
 
+# Module for providing easy access to JSON data describing the various Cards, Playspaces, and Scenarios in the game
+# These JSON blueprints are used to reproduce Card, Playspace and Scenario objects
 class BlueprintsStorageModule(GameModule):
 	IDMARKER = "blueprints"
 
@@ -54,25 +61,33 @@ class BlueprintsStorageModule(GameModule):
 		self.scenarios = SimpleNamespace(**blueprints["scenarios"])
 		self._blueprints = blueprints
 
+	# Iterator over card ids and json
 	def icards(self) -> Iterator[Tuple[str, dict]]:
 		return self.cards.__dict__.items()
 
+	# Iterator over playspace ids and json
 	def ibuildings(self) -> Iterator[Tuple[str, dict]]:
 		return self.buildings.__dict__.items()
 
+	# Iterator over scenario ids and json
 	def iscenarios(self) -> Iterator[Tuple[str, dict]]:
 		return self.scenarios.__dict__.items()
 
+	# Fetch json based on card id
 	def get_card(self, name):
 		return self.cards.__dict__.get(name)
 
+	# Fetch json based on playspace id
 	def get_building(self, name):
 		return self.buildings.__dict__.get(name)
 
+	# Fetch json based on scenario id
 	def get_scenario(self, name):
 		return self.scenarios.__dict__.get(name)
 
 
+# Module to move the playspaces left and right when arrow keys are pressed
+# Helpful for power users who want to organize their gamespace more effectively
 class CameraSpoofingModule(GameModule):
 	IDMARKER = "camera"
 
@@ -90,6 +105,7 @@ class CameraSpoofingModule(GameModule):
 			space.rect.x += vel
 
 
+# Module to track the state of various stats related to an ongoing game
 class PlayerStateTrackingModule(GameModule):
 	IDMARKER = "playerstate"
 
@@ -119,6 +135,7 @@ class PlayerStateTrackingModule(GameModule):
 		return prop in self.__dict__
 
 
+# Module to easily spawn cards from card ids, random selections, etc
 class CardSpawningModule(GameModule):
 	IDMARKER = "cardspawn"
 	REQUIREMENTS = ["blueprints"]
@@ -126,15 +143,18 @@ class CardSpawningModule(GameModule):
 	def create(self):
 		pass
 
+	# Return a random card
 	def random(self, choices: List[str] = []) -> Card:
 		choices = [game.blueprints.get_card(card) for card in choices
 					] if choices else [v for _, v in game.blueprints.icards()]
 		return Card.from_blueprint(random.choice(choices)).with_tooltip()  # type: ignore
 
+	# Return a card object based on play_id's associated blueprint
 	def get(self, play_id: str) -> Card:
 		bp = game.blueprints.cards.__dict__.get(play_id)
 		return Card.from_blueprint(bp)
 
+	# Spawn a card based on play_id with a tooltip
 	def spawn(self, play_id: str, tooltip=True):
 		card = self.get(play_id)
 		if tooltip:

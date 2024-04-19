@@ -13,6 +13,7 @@ pygame.font.init()
 NONE_FONT = pygame.font.Font(None, 28)
 
 
+# Class representing a font family and all of the different sizes availible
 @dataclass
 class FontFamily:
 	path: str
@@ -33,6 +34,7 @@ class FontFamily:
 		return self.sizes[x]
 
 
+# Load fonts defined in data/assets.json
 with open("data/assets.json") as file:
 	jdict = json.load(file)
 	fonts = jdict["fonts"]

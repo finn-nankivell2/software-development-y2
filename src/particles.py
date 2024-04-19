@@ -1,6 +1,7 @@
 from prelude import *
 
 
+# Simple particle type. Spawns, floats off in a direction, and diminishes
 class Particle(Sprite):
 	LAYER = "PARTICLE"
 
@@ -28,6 +29,7 @@ class Particle(Sprite):
 		pygame.draw.circle(game.windowsystem.screen, self.colour, self.pos, self.size)
 
 
+# Particle that renders a Surface
 class SurfaceParticle(Particle):
 
 	def __init__(self, pos, vel, surface, lifetime=60):
@@ -42,6 +44,7 @@ class SurfaceParticle(Particle):
 		game.windowsystem.screen.blit(self.surface, self.pos - Vector2(self.surface.get_size()) / 2)
 
 
+# Rectangle particles that shrinks away in place
 class DeflatingParticle(Particle):
 
 	def __init__(self, rect, colour, lifetime=60):
@@ -58,6 +61,7 @@ class DeflatingParticle(Particle):
 		pygame.draw.rect(game.windowsystem.screen, self.colour, self.rect, border_radius=5)
 
 
+# Spawn many particles at once at a random spread
 def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[Particle]:
 	parts = []
 	for _ in range(number):
@@ -76,6 +80,7 @@ def particle_explosion(number, *args, particle_type=Particle, **kwargs) -> List[
 	return parts
 
 
+# Class that manages a series of Particles and constantly emits and destroys them (not used in final game)
 class BubbleParticleEmitter(SpriteGroup):
 	LAYER = "BACKGROUND"
 

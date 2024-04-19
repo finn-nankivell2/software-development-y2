@@ -1,3 +1,5 @@
+# This module is for commonly used types and functions that can be star imported for ease of use
+
 from consts import VZERO
 import consts
 

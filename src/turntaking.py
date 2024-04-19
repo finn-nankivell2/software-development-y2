@@ -9,6 +9,7 @@ from ui import NamedButton
 import requests
 
 
+# Deal an investment card to the player when funds stat reaches 1.0 and reset the funds stat to 0
 class InvestmentWatcher(Sprite):
 	LAYER = "MANAGER"
 
@@ -23,6 +24,7 @@ class InvestmentWatcher(Sprite):
 
 
 
+# End the game when pollution reaches 100%
 class PollutionWatcher(Sprite):
 	LAYER = "MANAGER"
 
@@ -32,6 +34,7 @@ class PollutionWatcher(Sprite):
 
 
 
+# Sprite that appears and covers the screen when the game ends
 class GameComplete(Sprite):
 	LAYER = "UI"
 	ANIM_TIMING = 50
@@ -41,6 +44,7 @@ class GameComplete(Sprite):
 		self.surface.fill(palette.BLACK)
 		self.surface.set_alpha(GameComplete.ANIM_TIMING)
 
+		# Message to display
 		self.message = "You win!" if victory else "You lose!"
 		self._font = fonts.families.roboto.size(70)
 		self._render = self._font.render(self.message, True, palette.TEXT)
@@ -54,8 +58,11 @@ class GameComplete(Sprite):
 	def _alpha_halfway(self):
 		return self._frames >= GameComplete.ANIM_TIMING
 
+	# Update the physical internals
 	def update_move(self):
 		self._frames += 1
+
+		# If the GameComplete has faded in, then bring down the text and subsequently add buttons and game stats
 		if self._alpha_halfway():
 			if self._frames < GameComplete.ANIM_TIMING*2:
 				if self._disable_callback:
@@ -66,10 +73,11 @@ class GameComplete(Sprite):
 				def return_to_main_menu():
 					game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(game.loop.functions.menu)))
 
+				# Submit the scores to the server
 				def submit_scores_to_server():
 					submit_btn.disabled = True
 					data = {
-						"username": "default",
+						"username": "default",  # Default username, should have been changed to a custom one but I couldn't implement that
 						"turn_count": game.playerturn.turn_count,
 						"seconds": game.playerstate.time_since_game_start().total_seconds(),
 						"pollution": int(game.playerstate.pollution * 100)
@@ -77,10 +85,13 @@ class GameComplete(Sprite):
 					text = "Submitted"
 					try:
 						response = requests.post(consts.SERVER_ADDRESS + "/upload", json=data)
+
+					# Catches any possible exceptions to prevent the game from crashing
 					except Exception as e:
 						text = "Error!"
 						logging.error(f"Request failed with {e} error")
 
+					# Creates a text label based on whether the submission was successful or not
 					res_text = fonts.families.roboto.size(45).render(text, True, palette.TEXT)
 					padding = Vector2(20, 20)
 					bg = Surface(res_text.get_size() + padding)
@@ -92,6 +103,7 @@ class GameComplete(Sprite):
 						bg
 					), layer_override="UI")
 
+				# Create two buttons to return to the main menu and submit scores respectively
 				buttons_start_at = self._font_pos.copy()
 				buttons_size = Vector2(300, 120)
 				game.sprites.new(NamedButton(
@@ -113,14 +125,13 @@ class GameComplete(Sprite):
 				stats_render.fill(palette.BLACK)
 				stats_render = surface_rounded_corners(stats_render, 5)
 
-				# pygame.draw.rect(stats_render, palette.GREY, stats_render.get_rect().inflate(-10, -10), border_radius=5, width=2)
-
 				stats = [
 					f"Turns: {game.playerturn.turn_count}",
 					f"Time: {game.playerstate.time_since_game_start()}",
 					f"Pollution: {int(game.playerstate.pollution * 100)}%",
 				]
 
+				# Render game statistics
 				tpos = Vector2(20, 20)
 				for text in stats:
 					render = fonts.families.roboto.size(18).render(text, True, palette.TEXT)
@@ -137,24 +148,28 @@ class GameComplete(Sprite):
 			game.windowsystem.screen.blit(self._render, self._font_pos - Vector2(self._render.get_size())/2)
 
 
+# Dataclass representing a Scenario, i.e. a specific set of rules that change what buildings and cards the player has access to
 @dataclass
 class Scenario:
-	name: str
-	scenario_id: str
-	description: str
-	drawable_cards: Dict[str, float]
-	starting_buildings: List[str]
-	buildable_buildings: List[str]
-	cards_per_turn: int
+	name: str  # Name of the scenario
+	scenario_id: str  # Internal id of the scenario
+	description: str  # Description of the scenario
+	drawable_cards: Dict[str, float]  # The cards that can be drawn in this scenario, and their percentage (0.0-1.0) chance of being drawn
+	starting_buildings: List[str]  # The buildings that will be spawned when the player starts the game
+	buildable_buildings: List[str]  # The buildings that can optionally be constructed
+	cards_per_turn: int  # The number of cards per turn to be drawn
 
+	# Create Scenario from json blueprint
 	@classmethod
 	def from_blueprint(cls, j: Dict[str, Any]):
 		return cls(**j)
 
+	# Default scenario. Used for debugging purposes
 	@classmethod
 	def default(cls):
 		return cls(name="Default", scenario_id="default", description="Default Scenario", drawable_cards={"investment": 0.5, "plastic": 0.5}, starting_buildings=["landfill", "incinerator"], buildable_buildings=["plasticrec"], cards_per_turn=4)
 
+	# Return a random card id from the availible cards for this scenario, based on their chance to be drawn
 	def random_card_id(self, exclude: List[str] = []) -> str:
 		roll = random.uniform(0, 1.0)
 		start = 0
@@ -177,11 +192,13 @@ class Scenario:
 
 		return highest_chance
 
+	# Return a random card based on Scenario.random_card_id
 	def random_card(self, *args, **kwargs) -> Card:
 		return game.cardspawn.get(self.random_card_id(*args, **kwargs)).with_tooltip()
 
 
-class PlayerTurnTakingModue(GameModule):
+# Module for controlling the flow of player turns, turn ending cleanup, and dealing new cards
+class PlayerTurnTakingModule(GameModule):
 	IDMARKER = "playerturn"
 	TURN_TRANSITION_LENGTH = 60
 
@@ -191,10 +208,12 @@ class PlayerTurnTakingModue(GameModule):
 		self.reset()
 		self.scenario = Scenario.default()
 
+	# Change the scenario and reset the state
 	def set_scenario_id(self, scenario_id):
 		self.scenario = Scenario.from_blueprint(game.blueprints.get_scenario(scenario_id))
 		self.reset()
 
+	# Disable all Cards and Playspaces onscreen when the game ends
 	def _game_end_disable_elements(self):
 		def empty(*args, **kwargs):
 			pass
@@ -208,6 +227,7 @@ class PlayerTurnTakingModue(GameModule):
 		for button in game.sprites.get("UI"):
 			button.hovered = empty
 
+	# Start the animation for the game ending
 	def _game_complete_init(self, victory: bool):
 		if self.game_complete:
 			return
@@ -223,14 +243,17 @@ class PlayerTurnTakingModue(GameModule):
 	def game_over(self):
 		self._game_complete_init(False)
 
+	# Reset the state to turn 1
 	def reset(self):
 		self.turn_count = 1
 		self.transitioning = False
 		self.game_complete = False
 
+	# Deal a random card based on the PlayerStateTrackingModule's
 	def deal_card(self):
 		game.sprites.new(self.scenario.random_card())
 
+	# Start the scene, build the starter Playspaces, add hooks
 	def scene_start(self):
 		game.sprites.new(InvestmentWatcher())
 		game.sprites.new(PollutionWatcher())
@@ -239,6 +262,7 @@ class PlayerTurnTakingModue(GameModule):
 			bp = game.blueprints.get_building(building)
 			game.sprites.new(Playspace.from_blueprint(bp).with_tooltip())
 
+	# Deal new cards and reset all Playspace's stamina to full
 	def next_turn(self):
 		if self.game_complete:
 			return
@@ -257,6 +281,7 @@ class PlayerTurnTakingModue(GameModule):
 
 		self.turn_count += 1
 
+	# Remove unused cards and increase pollution accordingly
 	def end_turn(self):
 		if self.transitioning:
 			return
@@ -265,17 +290,23 @@ class PlayerTurnTakingModue(GameModule):
 
 		self.transitioning = True
 
-		timer = PlayerTurnTakingModue.TURN_TRANSITION_LENGTH if list(game.sprites.get("CARD")) else 10
+		timer = PlayerTurnTakingModule.TURN_TRANSITION_LENGTH if list(game.sprites.get("CARD")) else 10
 		tick = TickCoroutine(timer, self.next_turn)
 		game.sprites.new(tick, layer_override="MANAGER")
 
 		cards = game.sprites.get("CARD")
 		random.shuffle(cards)
+
+		def pollute():
+			game.playerstate.incr_property("pollution", consts.POLLUTION_UNPLAYED_INCR)
+			game.audio.sounds.polluting.play()
+
+		# Remove all cards and all PollutingCards in their place
 		for i, card in enumerate(cards):
-			lifetime = PlayerTurnTakingModue.TURN_TRANSITION_LENGTH - i*5
+			lifetime = PlayerTurnTakingModule.TURN_TRANSITION_LENGTH - i*5
 
 			if card.data.play_id != "investment":
 				card.destroy_into_polluting(target=Vector2(game.spriteglobals.pollution_bar.rect.midtop), lifetime=lifetime)
-				game.sprites.new(TickCoroutine(lifetime, lambda: game.playerstate.incr_property("pollution", consts.POLLUTION_UNPLAYED_INCR)), layer_override="MANAGER")
+				game.sprites.new(TickCoroutine(lifetime, pollute), layer_override="MANAGER")
 			else:
 				card.destroy_anim()

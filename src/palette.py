@@ -1,5 +1,7 @@
 from pygame import Color
 
+# Reused colours are stored here and imported elsewhere
+
 BLACK = Color("#101010")
 WHITE = Color("#ffffff")
 GREY = Color("#959595")
