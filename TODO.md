@@ -197,7 +197,7 @@
 
 		- [ ] - Chemical
 
-- [ ] - Tutorial
+- [x] - Tutorial
 
 - [x] - Flask server
 

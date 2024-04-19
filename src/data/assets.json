@@ -22,7 +22,14 @@
 		"construction": "assets/construction.png",
 		"wincondition": "assets/wincondition.png",
 		"logo": "assets/logo.png",
-		"scenarios": "assets/scenarios.png"
+		"scenarios": "assets/scenarios.png",
+		"tutorial1": "assets/tutorial1.png",
+		"tutorial2": "assets/tutorial2.png",
+		"tutorial3": "assets/tutorial3.png",
+		"tutorial4": "assets/tutorial4.png",
+		"tutorial5": "assets/tutorial5.png",
+		"tutorial6": "assets/tutorial6.png",
+		"tutorial7": "assets/tutorial7.png"
 	},
 
 	"fonts": {

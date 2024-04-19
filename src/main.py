@@ -70,25 +70,48 @@ def tutorial_menu():
 			self.rect = rect
 			self._text_images = text_images
 
-			next_rect = FRect(self.rect.midbottom + Vector2(-100, 100), (200, 100))
+			next_rect = FRect(self.rect.midbottom + Vector2(-100, 50), (200, 100))
 			self._next_button = NamedButton(next_rect, "NEXT").set_onclick(self.next)
 			game.sprites.new(self._next_button)
-			self._menu_button = NamedButton(next_rect.copy(), "MENU").set_onclick(boxes_loop_transition(main_menu))
+			self._menu_button = NamedButton(FRect(self.rect.center - Vector2(100, 50), (200, 100)), "MENU").set_onclick(boxes_loop_transition(main_menu))
 
 		def next(self):
 			self._text_images.pop(0)
 
 		def update_move(self):
-			if not self._text_images:
+			if not self._text_images and self._menu_button:
 				self._next_button.destroy()
-				game.sprites.new(menu_button)
+				game.sprites.new(self._menu_button)
+				self._menu_button = None
 
 		def update_draw(self):
-			pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
-			# draw image
+			if self._text_images:
+				pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
+				image_space = self.rect.inflate(-100, -200)
+				image_space.topleft -= Vector2(0, 50)
+				text, img = self._text_images[0]
+				ratio = image_space.height / img.get_height()
+				trans = pygame.transform.scale_by(img, (ratio, ratio))
+				image_space.x = image_space.centerx - trans.get_width()/2
 
-	game.sprites.new(Tutorial(game.windowsystem.rect.inflate(-300, -200), ["TEXT"]))
+				game.windowsystem.screen.blit(trans, image_space.topleft)
+				img_rect = trans.get_rect()
+				img_rect.topleft = image_space.topleft
+				pygame.draw.rect(game.windowsystem.screen, palette.WHITE, img_rect, width=3, border_radius=5)
 
+				font = fonts.families.roboto.size(28)
+				textrend = font.render(text, True, palette.TEXT)
+				game.windowsystem.screen.blit(textrend, self.rect.midbottom - Vector2(textrend.get_width()/2, textrend.get_height()*3))
+
+	game.sprites.new(Tutorial(game.windowsystem.rect.inflate(-300, -300).move(0, -100), [
+		("Welcome to The Works. In this game, you must play cards onto the correct buildings", game.assets.tutorial1),
+		("Cards are dealt into your hand at the start of every turn. Mouse over them to learn more about them", game.assets.tutorial2),
+		("Buildings have limited capacity, and you cannot play more cards than their capacity per turn", game.assets.tutorial3),
+		("Watch out for the pollution meter! Any unplayed cards at the end of the turn will increase it!", game.assets.tutorial4),
+		("Investment cards are drawn when your funds reach 100%. Play them to buildings to add upgrade points to that building", game.assets.tutorial5),
+		("Playing an investment card to an empty space creates a Construction there, which can be upgraded into a new building", game.assets.tutorial6),
+		("You're ready to play! Have fun!", game.assets.tutorial7),
+	]))
 
 
 def main_menu():
