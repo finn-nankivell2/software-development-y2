@@ -4,7 +4,7 @@ from gamesystem.common.coroutines import TickCoroutine
 from cards import PollutingCard, Card
 from playspaces import Playspace
 import fonts
-from gameutil import EasingVector2, BoxesTransition, ImageSprite
+from gameutil import EasingVector2, BoxesTransition, ImageSprite, surface_rounded_corners
 from ui import NamedButton
 import requests
 
@@ -71,7 +71,7 @@ class GameComplete(Sprite):
 					data = {
 						"username": "default",
 						"turn_count": game.playerturn.turn_count,
-						"seconds": 2,
+						"seconds": game.playerstate.time_since_game_start().total_seconds(),
 						"pollution": int(game.playerstate.pollution * 100)
 					}
 					text = "Submitted"
@@ -88,7 +88,7 @@ class GameComplete(Sprite):
 					bg.blit(res_text, padding/2)
 
 					game.sprites.new(ImageSprite(
-						submit_btn.rect.midright + Vector2(30, -35),
+						submit_btn.rect.midright + Vector2(40, 80),
 						bg
 					), layer_override="UI")
 
@@ -108,6 +108,27 @@ class GameComplete(Sprite):
 
 				game.sprites.new(submit_btn)
 				self._add_buttons_lock = True
+
+				stats_render = Surface((200, buttons_size.y))
+				stats_render.fill(palette.BLACK)
+				stats_render = surface_rounded_corners(stats_render, 5)
+
+				# pygame.draw.rect(stats_render, palette.GREY, stats_render.get_rect().inflate(-10, -10), border_radius=5, width=2)
+
+				stats = [
+					f"Turns: {game.playerturn.turn_count}",
+					f"Time: {game.playerstate.time_since_game_start()}",
+					f"Pollution: {int(game.playerstate.pollution * 100)}%",
+				]
+
+				tpos = Vector2(20, 20)
+				for text in stats:
+					render = fonts.families.roboto.size(18).render(text, True, palette.TEXT)
+					stats_render.blit(render, tpos)
+					tpos.y += 30
+
+				game.sprites.new(ImageSprite(submit_btn.rect.topright + Vector2(40, 0), stats_render), layer_override="UI")
+
 
 	def update_draw(self):
 		self.surface.set_alpha(min(self._frames, GameComplete.ANIM_TIMING)*4)

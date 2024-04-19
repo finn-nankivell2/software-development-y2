@@ -105,9 +105,8 @@ class PlayerStateTrackingModule(GameModule):
 		return datetime.now() - self.start_time
 
 	def update(self):
-		for prop, val in self.__dict__.items():
-			if isinstance(val, float):
-				self.__dict__[prop] = min(max(0, val), 1.0)
+		self.pollution = min(max(0, self.pollution), 1.0)
+		self.funds = min(max(0, self.funds), 1.0)
 
 	def incr_property(self, prop, num):
 		self.__dict__[prop] += num

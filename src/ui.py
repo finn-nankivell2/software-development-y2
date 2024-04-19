@@ -164,18 +164,18 @@ class UserDebugLog(Sprite):
 	LAYER = "UI"
 	LOG_SHOW_LENGTH = 10
 
-	def __init__(self, rect: FRect, num_lines: int = 9, text_size: int = 30, colour = palette.BLACK):
+	def __init__(self, rect: FRect, num_lines: int = 9, text_size: int = 26, colour = palette.BLACK):
 		self.rect = rect
 		self.num_lines = num_lines
 		self.text_size = text_size
 		self._font = fonts.families.roboto.size(text_size)
-		self._queue = [f"test{i}" for i in range(20) ]
+		self._queue = []
 
 		self.colour = colour
 		self._tick = UserDebugLog.LOG_SHOW_LENGTH
 
 	def display_to_queue(self, text):
-		self._queue.push(text)
+		self._queue.append(text)
 
 	def update_move(self):
 		if len(self._queue) > self.num_lines:
@@ -195,7 +195,7 @@ class UserDebugLog(Sprite):
 		for text in itertools.islice(self._queue, self.num_lines):
 			render = self._font.render(text, True, palette.TEXT)
 			game.windowsystem.screen.blit(render, rect)
-			rect.y += rect.height
+			rect.y += rect.height * 1.2
 
 
 class Dropdown(AbstractButton):

@@ -423,7 +423,7 @@
 	"scenarios": {
 		"plastic_metal_sorting": {
 			"scenario_id": "plastic_metal_sorting",
-			"name": "Plastic and Aluminium Sorting",
+			"name": "Plastic and Metal Sorting",
 			"description": "In this scenario, sort plastic, aluminium and metal waste out from unknown waste cards, and play them to their correct facilities. There is a very low chance of drawing investment cards in this scenario",
 			"starting_buildings": [
 				"landfill",

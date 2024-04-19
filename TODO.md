@@ -73,7 +73,7 @@
 
 - [x] - Palette module
 
-- [ ] - Camera module
+- [x] - Camera module
 
 	- [x] - Just move the buildings left and right
 
@@ -169,9 +169,7 @@
 
 	- [ ] - Comment documentation
 
-- [ ] - Scenarios menu
-
-	- [ ] - Fancy scenario choice ui
+- [x] - Scenarios menu
 
 - [ ] - More scenarios
 
@@ -207,7 +205,7 @@
 
 - [x] - Fix pollution progress bar underflow
 
-- [ ] - WIN STATE / LOSE STATE (important!!!!!)
+- [x] - WIN STATE / LOSE STATE (important!!!!!)
 
 	- [x] - Playspace movement locked
 
@@ -215,7 +213,7 @@
 
 		- [x] Remove update_move
 
-	- [ ] - End of game stats
+	- [x] - End of game stats
 
 - [x] - Transitions
 
@@ -223,8 +221,10 @@
 
 	- [x] - Reduction
 
-- [x] - Stylish player debug log ui
+- [x] - Stylish player debug log ui (not gonna use actually)
 
 - [x] - Fix upgrade tooltips being misplaced
 
 	- [x] - cached_rect fix
+
+- [ ] - Particles when pollution meter is raised

@@ -55,6 +55,42 @@ from ui import AbstractButton, NamedButton, ProgressBar, TargettingProgressBar, 
 from turntaking import PlayerTurnTakingModue
 
 
+def boxes_loop_transition(loop):
+	return lambda: game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(loop)))
+
+
+def tutorial_menu():
+	game.sprites.purge_preserve("TRANSITION")
+	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
+
+	class Tutorial(Sprite):
+		LAYER = "UI"
+
+		def __init__(self, rect, text_images):
+			self.rect = rect
+			self._text_images = text_images
+
+			next_rect = FRect(self.rect.midbottom + Vector2(-100, 100), (200, 100))
+			self._next_button = NamedButton(next_rect, "NEXT").set_onclick(self.next)
+			game.sprites.new(self._next_button)
+			self._menu_button = NamedButton(next_rect.copy(), "MENU").set_onclick(boxes_loop_transition(main_menu))
+
+		def next(self):
+			self._text_images.pop(0)
+
+		def update_move(self):
+			if not self._text_images:
+				self._next_button.destroy()
+				game.sprites.new(menu_button)
+
+		def update_draw(self):
+			pygame.draw.rect(game.windowsystem.screen, palette.BLACK, self.rect, border_radius=5)
+			# draw image
+
+	game.sprites.new(Tutorial(game.windowsystem.rect.inflate(-300, -200), ["TEXT"]))
+
+
+
 def main_menu():
 	game.sprites.purge_preserve("TRANSITION")
 	game.sprites.new(ScalingImageSprite(VZERO, game.assets.citiedlow1), layer_override="BACKGROUND")
@@ -64,7 +100,7 @@ def main_menu():
 		# game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(mainloop)))
 
 	game.sprites.new(NamedButton(FRect(150, 500, 200, 100), "PLAY", onclick = start_game))
-	game.sprites.new(NamedButton(FRect(400, 500, 200, 100), "TUTORIAL"))
+	game.sprites.new(NamedButton(FRect(400, 500, 200, 100), "TUTORIAL", onclick = boxes_loop_transition(tutorial_menu)))
 	game.sprites.new(NamedButton(FRect(650, 500, 200, 100), "EXIT", onclick = lambda: game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = game.loop.stop))))
 
 	game.sprites.new(ImageSprite(Vector2(100, 150), game.assets.logo), layer_override="FOREGROUND")
@@ -84,7 +120,9 @@ def scenario_choice():
 	for scen_id, scenario in game.blueprints.iscenarios():
 		scenario_start = NamedButton(button_start.copy(), scenario["name"].upper(), onclick = functools.partial(start_game, scen_id))
 		game.sprites.new(scenario_start)
-		game.sprites.new(Tooltip(scenario["name"], scenario["description"], scenario_start.rect, parent = scenario_start))
+		tooltip = Tooltip(scenario["name"], scenario["description"], scenario_start.rect, parent = scenario_start)
+		tooltip.z = 2
+		game.sprites.new(tooltip)
 		button_start.topleft += Vector2(0, 150)
 
 	button_start.width = 200
@@ -114,12 +152,6 @@ def mainloop():
 	pbar_rect = FRect(0, 0, 200, 43)
 	pbar_rect.topright = (game.windowsystem.dimensions.x, 170)
 	game.sprites.new(DodgingProgressBar(pbar_rect, "Funds", target="funds"), layer_override="FOREGROUND")
-
-	debug_rect = FRect(0, 0, 150, 300)
-	debug_rect.topright = game.windowsystem.dimensions - Vector2(-20, 550)
-
-	game.sprites.PLAYER_DEBUG = UserDebugLog(debug_rect)
-	game.sprites.new(game.sprites.PLAYER_DEBUG)
 
 	game.playerturn.scene_start()
 	game.playerturn.next_turn()
@@ -200,4 +232,4 @@ if __name__ == "__main__":
 	game.add_module(CameraSpoofingModule)
 
 	game.loop.functions = SimpleNamespace(gameplay=mainloop, menu=main_menu)
-	game.loop.run(mainloop)
+	game.loop.run(main_menu)

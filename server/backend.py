@@ -72,7 +72,19 @@ def upload():
 
 @app.route("/")
 def index():
-	return "Hello"
+	html = "<h1>Username, Turns, Seconds, Pollution Percentage</h1>"
+
+	highscoresq = """
+	SELECT * FROM highscores WHERE pollution < 100 ORDER BY seconds ASC
+	"""
+	con = sqlite3.connect("highscores.db")
+	cur = con.cursor()
+
+	for score in cur.execute(highscoresq).fetchall():
+		entry = Entry(*score[1:])
+		html += f"<p>{entry.username}, {entry.turn_count}, {entry.seconds}, {entry.pollution}</p>"
+
+	return html
 
 
 def startup():
@@ -88,6 +100,7 @@ def startup():
 	"""
 
 	cur = con.cursor()
+	cur.execute(creationq)
 
 
 startup()
