@@ -159,8 +159,12 @@ class Card(Sprite):
 				self.destroy_anim()
 				construction = Playspace.from_blueprint(game.blueprints.get_building("construction"))
 				construction.rect.topleft = self.rect.topleft
+				if construction.rect.y < 0:
+					construction.rect.y = 10
+
 				game.sprites.new(DeflatingParticle(construction.rect.inflate(40, 40), palette.GREY), layer_override="LOWPARTICLE")
 				game.sprites.new(construction)
+
 
 		# Logic for if the Card is being dragged
 		if self.dragged:

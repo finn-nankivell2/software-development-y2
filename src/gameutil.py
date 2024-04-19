@@ -8,8 +8,32 @@ from typing import List, Union, Iterator, Tuple, Callable, Any, Optional
 from consts import VZERO
 from dataclasses import dataclass
 import palette
+import requests
+import threading
+import time
 
 from easing_functions import CubicEaseInOut, BackEaseInOut
+
+
+# Attempt at a multithreaded client request (does not work due to python3 GIL)
+class Promise:
+	def __init__(self, method: Callable, url: str, **kwargs):
+		self._method = method
+		self._url = url
+		self._request_kwargs = kwargs
+		self.complete = False
+		self.response = None
+
+		self._thread = threading.Thread(target=self.target, daemon=True)
+
+	def start(self):
+		time.sleep(5)
+		self._thread.start()
+		return self
+
+	def target(self):
+		self.response = self._method(self._url, **self._request_kwargs)
+		self.complete = True
 
 
 class EasingVector2:
@@ -222,7 +246,7 @@ class BoxesTransition(Sprite):
 
 	def update_draw(self):
 		for box in self.boxes:
-			pygame.draw.rect(game.windowsystem.screen, self.colour, (box.pos.x, box.pos.y, box.width, self._box_height))
+			pygame.draw.rect(game.windowsystem.screen, self.colour, (box.pos.x, box.pos.y, box.width, self._box_height+1))
 
 
 

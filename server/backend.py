@@ -48,9 +48,9 @@ def _verify_upload_data(data):
 	pollution = get_and_assert("pollution")
 
 	assert len(username) <= 20, "Username length cannot be longer than 20"
-	assert turn_count.isnumeric() and int(turn_count) > 0, "turn_count must be a positive integer"
-	assert seconds.isnumeric() and int(seconds) > 0, "seconds must be a positive integer"
-	assert pollution.isnumeric() and 0 <= int(pollution) <= 100, "pollution must be an integer between 0 and 100"
+	assert turn_count > 0, "turn_count must be a positive integer"
+	assert seconds > 0, "seconds must be a positive integer"
+	assert 0 <= pollution <= 100, "pollution must be an integer between 0 and 100"
 
 
 @app.route("/upload", methods = ["POST"])
@@ -72,7 +72,7 @@ def upload():
 
 @app.route("/")
 def index():
-	return "<p>Hello</p>"
+	return "Hello"
 
 
 def startup():
@@ -88,7 +88,6 @@ def startup():
 	"""
 
 	cur = con.cursor()
-	print(cur.execute(creationq))
 
 
 startup()

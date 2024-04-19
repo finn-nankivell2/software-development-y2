@@ -41,12 +41,14 @@ from particles import BubbleParticleEmitter
 from cards import Card, Hand, DataCard
 from playspaces import Playspace
 
-from gameutil import ScalingImageSprite, HookSprite, BoxesTransition, ImageSprite
+from gameutil import ScalingImageSprite, HookSprite, BoxesTransition, ImageSprite, Promise
 from consts import VZERO
 
 from gmods import TextureClippingCacheModule, BlueprintsStorageModule, PlayerStateTrackingModule, CardSpawningModule, CameraSpoofingModule
 import fonts
 import palette
+
+import requests
 
 from tooltip import Tooltip
 from ui import AbstractButton, NamedButton, ProgressBar, TargettingProgressBar, DodgingProgressBar

@@ -6,7 +6,7 @@ from playspaces import Playspace
 import fonts
 from gameutil import EasingVector2, BoxesTransition
 from ui import NamedButton
-
+import requests
 
 
 class InvestmentWatcher(Sprite):
@@ -63,21 +63,31 @@ class GameComplete(Sprite):
 					self._disable_callback = None
 				self._font_pos = self._font_easing(self._frames - GameComplete.ANIM_TIMING)
 			elif not self._add_buttons_lock:
-				def main_menu():
+				def return_to_main_menu():
 					game.sprites.new(BoxesTransition(game.windowsystem.rect.copy(), (16, 9), callback = lambda: game.loop.run(game.loop.functions.menu)))
+
+				def submit_scores_to_server():
+					data = {
+						"username": "default",
+						"turn_count": game.playerturn.turn_count,
+						"seconds": 2,
+						"pollution": int(game.playerstate.pollution * 100)
+					}
+					response = requests.post(consts.SERVER_ADDRESS + "/upload", json=data)
+					print(response.text)
 
 				buttons_start_at = self._font_pos.copy()
 				buttons_size = Vector2(300, 120)
 				game.sprites.new(NamedButton(
 					FRect(buttons_start_at + Vector2(-(buttons_size.x + 30), 80), buttons_size),
 					"MENU",
-					onclick = main_menu
+					onclick = return_to_main_menu
 				))
 
 				game.sprites.new(NamedButton(
 					FRect(buttons_start_at + Vector2(30, 80), buttons_size),
 					"SUBMIT STATS",
-					onclick = lambda: "we'll get to it eventually"
+					onclick = submit_scores_to_server
 				))
 				self._add_buttons_lock = True
 
